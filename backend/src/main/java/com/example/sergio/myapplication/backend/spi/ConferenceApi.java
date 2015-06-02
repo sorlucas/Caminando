@@ -2,6 +2,7 @@ package com.example.sergio.myapplication.backend.spi;
 
 import com.example.sergio.myapplication.backend.Constants;
 import com.example.sergio.myapplication.backend.domain.Announcement;
+import com.example.sergio.myapplication.backend.domain.AppEngineUser;
 import com.example.sergio.myapplication.backend.domain.Conference;
 import com.example.sergio.myapplication.backend.domain.Profile;
 import com.example.sergio.myapplication.backend.form.ConferenceForm;
@@ -23,11 +24,13 @@ import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.users.User;
 import com.googlecode.objectify.Key;
+import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.Work;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.inject.Named;
 
@@ -59,6 +62,8 @@ import static com.example.sergio.myapplication.backend.service.OfyService.ofy;
 )
 public class ConferenceApi {
 
+    private static final Logger LOG = Logger.getLogger(ConferenceApi.class.getName());
+    
     /*
      * Get the display name from the user's email. For example, if the email is
      * lemoncake@example.com, then the display name becomes "lemoncake."
@@ -111,6 +116,27 @@ public class ConferenceApi {
     }
 
     /**
+     * This is an ugly workaround for null userId for Android clients.
+     *
+     * @param user A User object injected by the cloud endpoints.
+     * @return the App Engine userId for the user.
+     */
+    private static String getUserId(User user) {
+        String userId = user.getUserId();
+        if (userId == null) {
+            LOG.info("userId is null, so trying to obtain it from the datastore.");
+            AppEngineUser appEngineUser = new AppEngineUser(user);
+            ofy().save().entity(appEngineUser).now();
+            // Begin new session for not using session cache.
+            Objectify objectify = ofy().factory().begin();
+            AppEngineUser savedUser = objectify.load().key(appEngineUser.getKey()).now();
+            userId = savedUser.getUser().getUserId();
+            LOG.info("Obtained the userId: " + userId);
+        }
+        return userId;
+    }
+    
+    /**
      * Creates or updates a Profile object associated with the given user
      * object.
      *
@@ -131,7 +157,7 @@ public class ConferenceApi {
         }
 
         // Get the userId and mainEmail
-        String userId = user.getUserId();
+        String userId = getUserId(user);
         String mainEmail = user.getEmail();
 
         // Get the displayName and teeShirtSize sent by the request
@@ -185,7 +211,7 @@ public class ConferenceApi {
         }
 
         // load the Profile Entity
-        String userId = user.getUserId();
+        String userId = getUserId(user);
         Key key = Key.create(Profile.class, userId);
 
         return (Profile) ofy().load().key(key).now();
@@ -208,7 +234,7 @@ public class ConferenceApi {
         }
 
         // Get the userId of the logged in User
-        final String userId = user.getUserId();
+        final String userId = getUserId(user);
         // Get the key for the User's Profile
         Key<Profile> profileKey = Key.create(Profile.class, userId);
         // Allocate a key for the conference -- let App Engine allocate the ID
@@ -268,7 +294,7 @@ public class ConferenceApi {
         if (user == null){
             throw new UnauthorizedException("Autority required");
         }
-        Key<Profile> profileKey = Key.create(Profile.class,user.getUserId());
+        Key<Profile> profileKey = Key.create(Profile.class,getUserId(user));
 
         return ofy().load().type(Conference.class).ancestor(profileKey).list();
     }
@@ -319,7 +345,7 @@ public class ConferenceApi {
         }
 
         // Get the userId
-        final String userId = user.getUserId();
+        final String userId = getUserId(user);
 
         WrappedBoolean result = ofy().transact(new Work<WrappedBoolean>() {
             @Override
@@ -399,7 +425,7 @@ public class ConferenceApi {
             throw new UnauthorizedException("Authorization required");
         }
 
-        Profile profile = ofy().load().key(Key.create(Profile.class, user.getUserId())).now();
+        Profile profile = ofy().load().key(Key.create(Profile.class, getUserId(user))).now();
         if (profile == null) {
             throw new NotFoundException("Profile doesn't exist.");
         }
@@ -451,7 +477,7 @@ public class ConferenceApi {
                 }
 
                 // Un-registering from the Conference.
-                Profile profile = getProfileFromUser(user, user.getUserId());
+                Profile profile = getProfileFromUser(user, getUserId(user));
                 if (profile.getConferenceKeysToAttend().contains(websafeConferenceKey)) {
                     profile.unregisterFromConference(websafeConferenceKey);
                     conference.giveBackSeats(1);
