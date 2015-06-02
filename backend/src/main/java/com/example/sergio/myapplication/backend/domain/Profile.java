@@ -1,6 +1,7 @@
 package com.example.sergio.myapplication.backend.domain;
 
 import com.google.common.collect.ImmutableList;
+import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 
@@ -11,6 +12,7 @@ import static com.example.sergio.myapplication.backend.form.ProfileForm.TeeShirt
 
 
 @Entity
+@Cache
 public class Profile {
 
     String displayName;
