@@ -189,4 +189,21 @@ public class ConferenceApi {
     public List<Conference> queryConferences() {
         return ofy().load().type(Conference.class).order("name").list();
     }
+
+    @ApiMethod(
+            name = "getConferencesCreated",
+            path = "getConferencesCreated",
+            httpMethod = HttpMethod.POST
+    )
+    public List<Conference> getConferencesCreated(User user)
+            throws UnauthorizedException {
+
+        // If the user is not logged in, throw an UnauthorizedException
+        if (user == null){
+            throw new UnauthorizedException("Autority required");
+        }
+        Key<Profile> profileKey = Key.create(Profile.class,user.getUserId());
+
+        return ofy().load().type(Conference.class).ancestor(profileKey).list();
+    }
 }
