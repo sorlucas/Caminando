@@ -51,4 +51,19 @@ public class Profile {
     public String getUserId() {
         return userId;
     }
+
+    /**
+     *  Update the Profile with the given displayName and teeShirtSize
+     *
+     *  @param displayName Any string user wants us to display him/her on this system.
+     *  @param teeShirtSize The User's tee shirt size
+     */
+    public  void update(String displayName, TeeShirtSize teeShirtSize){
+        if (displayName != null){
+            this.displayName = displayName;
+        }
+        if (teeShirtSize != null){
+            this.teeShirtSize = teeShirtSize;
+        }
+    }
 }
