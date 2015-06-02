@@ -1,6 +1,7 @@
 package com.example.sergio.myapplication.backend.spi;
 
 import com.example.sergio.myapplication.backend.Constants;
+import com.example.sergio.myapplication.backend.domain.Announcement;
 import com.example.sergio.myapplication.backend.domain.Conference;
 import com.example.sergio.myapplication.backend.domain.Profile;
 import com.example.sergio.myapplication.backend.form.ConferenceForm;
@@ -15,6 +16,8 @@ import com.google.api.server.spi.response.ConflictException;
 import com.google.api.server.spi.response.ForbiddenException;
 import com.google.api.server.spi.response.NotFoundException;
 import com.google.api.server.spi.response.UnauthorizedException;
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.appengine.api.users.User;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Work;
@@ -428,7 +431,7 @@ public class ConferenceApi {
                 Conference conference = ofy().load().key(conferenceKey).now();
                 // 404 when there is no Conference with the given conferenceId.
                 if (conference == null) {
-                    return new  WrappedBoolean(false,
+                    return new WrappedBoolean(false,
                             "No Conference found with key: " + websafeConferenceKey);
                 }
 
@@ -455,5 +458,30 @@ public class ConferenceApi {
         }
         // NotFoundException is actually thrown here.
         return new WrappedBoolean(result.getResult());
+    }
+
+    /**
+     * Returns a Announcement present in memCache
+     *
+     * @return Announcement
+     */
+    @ApiMethod(
+            name = "getAnnouncement",
+            path = "announcement",
+            httpMethod = HttpMethod.GET
+    )
+    public Announcement getAnnouncement(){
+
+        MemcacheService memcacheService = MemcacheServiceFactory.getMemcacheService();
+
+        String announcementKey = Constants.MEMCACHE_ANNOUNCEMENTS_KEY;
+
+        Object message = memcacheService.get(announcementKey);
+
+        if (message != null){
+            return new Announcement(message.toString());
+        }
+
+        return null;
     }
 }
