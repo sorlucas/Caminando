@@ -18,6 +18,9 @@ import com.google.api.server.spi.response.NotFoundException;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.users.User;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Work;
@@ -204,23 +207,34 @@ public class ConferenceApi {
         }
 
         // Get the userId of the logged in User
-        String userId = user.getUserId();
+        final String userId = user.getUserId();
         // Get the key for the User's Profile
         Key<Profile> profileKey = Key.create(Profile.class, userId);
         // Allocate a key for the conference -- let App Engine allocate the ID
         final Key<Conference> conferenceKey = factory().allocateId(profileKey, Conference.class);
         // Get the Conference Id from the Key
         final long conferenceId = conferenceKey.getId();
-        // Get the existing Profile entity for the current user if there is one
-        // Otherwise create a new Profile entity with default values
-        Profile profile = getProfileFromUser(user, userId);
-        // Create a new Conference Entity, specifying the user's Profile entity
-        // as the parent of the conference
-        Conference conference = new Conference(conferenceId, userId, conferenceForm);
+        final Queue queue = QueueFactory.getDefaultQueue();
 
-        // Save Conference and Profile Entities
-        ofy().save().entities(profile, conference).now();
-        return conference;
+        //Star transaction
+        return ofy().transact(new Work<Conference>() {
+            @Override
+            public Conference run() {
+
+                //Fetch user's Profile.
+                Profile profile = getProfileFromUser(user,userId);
+                Conference conference = new Conference(conferenceId,userId,conferenceForm);
+                // Save Conference and Profile Entities
+                ofy().save().entities(profile,conference).now();
+                // add TAsk with transaction to queue
+                queue.add(ofy().getTransaction(),
+                        TaskOptions.Builder.withUrl("/tasks/send_confirmation_email")
+                                .param("email", profile.getMainEmail())
+                                .param("conferenceInfo", conference.toString()));
+
+                return conference;
+            }
+        });
     }
 
     @ApiMethod(
