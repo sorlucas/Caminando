@@ -1,7 +1,11 @@
 package com.example.sergio.myapplication.backend.domain;
 
+import com.google.common.collect.ImmutableList;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.example.sergio.myapplication.backend.form.ProfileForm.TeeShirtSize;
 
@@ -15,6 +19,29 @@ public class Profile {
 
     @Id
     String userId;
+
+    private List<String> conferenceKeysToAttend = new ArrayList<>(0);
+
+    public List<String> getConferenceKeysToAttend() {
+        return ImmutableList.copyOf(conferenceKeysToAttend);
+    }
+
+    public void addToConferenceKeysToAttend(String conferenceKey){
+        conferenceKeysToAttend.add(conferenceKey);
+    }
+
+    /**
+     * Remove the conferenceId from conferenceIdsToAttend.
+     *
+     * @param conferenceKey a websafe String representation of the Conference Key.
+     */
+    public void unregisterFromConference(String conferenceKey){
+        if (conferenceKeysToAttend.contains(conferenceKey)){
+            conferenceKeysToAttend.remove(conferenceKey);
+        } else {
+            throw new IllegalArgumentException("Invalid conferenceKey: " + conferenceKey);
+        }
+    }
 
     /**
      * Just making the default constructor private.
