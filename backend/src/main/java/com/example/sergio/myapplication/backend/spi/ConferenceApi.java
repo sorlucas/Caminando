@@ -4,6 +4,7 @@ import com.example.sergio.myapplication.backend.Constants;
 import com.example.sergio.myapplication.backend.domain.Conference;
 import com.example.sergio.myapplication.backend.domain.Profile;
 import com.example.sergio.myapplication.backend.form.ConferenceForm;
+import com.example.sergio.myapplication.backend.form.ConferenceQueryForm;
 import com.example.sergio.myapplication.backend.form.ProfileForm;
 import com.example.sergio.myapplication.backend.form.ProfileForm.TeeShirtSize;
 import com.google.api.server.spi.config.Api;
@@ -14,6 +15,7 @@ import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.users.User;
 import com.googlecode.objectify.Key;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.sergio.myapplication.backend.service.OfyService.factory;
@@ -186,8 +188,17 @@ public class ConferenceApi {
             path = "queryConferences",
             httpMethod = HttpMethod.POST
     )
-    public List<Conference> queryConferences() {
-        return ofy().load().type(Conference.class).order("name").list();
+    public List<Conference> queryConferences(ConferenceQueryForm conferenceQueryForm) {
+        Iterable<Conference> conferenceIterable = conferenceQueryForm.getQuery();
+        List<Conference> result = new ArrayList<>(0);
+        List<Key<Profile>> organizersKeyList = new ArrayList<>(0);
+        for (Conference conference : conferenceIterable) {
+            organizersKeyList.add(Key.create(Profile.class, conference.getOrganizerUserId()));
+            result.add(conference);
+        }
+        // To avoid separate datastore gets for each Conference, pre-fetch the Profiles.
+        ofy().load().keys(organizersKeyList);
+        return result;
     }
 
     @ApiMethod(
