@@ -47,7 +47,7 @@
         <servlet-name>SetAnnouncementServlet</servlet-name>
         <url-pattern>/crons/set_announcement</url-pattern>
     </servlet-mapping>
-
+    <!-- Add segurity to servlet Cron Jobs (Announcements, ...)-->
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>crons</web-resource-name>
