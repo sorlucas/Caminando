@@ -1,5 +1,6 @@
 package com.example.sergio.myapplication.backend.service;
 
+import com.example.sergio.myapplication.backend.domain.Conference;
 import com.example.sergio.myapplication.backend.domain.Profile;
 import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyFactory;
@@ -14,6 +15,7 @@ public class OfyService {
      */
     static {
         factory().register(Profile.class);
+        factory().register(Conference.class);
     }
 
     /**
