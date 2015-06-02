@@ -51,6 +51,7 @@ import static com.example.sergio.myapplication.backend.service.OfyService.ofy;
         scopes = { Constants.EMAIL_SCOPE },
         clientIds = {
                 Constants.WEB_CLIENT_ID,
+                Constants.ANDROID_CLIENT_ID,
                 Constants.API_EXPLORER_CLIENT_ID},
         audiences = {Constants.ANDROID_AUDIENCE},
         description = "Conference Central API for creating and querying conferences," +
