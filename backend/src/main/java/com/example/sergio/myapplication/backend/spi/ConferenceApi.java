@@ -14,6 +14,8 @@ import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.users.User;
 import com.googlecode.objectify.Key;
 
+import java.util.List;
+
 import static com.example.sergio.myapplication.backend.service.OfyService.factory;
 import static com.example.sergio.myapplication.backend.service.OfyService.ofy;
 
@@ -169,13 +171,22 @@ public class ConferenceApi {
         final long conferenceId = conferenceKey.getId();
         // Get the existing Profile entity for the current user if there is one
         // Otherwise create a new Profile entity with default values
-        Profile profile = getProfileFromUser(user,userId);
+        Profile profile = getProfileFromUser(user, userId);
         // Create a new Conference Entity, specifying the user's Profile entity
         // as the parent of the conference
-        Conference conference = new Conference(conferenceId,userId,conferenceForm);
+        Conference conference = new Conference(conferenceId, userId, conferenceForm);
 
         // Save Conference and Profile Entities
-        ofy().save().entities(profile,conference).now();
+        ofy().save().entities(profile, conference).now();
         return conference;
+    }
+
+    @ApiMethod(
+            name = "queryConferences",
+            path = "queryConferences",
+            httpMethod = HttpMethod.POST
+    )
+    public List<Conference> queryConferences() {
+        return ofy().load().type(Conference.class).order("name").list();
     }
 }
