@@ -1,10 +1,10 @@
-<!-- Indices written at Thu, 4 Jun 2015 17:58:16 CEST -->
+<!-- Indices written at Thu, 4 Jun 2015 18:53:45 CEST -->
 
 <datastore-indexes>
 
     <!-- Used 1 time in query history -->
     <datastore-index kind="Conference" ancestor="false" source="auto">
-        <property name="city" direction="asc"/>
+        <property name="maxAttendees" direction="asc"/>
         <property name="name" direction="asc"/>
     </datastore-index>
 
