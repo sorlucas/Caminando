@@ -65,4 +65,6 @@ dependencies {
     compile 'com.github.japgolly.android:svg-android:2.0.6'
 
     compile files('../third_party/glide/library/libs/glide-3.2.0a.jar')
+
+    compile 'com.google.code.gson:gson:2.3.1'
 }

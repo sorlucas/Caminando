@@ -48,6 +48,7 @@ import android.widget.Toast;
 import com.example.sergio.caminando.BuildConfig;
 import com.example.sergio.caminando.Config;
 import com.example.sergio.caminando.R;
+import com.example.sergio.caminando.endpoints.MainActivity;
 import com.example.sergio.caminando.ui.widget.MultiSwipeRefreshLayout;
 import com.example.sergio.caminando.ui.widget.ScrimInsetsScrollView;
 import com.example.sergio.caminando.util.AccountUtils;
@@ -716,6 +717,8 @@ public abstract class BaseActivity extends ActionBarActivity implements
                 return true;
 
             case R.id.menu_wifi:
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
                 return true;
 
             case R.id.menu_i_o_hunt:
