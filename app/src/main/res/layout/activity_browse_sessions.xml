@@ -32,13 +32,22 @@
         app:shadowDrawable="@drawable/header_shadow">
 
         <!-- ADD MultiSwipeRefreshLayout -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:background="@drawable/img_action_bar_photo_paula"></LinearLayout>
+        <!-- ADD MultiSwipeRefreshLayout -->
             <!-- Sessions fragment showing the session grid -->
             <fragment android:name="com.example.sergio.caminando.ui.RoutesFragment"
                 android:id="@+id/sessions_fragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 tools:layout="@layout/fragment_sessions"/>
-
+        </LinearLayout>
         <!-- -add- -->
 
         <LinearLayout style="@style/HeaderBar"
