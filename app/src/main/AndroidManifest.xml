@@ -39,7 +39,7 @@
         </activity>
         <activity
             android:name=".ui.CreateRouteActivity"
-            android:label="@string/title_activity_create_route" >
+            android:label="@string/title_activity_create_routes" >
         </activity>
     </application>
 

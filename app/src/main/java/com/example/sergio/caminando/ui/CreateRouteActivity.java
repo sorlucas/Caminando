@@ -1,4 +1,5 @@
 package com.example.sergio.caminando.ui;
+
 import android.content.ComponentName;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -6,6 +7,7 @@ import android.support.v4.content.IntentCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,7 +45,7 @@ public class CreateRouteActivity extends BaseActivity {
         setContentView(R.layout.activity_create_routes);
 
         Toolbar toolbar = getActionBarToolbar();
-        toolbar.setTitle(R.string.title_settings);
+        toolbar.setTitle(R.string.title_activity_create_routes);
         toolbar.setNavigationIcon(R.drawable.ic_up);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,28 +63,6 @@ public class CreateRouteActivity extends BaseActivity {
         }
 
         mEmailAccount = Utils.getEmailAccount(this);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_create_route, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     public static class CreateRouteFragment extends Fragment implements com.fourmob.datetimepicker.date.DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
@@ -110,6 +90,9 @@ public class CreateRouteActivity extends BaseActivity {
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+            setHasOptionsMenu(true);
+
             ViewGroup root = (ViewGroup) inflater.inflate(R.layout.fragment_create_route, container, false);
 
             mRouteName = (EditText) root.findViewById(R.id.route_name_editext);
@@ -208,12 +191,17 @@ public class CreateRouteActivity extends BaseActivity {
         @Override
         public void onDateSet(DatePickerDialog datePickerDialog, int year, int month, int day) {
             String tag = datePickerDialog.getTag();
+            Calendar newDate = Calendar.getInstance();
             switch (tag) {
                 case DATEPICKER_TAG_START:
                     Toast.makeText(getActivity(), "Start date:" + year + "-" + month + "-" + day, Toast.LENGTH_LONG).show();
+                    newDate.set(year, month, day);
+                    mStartDate.setText(dateFormatter.format(newDate.getTime()));
                     break;
                 case DATEPICKER_TAG_END:
                     Toast.makeText(getActivity(), "End date:" + year + "-" + month + "-" + day, Toast.LENGTH_LONG).show();
+                    newDate.set(year, month, day);
+                    mEndDate.setText(dateFormatter.format(newDate.getTime()));
                     break;
 
             }
@@ -222,6 +210,32 @@ public class CreateRouteActivity extends BaseActivity {
         @Override
         public void onTimeSet(RadialPickerLayout view, int hourOfDay, int minute) {
 
+        }
+
+        @Override
+        public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+            // Inflate the menu; this adds items to the action bar if it is present.
+            inflater.inflate(R.menu.menu_create_route, menu);
+        }
+
+        @Override
+        public boolean onOptionsItemSelected(MenuItem item) {
+            // Handle action bar item clicks here. The action bar will
+            // automatically handle clicks on the Home/Up button, so long
+            // as you specify a parent activity in AndroidManifest.xml.
+            int id = item.getItemId();
+
+            //To create route
+            if (id == R.id.menu_create){
+                Toast.makeText(getActivity(),"Creating Route", Toast.LENGTH_LONG).show();
+                createRoute();
+            }
+
+            return super.onOptionsItemSelected(item);
+        }
+
+        private boolean createRoute(){
+                return true;
         }
 
     }
