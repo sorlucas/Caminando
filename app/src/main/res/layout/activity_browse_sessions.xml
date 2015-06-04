@@ -35,7 +35,12 @@
             android:id="@+id/swipe_refresh_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-
+            <!-- Sessions fragment showing the session grid -->
+            <fragment android:name="com.example.sergio.caminando.ui.RoutesFragment"
+                android:id="@+id/sessions_fragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:layout="@layout/fragment_sessions"/>
 
         </com.example.sergio.caminando.ui.widget.MultiSwipeRefreshLayout>
 
@@ -73,6 +78,13 @@
         </LinearLayout>
     </com.example.sergio.caminando.ui.widget.DrawShadowFrameLayout>
 
+    <!-- Butter bar -->
+    <FrameLayout android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginTop="?actionBarSize">
+        <include layout="@layout/include_butter_bar" />
+    </FrameLayout>
     <!-- Nav drawer -->
     <include layout="@layout/navdrawer" />
 

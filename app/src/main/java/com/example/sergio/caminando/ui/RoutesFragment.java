@@ -1,21 +1,23 @@
-package com.example.sergio.caminando.endpoints;
+package com.example.sergio.caminando.ui;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v4.view.ViewCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.sergio.caminando.R;
+import com.example.sergio.caminando.endpoints.ConferenceDataAdapter;
+import com.example.sergio.caminando.endpoints.ConferenceLoader;
 import com.example.sergio.caminando.endpoints.utils.ConferenceException;
 import com.example.sergio.caminando.endpoints.utils.ConferenceUtils;
 import com.example.sergio.caminando.endpoints.utils.DecoratedConference;
@@ -23,101 +25,68 @@ import com.example.sergio.caminando.endpoints.utils.Utils;
 
 import java.io.IOException;
 import java.util.List;
-// TODO: Change ListFragment to Fragment to implement more funcionalities from SessionsFRagment (iosched)
-public class ConferenceListFragment extends ListFragment implements
-        LoaderManager.LoaderCallbacks<List<DecoratedConference>> {
+
+/**
+ * Created by sergio on 25/05/15.
+ */
+public class RoutesFragment extends Fragment implements
+        LoaderManager.LoaderCallbacks<List<DecoratedConference>>  {
 
     private static final String TAG = "ConferenceListFragment";
 
     private ConferenceDataAdapter mAdapter;
 
     private ListView mListView;
-    /*
-     * (non-Javadoc)
-     * @see android.support.v4.app.Fragment#onActivityCreated(android.os.Bundle)
-     */
+    private TextView mEmptyView;
+    private View mLoadingView;
+
+    public boolean canCollectionViewScrollUp() {
+        return ViewCompat.canScrollVertically(mListView, -1);
+    }
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mListView = getListView();
+
         mListView.setFastScrollEnabled(true);
         LayoutAnimationController controller = AnimationUtils
                 .loadLayoutAnimation(getActivity(), R.anim.list_layout_controller);
         mListView.setLayoutAnimation(controller);
         mAdapter = new ConferenceDataAdapter(getActivity());
-        setEmptyText(getString(R.string.no_conferences));
-        setListAdapter(mAdapter);
-        setListShown(false);
+        mListView.setEmptyView(mEmptyView);
+        mListView.setAdapter(mAdapter);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see android.support.v4.app.LoaderManager.LoaderCallbacks#onLoadFinished(android
-     * .support.v4.content.Loader, java.lang.Object)
-     */
     @Override
-    public void onLoadFinished(Loader<List<DecoratedConference>> loader,
-                               List<DecoratedConference> data) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        ViewGroup root = (ViewGroup) inflater.inflate(R.layout.fragment_sessions, container, false);
+        mListView = (ListView) root.findViewById(R.id.sessions_collection_view);
+        mEmptyView = (TextView) root.findViewById(R.id.empty_text);
+        mLoadingView = root.findViewById(R.id.loading);
+        return root;
+    }
+
+    @Override
+    public Loader<List<DecoratedConference>> onCreateLoader(int id, Bundle args) {
+        return new ConferenceLoader(getActivity());
+    }
+
+    @Override
+    public void onLoadFinished(Loader<List<DecoratedConference>> loader, List<DecoratedConference> data) {
         ConferenceLoader conferenceLoader = (ConferenceLoader) loader;
         if (conferenceLoader.getException() != null) {
             Utils.displayNetworkErrorMessage(getActivity());
             return;
         }
         mAdapter.setData(data);
-        if (isResumed()) {
-            setListShown(true);
-        } else {
-            setListShownNoAnimation(true);
-        }
+
     }
 
-    /*
-     * (non-Javadoc)
-     * @see android.support.v4.app.LoaderManager.LoaderCallbacks#onLoaderReset(android
-     * .support.v4.content.Loader)
-     */
     @Override
-    public void onLoaderReset(Loader<List<DecoratedConference>> arg0) {
+    public void onLoaderReset(Loader<List<DecoratedConference>> loader) {
         mAdapter.setData(null);
     }
 
-    @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        final DecoratedConference decoratedConference = mAdapter.getItem(position);
-
-        final String message = Utils
-                .getConferenceCard(getActivity(), decoratedConference.getConference());
-
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
-        LayoutInflater li = LayoutInflater.from(getActivity());
-        View conferenceDetailsView = li.inflate(R.layout.conference_details, null);
-        alertDialogBuilder.setView(conferenceDetailsView);
-
-        final TextView textViewTitle = (TextView) conferenceDetailsView
-                .findViewById(R.id.textViewTitle);
-        final TextView textViewMessage = (TextView) conferenceDetailsView
-                .findViewById(R.id.textViewMessage);
-        textViewTitle.setText(decoratedConference.getConference().getName());
-        textViewMessage.setText(message);
-
-        alertDialogBuilder
-                .setPositiveButton(decoratedConference.isRegistered() ? R.string.unregister
-                        : R.string.register, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                        registerToConference(decoratedConference);
-                    }
-                })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                })
-                .create()
-                .show();
-    }
 
     private void registerToConference(DecoratedConference decoratedConference) {
         new RegistrationAsyncTask(decoratedConference).execute();
@@ -131,11 +100,6 @@ public class ConferenceListFragment extends ListFragment implements
 
         public RegistrationAsyncTask(DecoratedConference conference) {
             this.mDecoratedConference = conference;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            setListShown(false);
         }
 
         @Override
@@ -181,18 +145,8 @@ public class ConferenceListFragment extends ListFragment implements
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * @see android.support.v4.app.LoaderManager.LoaderCallbacks#onCreateLoader(int,
-     * android.os.Bundle)
-     */
-    @Override
-    public Loader<List<DecoratedConference>> onCreateLoader(int arg0, Bundle arg1) {
-        return new ConferenceLoader(getActivity());
-    }
-
-    public static ConferenceListFragment newInstance() {
-        ConferenceListFragment f = new ConferenceListFragment();
+    public static RoutesFragment newInstance() {
+        RoutesFragment f = new RoutesFragment();
         Bundle b = new Bundle();
         f.setArguments(b);
         return f;
@@ -203,18 +157,12 @@ public class ConferenceListFragment extends ListFragment implements
     }
 
     public void reload() {
-        setListShown(false);
         getLoaderManager().restartLoader(0, null, this).startLoading();
     }
 
     public void reload(List<DecoratedConference> conferences) {
         mAdapter.setData(conferences);
         mAdapter.notifyDataSetChanged();
-        setListShown(true);
-    }
-
-    public void setContentTopClearance(int topClearance) {
-        mListView.setSelection(0);
     }
 
 }

@@ -38,8 +38,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -1110,6 +1112,31 @@ public abstract class BaseActivity extends ActionBarActivity implements
         onActionBarAutoShowOrHide(show);
     }
 
+    /**
+     * Para que desaparezca la action bar cuando scrol.
+     * @param listView
+     */
+    protected void enableActionBarAutoHide(final ListView listView) {
+        initActionBarAutoHide();
+        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            final static int ITEMS_THRESHOLD = 3;
+            int lastFvi = 0;
+
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                onMainContentScrolled(firstVisibleItem <= ITEMS_THRESHOLD ? 0 : Integer.MAX_VALUE,
+                        lastFvi - firstVisibleItem > 0 ? Integer.MIN_VALUE :
+                                lastFvi == firstVisibleItem ? 0 : Integer.MAX_VALUE
+                );
+                lastFvi = firstVisibleItem;
+            }
+        });
+    }
+
     private View makeNavDrawerItem(final int itemId, ViewGroup container) {
         boolean selected = getSelfNavDrawerItem() == itemId;
         int layoutToInflate = 0;
@@ -1222,6 +1249,11 @@ public abstract class BaseActivity extends ActionBarActivity implements
     };
     */
 
+    protected void registerHideableHeaderView(View hideableHeaderView) {
+        if (!mHideableHeaderViews.contains(hideableHeaderView)) {
+            mHideableHeaderViews.add(hideableHeaderView);
+        }
+    }
 
     protected void onActionBarAutoShowOrHide(boolean shown) {
         if (mStatusBarColorAnimator != null) {
