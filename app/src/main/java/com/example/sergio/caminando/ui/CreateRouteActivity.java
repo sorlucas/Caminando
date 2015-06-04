@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.example.sergio.caminando.R;
 import com.example.sergio.caminando.endpoints.utils.Utils;
+import com.example.sergio.myapplication.backend.domain.conference.model.Conference;
 import com.fourmob.datetimepicker.date.DatePickerDialog;
 import com.sleepbot.datetimepicker.time.RadialPickerLayout;
 import com.sleepbot.datetimepicker.time.TimePickerDialog;
@@ -25,9 +26,10 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
+import static com.example.sergio.caminando.util.LogUtils.LOGE;
 import static com.example.sergio.caminando.util.LogUtils.makeLogTag;
 
-public class CreateRouteActivity extends BaseActivity {
+public class CreateRouteActivity extends BaseActivity implements CreateRouteFragment.Callbacks{
 
     private static final String TAG = makeLogTag(CreateRouteActivity.class);
 
@@ -238,5 +240,10 @@ public class CreateRouteActivity extends BaseActivity {
                 return true;
         }
 
+    }
+
+    @Override
+    public void uploadRoute(Conference conference) {
+        LOGE(TAG,"uploadRoute");
     }
 }
