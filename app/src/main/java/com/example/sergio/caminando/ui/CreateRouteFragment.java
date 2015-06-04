@@ -15,13 +15,16 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.example.sergio.caminando.R;
-import com.example.sergio.myapplication.backend.domain.conference.model.Conference;
+import com.example.sergio.myapplication.backend.domain.conference.model.ConferenceForm;
 import com.fourmob.datetimepicker.date.DatePickerDialog;
+import com.google.api.client.util.DateTime;
 import com.sleepbot.datetimepicker.time.RadialPickerLayout;
 import com.sleepbot.datetimepicker.time.TimePickerDialog;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -49,14 +52,16 @@ public class CreateRouteFragment extends Fragment implements com.fourmob.datetim
     private EditText mMaxAttendees;
 
     private SimpleDateFormat dateFormatter;
+    private DateTime startDate;
+    private DateTime endDate;
 
     public interface Callbacks {
-        public void uploadRoute(Conference conference);
+        public void uploadRoute(ConferenceForm conference);
     }
 
     private static Callbacks sDummyCallbacks = new Callbacks() {
         @Override
-        public void uploadRoute(Conference conference) {}
+        public void uploadRoute(ConferenceForm conference) {}
     };
 
     private Callbacks mCallbacks = sDummyCallbacks;
@@ -186,11 +191,13 @@ public class CreateRouteFragment extends Fragment implements com.fourmob.datetim
                 Toast.makeText(getActivity(), "Start date:" + year + "-" + month + "-" + day, Toast.LENGTH_LONG).show();
                 newDate.set(year, month, day);
                 mStartDate.setText(dateFormatter.format(newDate.getTime()));
+                startDate = new DateTime(newDate.getTime());
                 break;
             case DATEPICKER_TAG_END:
                 Toast.makeText(getActivity(), "End date:" + year + "-" + month + "-" + day, Toast.LENGTH_LONG).show();
                 newDate.set(year, month, day);
                 mEndDate.setText(dateFormatter.format(newDate.getTime()));
+                endDate = new DateTime(newDate.getTime());
                 break;
 
         }
@@ -223,10 +230,26 @@ public class CreateRouteFragment extends Fragment implements com.fourmob.datetim
     }
 
     private void createRoute(){
-        Conference conference = new Conference();
-        conference.setName("Desde el movil")
-                .setCity("Roble");
-        mCallbacks.uploadRoute(conference);
+
+        //Implememt anything to check form
+        mCallbacks.uploadRoute(getDataConference());
+    }
+
+    private ConferenceForm getDataConference(){
+        //TODO: FIX listTopics to catch List<String>
+        List<String> listTopics = new ArrayList<>();
+        listTopics.add(mTopicsRoute.getText().toString());
+
+        ConferenceForm conferenceForm = new ConferenceForm();
+
+        conferenceForm.setName(mRouteName.getText().toString());
+        conferenceForm.setDescription(mDescriptionRoute.getText().toString());
+        conferenceForm.setTopics(listTopics);
+        conferenceForm.setCity(mCityName.getText().toString());
+        conferenceForm.setStartDate(startDate);
+        conferenceForm.setEndDate(endDate);
+        conferenceForm.setMaxAttendees(Integer.parseInt(mMaxAttendees.getText().toString()));
+        return conferenceForm;
     }
 
 }

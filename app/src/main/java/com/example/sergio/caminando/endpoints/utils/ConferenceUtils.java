@@ -4,11 +4,12 @@ package com.example.sergio.caminando.endpoints.utils;
 import android.content.Context;
 import android.util.Log;
 
+import com.example.sergio.caminando.endpoints.AppConstants;
 import com.example.sergio.myapplication.backend.domain.conference.model.Conference;
 import com.example.sergio.myapplication.backend.domain.conference.model.ConferenceCollection;
+import com.example.sergio.myapplication.backend.domain.conference.model.ConferenceForm;
 import com.example.sergio.myapplication.backend.domain.conference.model.Profile;
 import com.example.sergio.myapplication.backend.domain.conference.model.WrappedBoolean;
-import com.example.sergio.caminando.endpoints.AppConstants;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 
 import java.io.IOException;
@@ -131,6 +132,18 @@ public class ConferenceUtils {
         com.example.sergio.myapplication.backend.domain.conference.Conference.GetProfile getProfile =
                 sApiServiceHandler.getProfile();
         return getProfile.execute();
+    }
+
+    public static Conference createConference(ConferenceForm conferenceForm)
+            throws ConferenceException, IOException{
+        if (null == sApiServiceHandler) {
+            Log.e(TAG, "createConference(): no service handler was built");
+            throw new ConferenceException();
+        }
+        com.example.sergio.myapplication.backend.domain.conference.Conference.CreateConference createConference =
+                sApiServiceHandler.createConference(conferenceForm);
+
+        return createConference.execute();
     }
 
     /**
