@@ -1,28 +1,28 @@
 package com.example.sergio.caminando.ui;
-import android.app.DatePickerDialog;
 import android.content.ComponentName;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.IntentCompat;
 import android.support.v7.widget.Toolbar;
-import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.example.sergio.caminando.R;
 import com.example.sergio.caminando.endpoints.utils.Utils;
+import com.fourmob.datetimepicker.date.DatePickerDialog;
+import com.sleepbot.datetimepicker.time.RadialPickerLayout;
+import com.sleepbot.datetimepicker.time.TimePickerDialog;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-import static com.example.sergio.caminando.util.LogUtils.LOGE;
 import static com.example.sergio.caminando.util.LogUtils.makeLogTag;
 
 public class CreateRouteActivity extends BaseActivity {
@@ -85,22 +85,26 @@ public class CreateRouteActivity extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public static class CreateRouteFragment extends Fragment implements View.OnClickListener{
+    public static class CreateRouteFragment extends Fragment implements com.fourmob.datetimepicker.date.DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
+
+        public static final String DATEPICKER_TAG_START = "datepickerstart";
+        public static final String DATEPICKER_TAG_END = "datepickerend";
+        public static final String TIMEPICKER_TAG_START = "timepickerstart";
+        public static final String TIMEPICKER_TAG_END = "timepickerend";
 
         //Declarate UI Rerferences
 
         private EditText mRouteName;
         private EditText mCityName;
         private EditText mDescriptionRoute;
-        private EditText mTopicsRoute ;
+        private EditText mTopicsRoute;
         private EditText mStartDate;
         private ImageButton mImageButtonStartDate;
+        private ImageButton mImageButtonStartTime;
         private EditText mEndDate;
         private ImageButton mImageButtonEndDate;
+        private ImageButton mImageButtonEndTime;
         private EditText mMaxAttendees;
-
-        private DatePickerDialog startDatePickerDialog;
-        private DatePickerDialog endDatePickerDialog;
 
         private SimpleDateFormat dateFormatter;
 
@@ -114,12 +118,12 @@ public class CreateRouteActivity extends BaseActivity {
             mTopicsRoute = (EditText) root.findViewById(R.id.topics_routes);
 
             mStartDate = (EditText) root.findViewById(R.id.start_date_route_editext);
-            mStartDate.setInputType(InputType.TYPE_NULL);
             mImageButtonStartDate = (ImageButton) root.findViewById(R.id.imageButtonStartDate);
+            mImageButtonStartTime = (ImageButton) root.findViewById(R.id.imageButtonStartTime);
 
             mEndDate = (EditText) root.findViewById(R.id.end_date_route_editext);
-            mEndDate.setInputType(InputType.TYPE_NULL);
             mImageButtonEndDate = (ImageButton) root.findViewById(R.id.imageButtoEndDate);
+            mImageButtonEndTime = (ImageButton) root.findViewById(R.id.imageButtonEndTime);
 
             mMaxAttendees = (EditText) root.findViewById(R.id.max_attendees_editext);
 
@@ -129,50 +133,96 @@ public class CreateRouteActivity extends BaseActivity {
         @Override
         public void onActivityCreated(Bundle savedInstanceState) {
             super.onActivityCreated(savedInstanceState);
-            LOGE(TAG, "onActivityCreated");
-            dateFormatter = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
 
+            if (savedInstanceState != null) {
+                DatePickerDialog dpdS = (DatePickerDialog) getFragmentManager().findFragmentByTag(DATEPICKER_TAG_START);
+                DatePickerDialog dpdE = (DatePickerDialog) getFragmentManager().findFragmentByTag(DATEPICKER_TAG_END);
+                TimePickerDialog tpdS = (TimePickerDialog) getFragmentManager().findFragmentByTag(TIMEPICKER_TAG_START);
+                TimePickerDialog tpdE = (TimePickerDialog) getFragmentManager().findFragmentByTag(TIMEPICKER_TAG_END);
+
+                if (dpdS != null) {
+                    dpdS.setOnDateSetListener(this);
+                }
+                if (dpdE != null) {
+                    dpdE.setOnDateSetListener(this);
+                }
+                if (tpdS != null) {
+                    tpdS.setOnTimeSetListener(this);
+                }
+                if (tpdE != null) {
+                    tpdE.setOnTimeSetListener(this);
+                }
+            }
+            dateFormatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.US);
             setDateTimeField();
         }
 
         private void setDateTimeField() {
-            mImageButtonStartDate.setOnClickListener(this);
-            mImageButtonEndDate.setOnClickListener(this);
+            final Calendar calendar = Calendar.getInstance();
 
+            final DatePickerDialog datePickerDialog = DatePickerDialog.newInstance(this, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), true);
+            final TimePickerDialog timePickerDialog = TimePickerDialog.newInstance(this, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false, true);
 
-            Calendar newCalendar = Calendar.getInstance();
-            startDatePickerDialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
+            mImageButtonStartDate.setOnClickListener(new View.OnClickListener() {
 
-                public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                    Calendar newDate = Calendar.getInstance();
-                    newDate.set(year, monthOfYear, dayOfMonth);
-                    mStartDate.setText(dateFormatter.format(newDate.getTime()));
+                @Override
+                public void onClick(View v) {
+                    datePickerDialog.setVibrate(true); //Add vibrate
+                    datePickerDialog.setYearRange(1985, 2028);
+                    datePickerDialog.setCloseOnSingleTapDay(false);
+                    datePickerDialog.show(getFragmentManager(), DATEPICKER_TAG_START);
                 }
+            });
 
-            },newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
-
-            endDatePickerDialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
-
-                public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                    Calendar newDate = Calendar.getInstance();
-                    newDate.set(year, monthOfYear, dayOfMonth);
-                    mEndDate.setText(dateFormatter.format(newDate.getTime()));
+            mImageButtonStartTime.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    timePickerDialog.setVibrate(true);
+                    timePickerDialog.setCloseOnSingleTapMinute(false);
+                    timePickerDialog.show(getFragmentManager(), TIMEPICKER_TAG_START);
                 }
+            });
 
-            },newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
+
+            mImageButtonEndDate.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    datePickerDialog.setVibrate(true); //Add vibrate
+                    datePickerDialog.setYearRange(1985, 2028);
+                    datePickerDialog.setCloseOnSingleTapDay(false);
+                    datePickerDialog.show(getFragmentManager(), DATEPICKER_TAG_END);
+                }
+            });
+
+            mImageButtonEndTime.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    timePickerDialog.setVibrate(true);
+                    timePickerDialog.setCloseOnSingleTapMinute(false);
+                    timePickerDialog.show(getFragmentManager(), TIMEPICKER_TAG_END);
+                }
+            });
         }
 
         @Override
-        public void onClick(View view) {
-            LOGE(TAG,"in onclick");
-            if(view == mImageButtonStartDate) {
+        public void onDateSet(DatePickerDialog datePickerDialog, int year, int month, int day) {
+            String tag = datePickerDialog.getTag();
+            switch (tag) {
+                case DATEPICKER_TAG_START:
+                    Toast.makeText(getActivity(), "Start date:" + year + "-" + month + "-" + day, Toast.LENGTH_LONG).show();
+                    break;
+                case DATEPICKER_TAG_END:
+                    Toast.makeText(getActivity(), "End date:" + year + "-" + month + "-" + day, Toast.LENGTH_LONG).show();
+                    break;
 
-                startDatePickerDialog.show();
-            } else if(view == mImageButtonEndDate) {
-                endDatePickerDialog.show();
             }
         }
+
+        @Override
+        public void onTimeSet(RadialPickerLayout view, int hourOfDay, int minute) {
+
+        }
+
     }
-
-
 }

@@ -104,6 +104,13 @@
             android:layout_toEndOf="@id/start_date_route_editext"
             android:src="@android:drawable/ic_menu_my_calendar" />
 
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageButtonStartTime"
+            android:layout_alignTop="@id/imageButtonStartDate"
+            android:layout_toEndOf="@id/imageButtonStartDate"
+            android:src="@drawable/ic_alarm_holo_dark" />
 
         <TextView
             android:id="@+id/label_end_date_route"
@@ -118,7 +125,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_below="@+id/label_end_date_route"
+            android:layout_below="@id/label_end_date_route"
             android:ems="10"
             android:inputType="date"/>
         <ImageButton
@@ -128,7 +135,13 @@
             android:layout_alignBottom="@id/end_date_route_editext"
             android:layout_toEndOf="@id/end_date_route_editext"
             android:src="@android:drawable/ic_menu_my_calendar" />
-
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageButtonEndTime"
+            android:layout_alignTop="@id/imageButtoEndDate"
+            android:layout_toEndOf="@id/imageButtoEndDate"
+            android:src="@drawable/ic_alarm_holo_dark" />
 
         <TextView
             android:id="@+id/label_max_attendees"
