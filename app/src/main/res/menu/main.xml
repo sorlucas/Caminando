@@ -5,7 +5,7 @@
     <item
         android:id="@+id/action_reload"
         android:title="@string/reload"
-        android:icon="@mipmap/ic_action_navigation_refresh"
+        android:icon="@drawable/ic_action_navigation_refresh"
         app:showAsAction="always"/>
 
     <item
