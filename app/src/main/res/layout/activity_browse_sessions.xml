@@ -75,13 +75,6 @@
         </LinearLayout>
     </com.example.sergio.caminando.ui.widget.DrawShadowFrameLayout>
 
-    <!-- Butter bar -->
-    <FrameLayout android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:layout_marginTop="?actionBarSize">
-        <include layout="@layout/include_butter_bar" />
-    </FrameLayout>
     <!-- Nav drawer -->
     <include layout="@layout/navdrawer" />
 

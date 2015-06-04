@@ -15,6 +15,7 @@
  */
 
 package com.example.sergio.caminando.ui;
+
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -22,17 +23,14 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.example.sergio.caminando.Config;
 import com.example.sergio.caminando.R;
 import com.example.sergio.caminando.endpoints.utils.ConferenceUtils;
 import com.example.sergio.caminando.endpoints.utils.Utils;
 import com.example.sergio.caminando.ui.widget.DrawShadowFrameLayout;
-import com.example.sergio.caminando.util.PrefUtils;
-import com.example.sergio.caminando.util.UIUtils;
+import com.example.sergio.caminando.util.ViewServer;
 
 import static com.example.sergio.caminando.util.LogUtils.makeLogTag;
 
@@ -55,8 +53,6 @@ public class BrowseSessionsActivity extends BaseActivity  {
 
     private AuthorizationCheckTask mAuthTask;
 
-    //Disapared when scroll up
-    private View mButterBar;
     // time when the user last clicked "refresh" from the stale data butter bar
     private long mLastDataStaleUserActionTime = 0L;
 
@@ -83,83 +79,32 @@ public class BrowseSessionsActivity extends BaseActivity  {
 
         mDrawShadowFrameLayout = (DrawShadowFrameLayout) findViewById(R.id.main_content);
 
-        mButterBar = findViewById(R.id.butter_bar);
-        registerHideableHeaderView(mButterBar);
+        //TODO: DELETO FOR RELEASE
+        ViewServer.get(this).addWindow(this);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        checkShowStaleDataButterBar();
         if (null != mEmailAccount) {
             performAuthCheck(mEmailAccount);
         }
+        //TODO: DELETO FOR RELEASE
+        ViewServer.get(this).setFocusedWindow(this);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //TODO: DELETO FOR RELEASE
+        ViewServer.get(this).removeWindow(this);
+    }
     @Override
     public boolean canSwipeRefreshChildScrollUp() {
         if (mSessionsFrag != null) {
             return mSessionsFrag.canCollectionViewScrollUp();
         }
         return super.canSwipeRefreshChildScrollUp();
-    }
-
-    private void checkShowStaleDataButterBar() {
-        //TODO: AQUI VAN showingFilters. Spinners adapters del activity_browse_sessions
-        final long now = UIUtils.getCurrentTime(this);
-        final boolean inSnooze = (now - mLastDataStaleUserActionTime < Config.STALE_DATA_WARNING_SNOOZE);
-        final long staleTime = now - PrefUtils.getLastSyncSucceededTime(this);
-        final long staleThreshold = (now >= Config.CONFERENCE_START_MILLIS && now
-                <= Config.CONFERENCE_END_MILLIS) ? Config.STALE_DATA_THRESHOLD_DURING_CONFERENCE :
-                Config.STALE_DATA_THRESHOLD_NOT_DURING_CONFERENCE;
-        final boolean isStale = (staleTime >= staleThreshold);
-        final boolean bootstrapDone = PrefUtils.isDataBootstrapDone(this);
-        //TODO: condicion tambien del showingFilters
-        final boolean mustShowBar = bootstrapDone && isStale && !inSnooze;
-
-        if (!mustShowBar) {
-            mButterBar.setVisibility(View.GONE);
-        } else {
-            UIUtils.setUpButterBar(mButterBar, getString(R.string.data_stale_warning),
-                    getString(R.string.description_refresh), new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            mButterBar.setVisibility(View.GONE);
-                            updateFragContentTopClearance();
-                            mLastDataStaleUserActionTime = UIUtils.getCurrentTime(
-                                    BrowseSessionsActivity.this);
-                            requestDataRefresh();
-                        }
-                    }
-            );
-        }
-        updateFragContentTopClearance();
-    }
-
-    // Updates the Sessions fragment content top clearance to take our chrome into account
-    private void updateFragContentTopClearance() {
-        RoutesFragment frag = (RoutesFragment) getSupportFragmentManager().findFragmentById(
-                R.id.sessions_fragment);
-        if (frag == null) {
-            return;
-        }
-
-        //TODO: findViewById del filterBox
-        final boolean butterBarVisible = mButterBar != null
-                && mButterBar.getVisibility() == View.VISIBLE;
-
-        int actionBarClearance = UIUtils.calculateActionBarSize(this);
-        int butterBarClearance = butterBarVisible
-                ? getResources().getDimensionPixelSize(R.dimen.butter_bar_height) : 0;
-        //TODO: FIX filterBoxClearance
-        int filterBoxClearance = getResources().getDimensionPixelSize(R.dimen.filterbar_height);
-        int secondaryClearance = butterBarClearance > filterBoxClearance ? butterBarClearance :
-                filterBoxClearance;
-        int gridPadding = getResources().getDimensionPixelSize(R.dimen.explore_grid_padding);
-
-        setProgressBarTopWhenActionBarShown(actionBarClearance + secondaryClearance);
-        mDrawShadowFrameLayout.setShadowTopOffset(actionBarClearance + secondaryClearance);
-        // TODO: frag.setContentTopClearance(actionBarClearance + secondaryClearance + gridPadding);
     }
     @Override
     protected int getSelfNavDrawerItem() {
