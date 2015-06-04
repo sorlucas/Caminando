@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".HipotecaFormulario" >
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp" >
+
+        <TextView
+            android:id="@+id/label_nombre"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/route_name"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+        <EditText
+            android:id="@+id/route_name_editext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/label_nombre"
+            android:ems="10" />
+
+
+        <TextView
+            android:id="@+id/label_city"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/create_route_city"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_below="@id/route_name_editext"
+            android:layout_marginTop="20dp" />
+        <EditText
+            android:id="@+id/route_city_name_editext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/label_city"
+            android:inputType="textMultiLine"/>
+
+
+        <TextView
+            android:id="@+id/label_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/description_create_route"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_below="@id/route_city_name_editext"
+            android:layout_marginTop="20dp" />
+        <EditText
+            android:id="@+id/description_route_editext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/label_description"
+            android:ems="10">
+        </EditText>
+
+
+        <TextView
+            android:id="@+id/label_topics"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/topics"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_below="@id/description_route_editext"
+            android:layout_marginTop="20dp" />
+        <EditText
+            android:id="@+id/topics_routes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/label_topics"
+            android:ems="10"
+            android:inputType="textAutoComplete" >
+        </EditText>
+
+
+        <TextView
+            android:id="@+id/label_start_date_route"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/topics_routes"
+            android:layout_marginTop="20dp"
+            android:text="@string/create_route_start_date"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+        <EditText
+            android:id="@+id/start_date_route_editext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/label_start_date_route"
+            android:ems="10"
+            android:inputType="date"/>
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageButtonStartDate"
+            android:layout_alignBottom="@id/start_date_route_editext"
+            android:layout_toEndOf="@id/start_date_route_editext"
+            android:src="@android:drawable/ic_menu_my_calendar" />
+
+
+        <TextView
+            android:id="@+id/label_end_date_route"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/start_date_route_editext"
+            android:layout_marginTop="20dp"
+            android:text="@string/create_route_end_date"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+        <EditText
+            android:id="@+id/end_date_route_editext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/label_end_date_route"
+            android:ems="10"
+            android:inputType="date"/>
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageButtoEndDate"
+            android:layout_alignBottom="@id/end_date_route_editext"
+            android:layout_toEndOf="@id/end_date_route_editext"
+            android:src="@android:drawable/ic_menu_my_calendar" />
+
+
+        <TextView
+            android:id="@+id/label_max_attendees"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/create_route_max_attendees"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_below="@+id/end_date_route_editext"
+            android:layout_marginTop="20dp" />
+        <EditText
+            android:id="@+id/max_attendees_editext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/label_max_attendees"
+            android:ems="10"
+            android:inputType="number">
+        </EditText>
+    </RelativeLayout>
+</ScrollView>

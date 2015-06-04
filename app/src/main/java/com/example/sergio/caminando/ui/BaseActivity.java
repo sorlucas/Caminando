@@ -722,6 +722,8 @@ public abstract class BaseActivity extends ActionBarActivity implements
                 return true;
 
             case R.id.menu_debug:
+                intent = new Intent(getApplicationContext(), CreateRouteActivity.class);
+                startActivity(intent);
                 return true;
 
             case R.id.menu_refresh:
