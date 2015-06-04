@@ -225,6 +225,8 @@ public abstract class BaseActivity extends ActionBarActivity implements
         mNormalStatusBarColor = mThemedStatusBarColor;
     }
 
+    // TODO: implement
+    /*
     private void trySetupSwipeRefresh() {
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
         if (mSwipeRefreshLayout != null) {
@@ -245,7 +247,7 @@ public abstract class BaseActivity extends ActionBarActivity implements
             }
         }
     }
-
+*/
     protected void setProgressBarTopWhenActionBarShown(int progressBarTopWhenActionBarShown) {
         mProgressBarTopWhenActionBarShown = progressBarTopWhenActionBarShown;
         updateSwipeRefreshProgressBarTop();
@@ -499,7 +501,7 @@ public abstract class BaseActivity extends ActionBarActivity implements
         setupNavDrawer();
         setupAccountBox();
 
-        trySetupSwipeRefresh();
+        // TODO: trySetupSwipeRefresh();;
         updateSwipeRefreshProgressBarTop();
 
         View mainContent = findViewById(R.id.main_content);

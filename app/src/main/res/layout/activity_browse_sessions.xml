@@ -31,10 +31,7 @@
         android:clipChildren="false"
         app:shadowDrawable="@drawable/header_shadow">
 
-        <com.example.sergio.caminando.ui.widget.MultiSwipeRefreshLayout
-            android:id="@+id/swipe_refresh_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+        <!-- ADD MultiSwipeRefreshLayout -->
             <!-- Sessions fragment showing the session grid -->
             <fragment android:name="com.example.sergio.caminando.ui.RoutesFragment"
                 android:id="@+id/sessions_fragment"
@@ -42,7 +39,7 @@
                 android:layout_height="match_parent"
                 tools:layout="@layout/fragment_sessions"/>
 
-        </com.example.sergio.caminando.ui.widget.MultiSwipeRefreshLayout>
+        <!-- -add- -->
 
         <LinearLayout style="@style/HeaderBar"
             android:id="@+id/headerbar"
