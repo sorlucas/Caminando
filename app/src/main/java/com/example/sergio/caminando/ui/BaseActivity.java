@@ -38,10 +38,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -211,12 +209,6 @@ public abstract class BaseActivity extends ActionBarActivity implements
 
         mImageLoader = new ImageLoader(this);
         mHandler = new Handler();
-
-        // Enable or disable each Activity depending on the form factor. This is necessary
-        // because this app uses many implicit intents where we don't name the exact Activity
-        // in the Intent, so there should only be one enabled Activity that handles each
-        // Intent in the app.
-        UIUtils.enableDisableActivitiesByFormFactor(this);
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         sp.registerOnSharedPreferenceChangeListener(this);
@@ -891,47 +883,6 @@ public abstract class BaseActivity extends ActionBarActivity implements
         }
     }
 
-    /**
-     * Converts an intent into a {@link Bundle} suitable for use as fragment arguments.
-     */
-    public static Bundle intentToFragmentArguments(Intent intent) {
-        Bundle arguments = new Bundle();
-        if (intent == null) {
-            return arguments;
-        }
-
-        final Uri data = intent.getData();
-        if (data != null) {
-            arguments.putParcelable("_uri", data);
-        }
-
-        final Bundle extras = intent.getExtras();
-        if (extras != null) {
-            arguments.putAll(intent.getExtras());
-        }
-
-        return arguments;
-    }
-
-    /**
-     * Converts a fragment arguments bundle into an intent.
-     */
-    public static Intent fragmentArgumentsToIntent(Bundle arguments) {
-        Intent intent = new Intent();
-        if (arguments == null) {
-            return intent;
-        }
-
-        final Uri data = arguments.getParcelable("_uri");
-        if (data != null) {
-            intent.setData(data);
-        }
-
-        intent.putExtras(arguments);
-        intent.removeExtra("_uri");
-        return intent;
-    }
-
     @Override
     public void onStart() {
         LOGD(TAG, "onStart");
@@ -1101,10 +1052,6 @@ public abstract class BaseActivity extends ActionBarActivity implements
         //getContentResolver().notifyChange(ScheduleContract.MySchedule.CONTENT_URI, null, false);
     }
 
-    protected void retryAuth() {
-        mLoginAndAuthHelper.retryAuthByUserRequest();
-    }
-
     /**
      * Initializes the Action Bar auto-hide (aka Quick Recall) effect.
      */
@@ -1161,27 +1108,6 @@ public abstract class BaseActivity extends ActionBarActivity implements
 
         mActionBarShown = show;
         onActionBarAutoShowOrHide(show);
-    }
-
-    protected void enableActionBarAutoHide(final ListView listView) {
-        initActionBarAutoHide();
-        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
-            final static int ITEMS_THRESHOLD = 3;
-            int lastFvi = 0;
-
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-            }
-
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                onMainContentScrolled(firstVisibleItem <= ITEMS_THRESHOLD ? 0 : Integer.MAX_VALUE,
-                        lastFvi - firstVisibleItem > 0 ? Integer.MIN_VALUE :
-                                lastFvi == firstVisibleItem ? 0 : Integer.MAX_VALUE
-                );
-                lastFvi = firstVisibleItem;
-            }
-        });
     }
 
     private View makeNavDrawerItem(final int itemId, ViewGroup container) {
@@ -1296,44 +1222,6 @@ public abstract class BaseActivity extends ActionBarActivity implements
     };
     */
 
-    protected void onRefreshingStateChanged(boolean refreshing) {
-        if (mSwipeRefreshLayout != null) {
-            mSwipeRefreshLayout.setRefreshing(refreshing);
-        }
-    }
-
-    protected void enableDisableSwipeRefresh(boolean enable) {
-        if (mSwipeRefreshLayout != null) {
-            mSwipeRefreshLayout.setEnabled(enable);
-        }
-    }
-
-    protected void registerHideableHeaderView(View hideableHeaderView) {
-        if (!mHideableHeaderViews.contains(hideableHeaderView)) {
-            mHideableHeaderViews.add(hideableHeaderView);
-        }
-    }
-
-    protected void deregisterHideableHeaderView(View hideableHeaderView) {
-        if (mHideableHeaderViews.contains(hideableHeaderView)) {
-            mHideableHeaderViews.remove(hideableHeaderView);
-        }
-    }
-
-    public LUtils getLUtils() {
-        return mLUtils;
-    }
-
-    public int getThemedStatusBarColor() {
-        return mThemedStatusBarColor;
-    }
-
-    public void setNormalStatusBarColor(int color) {
-        mNormalStatusBarColor = color;
-        if (mDrawerLayout != null) {
-            mDrawerLayout.setStatusBarBackgroundColor(mNormalStatusBarColor);
-        }
-    }
 
     protected void onActionBarAutoShowOrHide(boolean shown) {
         if (mStatusBarColorAnimator != null) {
