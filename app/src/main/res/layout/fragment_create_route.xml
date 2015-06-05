@@ -5,160 +5,144 @@
     android:layout_height="match_parent"
     tools:context=".HipotecaFormulario" >
 
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="10dp" >
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/first_coordinator_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="net.imthinker.android.dslsample.fragment.FirstFragment">
 
-        <TextView
-            android:id="@+id/label_nombre"
+        <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/route_name"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-        <EditText
-            android:id="@+id/route_name_editext"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@id/label_nombre"
-            android:ems="10" />
+            android:orientation="vertical"
+            android:padding="10dp" >
 
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/inputLayoutRouteName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp">
+                <android.support.v7.widget.AppCompatEditText
+                    android:id="@+id/route_name_editext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/route_name"
+                    android:inputType="textAutoComplete"/>
+            </android.support.design.widget.TextInputLayout>
 
-        <TextView
-            android:id="@+id/label_city"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/create_route_city"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_below="@id/route_name_editext"
-            android:layout_marginTop="20dp" />
-        <EditText
-            android:id="@+id/route_city_name_editext"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@id/label_city"
-            android:inputType="textMultiLine"/>
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/inputLayoutCityName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_below="@id/inputLayoutRouteName">
+                <android.support.v7.widget.AppCompatEditText
+                    android:id="@+id/route_city_name_editext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/city_name"
+                    android:inputType="textAutoComplete"/>
+            </android.support.design.widget.TextInputLayout>
 
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/inputLayoutDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_below="@id/inputLayoutCityName">
+                <android.support.v7.widget.AppCompatEditText
+                    android:id="@+id/description_route_editext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/description_create_route"
+                    android:inputType="textMultiLine"/>
+            </android.support.design.widget.TextInputLayout>
 
-        <TextView
-            android:id="@+id/label_description"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/description_create_route"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_below="@id/route_city_name_editext"
-            android:layout_marginTop="20dp" />
-        <EditText
-            android:id="@+id/description_route_editext"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@id/label_description"
-            android:ems="10">
-        </EditText>
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/inputLayoutTopics"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_below="@id/inputLayoutDescription">
+                <android.support.v7.widget.AppCompatEditText
+                    android:id="@+id/topics_routes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/topics"
+                    android:inputType="textAutoComplete"/>
+            </android.support.design.widget.TextInputLayout>
 
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/inputLayoutStartDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_below="@id/inputLayoutTopics"
+                android:layout_toStartOf="@+id/imageButtonStartDate">
+                <android.support.v7.widget.AppCompatEditText
+                    android:id="@+id/start_date_route_editext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/create_route_start_date"
+                    android:inputType="date"/>
+            </android.support.design.widget.TextInputLayout>
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageButtonStartDate"
+                android:src="@android:drawable/ic_menu_my_calendar"
+                android:layout_alignBottom="@+id/inputLayoutStartDate"
+                android:layout_toEndOf="@+id/inputLayoutEndDate" />
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageButtonStartTime"
+                android:src="@drawable/ic_alarm_holo_dark"
+                android:layout_alignTop="@+id/imageButtonStartDate"
+                android:layout_alignParentEnd="true" />
 
-        <TextView
-            android:id="@+id/label_topics"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/topics"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_below="@id/description_route_editext"
-            android:layout_marginTop="20dp" />
-        <EditText
-            android:id="@+id/topics_routes"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@id/label_topics"
-            android:ems="10"
-            android:inputType="textAutoComplete" >
-        </EditText>
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/inputLayoutEndDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_below="@id/inputLayoutStartDate"
+                android:layout_toStartOf="@+id/imageButtoEndDate">
+                <android.support.v7.widget.AppCompatEditText
+                    android:id="@+id/end_date_route_editext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/create_route_end_date"
+                    android:inputType="date"/>
+            </android.support.design.widget.TextInputLayout>
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageButtoEndDate"
+                android:src="@android:drawable/ic_menu_my_calendar"
+                android:layout_alignTop="@+id/imageButtonEndTime"
+                android:layout_toStartOf="@+id/imageButtonEndTime" />
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageButtonEndTime"
+                android:src="@drawable/ic_alarm_holo_dark"
+                android:layout_below="@+id/inputLayoutStartDate"
+                android:layout_alignEnd="@+id/inputLayoutMaxAttendees" />
 
-
-        <TextView
-            android:id="@+id/label_start_date_route"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/topics_routes"
-            android:layout_marginTop="20dp"
-            android:text="@string/create_route_start_date"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-        <EditText
-            android:id="@+id/start_date_route_editext"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@id/label_start_date_route"
-            android:ems="10"
-            android:inputType="date"/>
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/imageButtonStartDate"
-            android:layout_alignBottom="@id/start_date_route_editext"
-            android:layout_toEndOf="@id/start_date_route_editext"
-            android:src="@android:drawable/ic_menu_my_calendar" />
-
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/imageButtonStartTime"
-            android:layout_alignTop="@id/imageButtonStartDate"
-            android:layout_toEndOf="@id/imageButtonStartDate"
-            android:src="@drawable/ic_alarm_holo_dark" />
-
-        <TextView
-            android:id="@+id/label_end_date_route"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/start_date_route_editext"
-            android:layout_marginTop="20dp"
-            android:text="@string/create_route_end_date"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-        <EditText
-            android:id="@+id/end_date_route_editext"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@id/label_end_date_route"
-            android:ems="10"
-            android:inputType="date"/>
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/imageButtoEndDate"
-            android:layout_alignBottom="@id/end_date_route_editext"
-            android:layout_toEndOf="@id/end_date_route_editext"
-            android:src="@android:drawable/ic_menu_my_calendar" />
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/imageButtonEndTime"
-            android:layout_alignTop="@id/imageButtoEndDate"
-            android:layout_toEndOf="@id/imageButtoEndDate"
-            android:src="@drawable/ic_alarm_holo_dark" />
-
-        <TextView
-            android:id="@+id/label_max_attendees"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/create_route_max_attendees"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_below="@+id/end_date_route_editext"
-            android:layout_marginTop="20dp" />
-        <EditText
-            android:id="@+id/max_attendees_editext"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@+id/label_max_attendees"
-            android:ems="10"
-            android:inputType="number">
-        </EditText>
-    </RelativeLayout>
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/inputLayoutMaxAttendees"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_below="@id/inputLayoutEndDate">
+                <android.support.v7.widget.AppCompatEditText
+                    android:id="@+id/max_attendees_editext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/create_route_max_attendees"
+                    android:inputType="number"/>
+            </android.support.design.widget.TextInputLayout>
+        </RelativeLayout>
+    </android.support.design.widget.CoordinatorLayout>
 </ScrollView>

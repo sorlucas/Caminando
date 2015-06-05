@@ -3,10 +3,11 @@
     <!-- Done bar strings -->
     <string name="done">Done</string>
     <string name="route_name">Route Name</string>
+    <string name="city_name">City Name</string>
     <string name="create_route_city">City</string>
     <string name="description_create_route">Description of Route</string>
-    <string name="create_route_start_date">Start Date</string>
-    <string name="create_route_end_date">End Date</string>
+    <string name="create_route_start_date">Start Date (dd/mm/aa)</string>
+    <string name="create_route_end_date">End Date (dd/mm/aa)</string>
     <string name="create_route_max_attendees">Max Attendees</string>
     <string name="title_activity_create_routes">Create Route</string>
     <string name="action_settings">Settings</string>
