@@ -19,12 +19,12 @@ package com.example.sergio.caminando.ui;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.sergio.caminando.R;
@@ -116,7 +116,7 @@ public class BrowseSessionsActivity extends BaseActivity  {
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        ListView ListView = (ListView) findViewById(R.id.sessions_collection_view);
+        RecyclerView ListView = (RecyclerView) findViewById(R.id.sessions_collection_view);
         if (ListView != null) {
             enableActionBarAutoHide(ListView);
         }

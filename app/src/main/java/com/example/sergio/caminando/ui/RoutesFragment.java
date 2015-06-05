@@ -6,13 +6,14 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.sergio.caminando.R;
@@ -32,35 +33,36 @@ import java.util.List;
 public class RoutesFragment extends Fragment implements
         LoaderManager.LoaderCallbacks<List<DecoratedConference>>  {
 
-    private static final String TAG = "ConferenceListFragment";
+    private static final String TAG = "RoutesFragment";
 
     private ConferenceDataAdapter mAdapter;
 
-    private ListView mListView;
+    private RecyclerView mRecyclerView;
     private TextView mEmptyView;
     private View mLoadingView;
 
     public boolean canCollectionViewScrollUp() {
-        return ViewCompat.canScrollVertically(mListView, -1);
+        return ViewCompat.canScrollVertically(mRecyclerView, -1);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mListView.setFastScrollEnabled(true);
+        LinearLayoutManager llm = new LinearLayoutManager(getActivity());
+        mRecyclerView.setLayoutManager(llm);
+
         LayoutAnimationController controller = AnimationUtils
                 .loadLayoutAnimation(getActivity(), R.anim.list_layout_controller);
-        mListView.setLayoutAnimation(controller);
-        mAdapter = new ConferenceDataAdapter(getActivity());
-        mListView.setEmptyView(mEmptyView);
-        mListView.setAdapter(mAdapter);
+        mRecyclerView.setLayoutAnimation(controller);
+        //mRecyclerView.setEmptyView(mEmptyView);
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ViewGroup root = (ViewGroup) inflater.inflate(R.layout.fragment_sessions, container, false);
-        mListView = (ListView) root.findViewById(R.id.sessions_collection_view);
+        mRecyclerView = (RecyclerView) root.findViewById(R.id.sessions_collection_view);
         mEmptyView = (TextView) root.findViewById(R.id.empty_text);
         mLoadingView = root.findViewById(R.id.loading);
         return root;
@@ -78,13 +80,14 @@ public class RoutesFragment extends Fragment implements
             Utils.displayNetworkErrorMessage(getActivity());
             return;
         }
-        mAdapter.setData(data);
+        mAdapter = new ConferenceDataAdapter(getActivity(),data);
+        mRecyclerView.setAdapter(mAdapter);
 
     }
 
     @Override
     public void onLoaderReset(Loader<List<DecoratedConference>> loader) {
-        mAdapter.setData(null);
+        mAdapter = new ConferenceDataAdapter(getActivity(),null);
     }
 
 
@@ -161,7 +164,7 @@ public class RoutesFragment extends Fragment implements
     }
 
     public void reload(List<DecoratedConference> conferences) {
-        mAdapter.setData(conferences);
+        mAdapter = new ConferenceDataAdapter(getActivity(),conferences);
         mAdapter.notifyDataSetChanged();
     }
 

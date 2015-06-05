@@ -1,10 +1,11 @@
 package com.example.sergio.caminando.endpoints;
 
 import android.content.Context;
+import android.support.v7.widget.CardView;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -17,62 +18,61 @@ import java.util.List;
 /**
  *
  */
-public class ConferenceDataAdapter extends ArrayAdapter<DecoratedConference> {
+public class ConferenceDataAdapter extends RecyclerView.Adapter<ConferenceDataAdapter.ConferenceViewHolder> {
 
     private static final String TAG = "ConferenceDataAdapter";
 
-    private final Context mContext;
+    List<DecoratedConference> conferences;
 
-    public ConferenceDataAdapter(Context context) {
-        super(context, 0);
+    private Context mContext;
+
+    public ConferenceDataAdapter(Context context, List<DecoratedConference> conferences){
         this.mContext = context;
+        this.conferences = conferences;
     }
 
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public static class ConferenceViewHolder extends RecyclerView.ViewHolder{
 
-        ViewHolder holder;
-        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(
-                Context.LAYOUT_INFLATER_SERVICE);
-        DecoratedConference decoratedConference = getItem(position);
-
-        if (convertView == null) {
-            convertView = inflater.inflate(R.layout.conference_row, null);
-            holder = new ViewHolder();
-            holder.titleView = (TextView) convertView.findViewById(R.id.textView1);
-            holder.descriptionView = (TextView) convertView.findViewById(R.id.textView2);
-            holder.cityAndDateView = (TextView) convertView.findViewById(R.id.textView3);
-            holder.registerView = (ImageView) convertView.findViewById(R.id.imageView);
-            convertView.setTag(holder);
-        } else {
-            holder = (ViewHolder) convertView.getTag();
-        }
-
-        holder.titleView.setText(decoratedConference.getConference().getName());
-        holder.descriptionView.setText(decoratedConference.getConference().getDescription());
-        holder.cityAndDateView.setText(decoratedConference.getConference().getCity() + ", " + Utils
-                .getConferenceDate(mContext, decoratedConference.getConference()));
-        holder.registerView
-                .setVisibility(decoratedConference.isRegistered() ? View.VISIBLE : View.GONE);
-
-        return convertView;
-    }
-
-    private class ViewHolder {
-
+        CardView cardView;
         TextView titleView;
         TextView descriptionView;
         TextView cityAndDateView;
         ImageView registerView;
-    }
-
-    public void setData(List<DecoratedConference> data) {
-        clear();
-        if (data != null) {
-            for (DecoratedConference item : data) {
-                add(item);
-            }
+        ConferenceViewHolder(View itemView) {
+            super(itemView);
+            cardView = (CardView)itemView.findViewById(R.id.cardView);
+            titleView = (TextView)cardView.findViewById(R.id.textView1);
+            descriptionView = (TextView)cardView.findViewById(R.id.textView2);
+            cityAndDateView = (TextView)cardView.findViewById(R.id.textView3);
+            registerView = (ImageView)cardView.findViewById(R.id.imageView);
         }
 
+    }
+
+    @Override
+    public ConferenceViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.conference_row,viewGroup,false);
+        ConferenceViewHolder conferenceViewHolder = new ConferenceViewHolder(v);
+        return conferenceViewHolder;
+    }
+
+    @Override
+    public void onBindViewHolder(ConferenceViewHolder conferenceViewHolder, int i) {
+        conferenceViewHolder.titleView.setText(conferences.get(i).getConference().getName());
+        conferenceViewHolder.descriptionView.setText(conferences.get(i).getConference().getDescription());
+        conferenceViewHolder.cityAndDateView.setText(conferences.get(i).getConference().getCity() + ", " +
+            Utils.getConferenceDate(mContext, conferences.get(i).getConference()));
+        conferenceViewHolder.registerView.setVisibility(conferences.get(i).isRegistered() ? View.VISIBLE : View.GONE);
+
+    }
+
+    @Override
+    public int getItemCount() {
+        return conferences.size();
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
     }
 }

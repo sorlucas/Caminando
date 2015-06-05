@@ -35,10 +35,6 @@
             android:name=".ui.WelcomeActivity"
             android:theme="@style/Theme.IOSched.Welcome" />
         <activity
-            android:name=".endpoints.MainActivity"
-            android:label="@string/title_activity_main" >
-        </activity>
-        <activity
             android:name=".ui.CreateRouteActivity"
             android:label="@string/title_activity_create_routes" >
         </activity>
