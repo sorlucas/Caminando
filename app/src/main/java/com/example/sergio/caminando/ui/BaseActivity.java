@@ -497,9 +497,8 @@ public abstract class BaseActivity extends AppCompatActivity implements
         setupNavDrawer();
         setupAccountBox();
 
-        // TODO: trySetupSwipeRefresh();;
+        trySetupSwipeRefresh();;
         updateSwipeRefreshProgressBarTop();
-
         View mainContent = findViewById(R.id.main_content);
         if (mainContent != null) {
             mainContent.setAlpha(0);

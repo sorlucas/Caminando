@@ -3,6 +3,6 @@
     <cron>
         <url>/crons/set_announcement</url>
         <description>Repopulate the announcement every 1 hour</description>
-        <schedule>every 1 minutes</schedule>
+        <schedule>every 12 hours</schedule>
     </cron>
 </cronentries>

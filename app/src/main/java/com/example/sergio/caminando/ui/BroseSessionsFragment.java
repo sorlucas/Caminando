@@ -253,7 +253,7 @@ public class BroseSessionsFragment extends Fragment implements
         @Override
         public void onItemClick(View view, int position) {
             View heroView = view.findViewById(android.R.id.icon);
-            // TODO: FIX to Add
+            // TODO: ADD Detail Activity
             /*
             DetailActivity.launch(
                     getActivity(), mAdapter.mAttractionList.get(position).name, heroView);

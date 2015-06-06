@@ -46,10 +46,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/imageView"
-                android:layout_centerVertical="true"
                 android:src="@drawable/ic_action_navigation_accept"
+                android:visibility="invisible"
+                android:layout_alignParentTop="true"
                 android:layout_alignParentRight="true"
-                android:visibility="invisible" />
+                android:layout_alignParentEnd="true" />
 
             <TextView
                 android:id="@+id/textView1"
@@ -59,11 +60,13 @@
                 android:paddingTop="@dimen/small_margin"
                 android:paddingLeft="@dimen/small_margin"
                 android:paddingRight="@dimen/small_margin"
-                android:maxLines="1"
+                android:maxLines="2"
                 android:ellipsize="end"
                 style="?android:textAppearanceMedium"
                 tools:text="Title 1"
-                android:transitionName="image"/>
+                android:transitionName="image"
+                android:layout_toLeftOf="@+id/imageView"
+                android:layout_toStartOf="@+id/imageView" />
 
             <TextView
                 android:id="@+id/textView2"
@@ -81,15 +84,15 @@
                 android:id="@+id/textView3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/icon"
                 android:layout_below="@id/textView2"
-                android:layout_marginTop="2dp"
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:textColor="@android:color/secondary_text_light"
                 android:textSize="12sp"
                 android:text="@string/placeholder_city_and_date_route"
-                style="?android:textAppearanceSmall"/>
+                style="?android:textAppearanceSmall"
+                android:layout_toRightOf="@+id/icon"
+                android:gravity="end" />
         </RelativeLayout>
     </android.support.v7.widget.CardView>
 </RelativeLayout>
