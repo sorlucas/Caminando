@@ -29,7 +29,7 @@ import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -73,7 +73,7 @@ import static com.example.sergio.caminando.util.LogUtils.makeLogTag;
  * A base activity that handles common functionality in the app. This includes the
  * navigation drawer, login and authentication, Action Bar tweaks, amongst others.
  */
-public abstract class BaseActivity extends ActionBarActivity implements
+public abstract class BaseActivity extends AppCompatActivity implements
         LoginAndAuthHelper.Callbacks,
         SharedPreferences.OnSharedPreferenceChangeListener,
         MultiSwipeRefreshLayout.CanChildScrollUpCallback {

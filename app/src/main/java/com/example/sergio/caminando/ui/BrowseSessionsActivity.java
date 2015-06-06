@@ -46,19 +46,14 @@ public class BrowseSessionsActivity extends BaseActivity  {
 
     private RoutesFragment mRoutesFragment;
 
-    // time when the user last clicked "refresh" from the stale data butter bar
-    private long mLastDataStaleUserActionTime = 0L;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_browse_sessions);
-
         Toolbar toolbar = getActionBarToolbar();
-
         overridePendingTransition(0, 0);
-
 
         if (mMode == MODE_EXPLORE) {
             // no title (to make more room for navigation and actions)
@@ -67,7 +62,6 @@ public class BrowseSessionsActivity extends BaseActivity  {
         }
 
         mRoutesFragment = (RoutesFragment) getSupportFragmentManager().findFragmentById(R.id.sessions_fragment);
-
         mDrawShadowFrameLayout = (DrawShadowFrameLayout) findViewById(R.id.main_content);
 
         //TODO: DELETO FOR RELEASE
