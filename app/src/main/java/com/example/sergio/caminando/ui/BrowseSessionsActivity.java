@@ -17,20 +17,16 @@
 package com.example.sergio.caminando.ui;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.example.sergio.caminando.R;
-import com.example.sergio.caminando.endpoints.utils.ConferenceUtils;
-import com.example.sergio.caminando.endpoints.utils.Utils;
 import com.example.sergio.caminando.ui.widget.DrawShadowFrameLayout;
+import com.example.sergio.caminando.util.AccountUtils;
 import com.example.sergio.caminando.util.ViewServer;
 
 import static com.example.sergio.caminando.util.LogUtils.makeLogTag;
@@ -48,11 +44,7 @@ public class BrowseSessionsActivity extends BaseActivity  {
     private RoutesFragment mSessionsFrag = null;
     private DrawShadowFrameLayout mDrawShadowFrameLayout;
 
-    private String mEmailAccount;
-
     private RoutesFragment mRoutesFragment;
-
-    private AuthorizationCheckTask mAuthTask;
 
     // time when the user last clicked "refresh" from the stale data butter bar
     private long mLastDataStaleUserActionTime = 0L;
@@ -74,24 +66,12 @@ public class BrowseSessionsActivity extends BaseActivity  {
             toolbar.setTitle(null);
         }
 
-        mEmailAccount = Utils.getEmailAccount(this);
-
         mRoutesFragment = (RoutesFragment) getSupportFragmentManager().findFragmentById(R.id.sessions_fragment);
 
         mDrawShadowFrameLayout = (DrawShadowFrameLayout) findViewById(R.id.main_content);
 
         //TODO: DELETO FOR RELEASE
         ViewServer.get(this).addWindow(this);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (null != mEmailAccount) {
-            performAuthCheck(mEmailAccount);
-        }
-        //TODO: DELETO FOR RELEASE
-        ViewServer.get(this).setFocusedWindow(this);
     }
 
     @Override
@@ -129,6 +109,7 @@ public class BrowseSessionsActivity extends BaseActivity  {
             mSessionsFrag.reloadFromArguments(args);
             */
         }
+        getConferencesForList();
 
         registerHideableHeaderView(findViewById(R.id.headerbar));
     }
@@ -137,6 +118,12 @@ public class BrowseSessionsActivity extends BaseActivity  {
     protected void onActionBarAutoShowOrHide(boolean shown) {
         super.onActionBarAutoShowOrHide(shown);
         mDrawShadowFrameLayout.setShadowVisible(shown, shown);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getConferencesForList();
     }
 
     @Override
@@ -169,94 +156,8 @@ public class BrowseSessionsActivity extends BaseActivity  {
         return super.onOptionsItemSelected(item);
     }
 
-    /*
-     * Schedule the authorization check.
-     */
-    private void performAuthCheck(String email) {
-        // Cancel previously running tasks.
-        if (mAuthTask != null) {
-            mAuthTask.cancel(true);
-        }
-
-        // Start task to check authorization.
-        mAuthTask = new AuthorizationCheckTask();
-        mAuthTask.execute(email);
-    }
-
-    /**
-     * Verifies OAuth2 token access for the application and Google account combination with
-     * the {@code AccountManager} and the Play Services installed application. If the appropriate
-     * OAuth2 access hasn't been granted (to this application) then the task may fire an
-     * {@code Intent} to request that the user approve such access. If the appropriate access does
-     * exist then the button that will let the user proceed to the next activity is enabled.
-     */
-    private class AuthorizationCheckTask extends AsyncTask<String, Integer, Boolean> {
-
-        private final static boolean SUCCESS = true;
-        private final static boolean FAILURE = false;
-        private Exception mException;
-
-        @Override
-        protected Boolean doInBackground(String... emailAccounts) {
-            Log.i(TAG, "Background task started.");
-
-            if (!Utils.checkGooglePlayServicesAvailable(BrowseSessionsActivity.this)) {
-                publishProgress(R.string.gms_not_available);
-                return FAILURE;
-            }
-
-            String emailAccount = emailAccounts[0];
-            // Ensure only one task is running at a time.
-            mAuthTask = this;
-
-            // Ensure an email was selected.
-            if (TextUtils.isEmpty(emailAccount)) {
-                publishProgress(R.string.toast_no_google_account_selected);
-                return FAILURE;
-            }
-
-            mEmailAccount = emailAccount;
-            Utils.saveEmailAccount(BrowseSessionsActivity.this, emailAccount);
-
-            return SUCCESS;
-        }
-
-        @Override
-        protected void onProgressUpdate(Integer... stringIds) {
-            // Toast only the most recent.
-            Integer stringId = stringIds[0];
-            Toast.makeText(BrowseSessionsActivity.this, getString(stringId), Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        protected void onPreExecute() {
-            mAuthTask = this;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean success) {
-            if (success) {
-                // Authorization check successful, get conferences.
-                ConferenceUtils.build(BrowseSessionsActivity.this, mEmailAccount);
-                getConferencesForList();
-            } else {
-                // Authorization check unsuccessful.
-                mEmailAccount = null;
-                if (mException != null) {
-                    Utils.displayNetworkErrorMessage(BrowseSessionsActivity.this);
-                }
-            }
-            mAuthTask = null;
-        }
-
-        @Override
-        protected void onCancelled() {
-            mAuthTask = null;
-        }
-    }
-
     private void getConferencesForList() {
-        if (TextUtils.isEmpty(mEmailAccount)) {
+        if (TextUtils.isEmpty(AccountUtils.getActiveAccountName(this))) {
             return;
         }
         mRoutesFragment.loadConferences();

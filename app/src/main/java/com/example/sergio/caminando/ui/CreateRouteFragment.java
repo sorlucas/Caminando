@@ -233,6 +233,7 @@ public class CreateRouteFragment extends Fragment implements com.fourmob.datetim
 
         //Implememt anything to check form
         mCallbacks.uploadRoute(getDataConference());
+        getActivity().finish();
     }
 
     private ConferenceForm getDataConference(){

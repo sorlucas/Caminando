@@ -27,27 +27,6 @@ public class Utils {
 
     private static final String LOG_TAG = "Utils";
 
-    private final static String PREFS_KEY_EMAIL = "email_account";
-
-    /**
-     * Persists the email address to preference storage space.
-     *
-     * @param context context of running application
-     * @param email email user
-     */
-    public static void saveEmailAccount(Context context, String email) {
-        saveStringToPreference(context, PREFS_KEY_EMAIL, email);
-    }
-
-    /**
-     * Returns the persisted email account, or <code>null</code> if none found.
-     *
-     * @param context context of running application
-     * @return email user
-     */
-    public static String getEmailAccount(Context context) {
-        return getStringFromPreference(context, PREFS_KEY_EMAIL);
-    }
 
     /**
      * Saves a string value under the provided key in the preference manager. If <code>value</code>

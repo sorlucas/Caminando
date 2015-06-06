@@ -12,7 +12,7 @@ import android.widget.Toast;
 import com.example.sergio.caminando.R;
 import com.example.sergio.caminando.endpoints.utils.ConferenceException;
 import com.example.sergio.caminando.endpoints.utils.ConferenceUtils;
-import com.example.sergio.caminando.endpoints.utils.Utils;
+import com.example.sergio.caminando.util.AccountUtils;
 import com.example.sergio.myapplication.backend.domain.conference.model.Conference;
 import com.example.sergio.myapplication.backend.domain.conference.model.ConferenceForm;
 
@@ -25,7 +25,6 @@ public class CreateRouteActivity extends BaseActivity implements CreateRouteFrag
 
     private static final String TAG = makeLogTag(CreateRouteActivity.class);
 
-    private String mEmailAccount;
     private CreateRouteTask mAuthTask;
 
     @Override
@@ -51,7 +50,6 @@ public class CreateRouteActivity extends BaseActivity implements CreateRouteFrag
                     .commit();
         }
 
-        mEmailAccount = Utils.getEmailAccount(this);
     }
 
     private class CreateRouteTask extends AsyncTask<ConferenceForm, Integer, Conference> {
@@ -70,7 +68,7 @@ public class CreateRouteActivity extends BaseActivity implements CreateRouteFrag
             mAuthTask = this;
 
             // Authorization check successful, get conferences.
-            ConferenceUtils.build(CreateRouteActivity.this, mEmailAccount);
+            ConferenceUtils.build(CreateRouteActivity.this, AccountUtils.getActiveAccountName(CreateRouteActivity.this));
 
             try {
                 ConferenceUtils.getProfile();

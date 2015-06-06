@@ -23,6 +23,7 @@ import com.example.sergio.caminando.endpoints.utils.ConferenceException;
 import com.example.sergio.caminando.endpoints.utils.ConferenceUtils;
 import com.example.sergio.caminando.endpoints.utils.DecoratedConference;
 import com.example.sergio.caminando.endpoints.utils.Utils;
+import com.example.sergio.caminando.util.AccountUtils;
 
 import java.io.IOException;
 import java.util.List;
@@ -156,6 +157,8 @@ public class RoutesFragment extends Fragment implements
     }
 
     public void loadConferences() {
+        // Authorization check successful, get conferences.
+        ConferenceUtils.build(getActivity(), AccountUtils.getActiveAccountName(getActivity()));
         getLoaderManager().initLoader(0, null, this);
     }
 
