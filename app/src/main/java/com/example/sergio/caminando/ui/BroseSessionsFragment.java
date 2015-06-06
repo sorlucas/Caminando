@@ -1,11 +1,13 @@
 package com.example.sergio.caminando.ui;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewCompat;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -14,10 +16,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.sergio.caminando.R;
-import com.example.sergio.caminando.endpoints.ConferenceDataAdapter;
 import com.example.sergio.caminando.endpoints.ConferenceLoader;
 import com.example.sergio.caminando.endpoints.utils.ConferenceException;
 import com.example.sergio.caminando.endpoints.utils.ConferenceUtils;
@@ -31,7 +33,7 @@ import java.util.List;
 /**
  * Created by sergio on 25/05/15.
  */
-public class RoutesFragment extends Fragment implements
+public class BroseSessionsFragment extends Fragment implements
         LoaderManager.LoaderCallbacks<List<DecoratedConference>>  {
 
     private static final String TAG = "RoutesFragment";
@@ -149,8 +151,8 @@ public class RoutesFragment extends Fragment implements
         }
     }
 
-    public static RoutesFragment newInstance() {
-        RoutesFragment f = new RoutesFragment();
+    public static BroseSessionsFragment newInstance() {
+        BroseSessionsFragment f = new BroseSessionsFragment();
         Bundle b = new Bundle();
         f.setArguments(b);
         return f;
@@ -171,4 +173,80 @@ public class RoutesFragment extends Fragment implements
         mAdapter.notifyDataSetChanged();
     }
 
+
+
+    public static class ConferenceViewHolder extends RecyclerView.ViewHolder
+            implements View.OnClickListener {
+
+        CardView cardView;
+        TextView titleView;
+        TextView descriptionView;
+        TextView cityAndDateView;
+        ImageView registerView;
+        BroseSessionsFragment.ItemClickListener mItemClickListener;
+
+        ConferenceViewHolder(View itemView, BroseSessionsFragment.ItemClickListener itemClickListener) {
+            super(itemView);
+            cardView = (CardView)itemView.findViewById(R.id.cardView);
+            titleView = (TextView)cardView.findViewById(R.id.textView1);
+            descriptionView = (TextView)cardView.findViewById(R.id.textView2);
+            cityAndDateView = (TextView)cardView.findViewById(R.id.textView3);
+            registerView = (ImageView)cardView.findViewById(R.id.imageView);
+            mItemClickListener = itemClickListener;
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            mItemClickListener.onItemClick(v, getAdapterPosition());
+        }
+    }
+
+    private class ConferenceDataAdapter extends RecyclerView.Adapter<ConferenceViewHolder>
+            implements ItemClickListener{
+
+        public List<DecoratedConference> conferences;
+        private Context mContext;
+
+        public ConferenceDataAdapter(Context context, List<DecoratedConference> attractions) {
+            super();
+            mContext = context;
+            conferences = attractions;
+        }
+
+        @Override
+        public ConferenceViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            LayoutInflater inflater = LayoutInflater.from(mContext);
+            View view = inflater.inflate(R.layout.conference_row, parent, false);
+            return new ConferenceViewHolder(view, this);
+        }
+
+        @Override
+        public void onBindViewHolder(ConferenceViewHolder conferenceViewHolder, int i) {
+            conferenceViewHolder.titleView.setText(conferences.get(i).getConference().getName());
+            conferenceViewHolder.descriptionView.setText(conferences.get(i).getConference().getDescription());
+            conferenceViewHolder.cityAndDateView.setText(conferences.get(i).getConference().getCity() + ", " +
+                    Utils.getConferenceDate(mContext, conferences.get(i).getConference()));
+            conferenceViewHolder.registerView.setVisibility(conferences.get(i).isRegistered() ? View.VISIBLE : View.GONE);
+        }
+
+        @Override
+        public int getItemCount() {
+            return conferences.size();
+        }
+
+        @Override
+        public void onItemClick(View view, int position) {
+            View heroView = view.findViewById(android.R.id.icon);
+            // TODO: FIX to Add
+            /*
+            DetailActivity.launch(
+                    getActivity(), mAdapter.mAttractionList.get(position).name, heroView);
+            */
+        }
+    }
+
+    public interface ItemClickListener {
+        void onItemClick(View view, int position);
+    }
 }

@@ -100,19 +100,9 @@ public class CreateRouteActivity extends BaseActivity implements CreateRouteFrag
 
             Toast.makeText(getApplicationContext(),"Upload Route",Toast.LENGTH_LONG).show();
             Log.e(TAG, conference.toString());
-            //TODO: CATCH LAS EXCEPCIONES
-            /*
-            if (success) {
 
-            } else {
-                // Authorization check unsuccessful.
-                mEmailAccount = null;
-                if (mException != null) {
-                    Utils.displayNetworkErrorMessage(CreateRoutesActivity.this);
-                }
-            }
-            */
             mAuthTask = null;
+            finish();
         }
 
         @Override

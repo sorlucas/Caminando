@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="5dp"
@@ -24,6 +25,24 @@
             android:paddingEnd="16dp"
             android:paddingTop="5dp">
             <ImageView
+                android:id="@+id/icon"
+                android:layout_width="@dimen/image_size"
+                android:layout_height="match_parent"
+                android:src="@drawable/empty_photo"
+                android:scaleType="centerCrop"
+                android:transitionName="image" />
+            <TextView
+                android:id="@+id/overlaytext"
+                android:layout_width="@dimen/image_size"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/icon"
+                android:gravity="center"
+                android:padding="@dimen/tiny_margin"
+                style="?android:textAppearanceSmallInverse"
+                android:background="@color/text_background"
+                tools:text="Overlay"/>
+
+            <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/imageView"
@@ -34,40 +53,43 @@
 
             <TextView
                 android:id="@+id/textView1"
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toLeftOf="@id/imageView"
-                android:ellipsize="end"
+                android:layout_toRightOf="@id/icon"
+                android:paddingTop="@dimen/small_margin"
+                android:paddingLeft="@dimen/small_margin"
+                android:paddingRight="@dimen/small_margin"
                 android:maxLines="1"
-                android:textColor="@color/orange"
-                android:textSize="20sp"
-                android:text="@string/placeholder_name_route"/>
+                android:ellipsize="end"
+                style="?android:textAppearanceMedium"
+                tools:text="Title 1"
+                android:transitionName="image"/>
 
             <TextView
                 android:id="@+id/textView2"
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toLeftOf="@id/imageView"
+                android:layout_toRightOf="@id/icon"
                 android:layout_below="@id/textView1"
-                android:layout_marginTop="2dp"
+                android:padding="@dimen/small_margin"
                 android:ellipsize="end"
-                android:maxLines="1"
-                android:textColor="@android:color/secondary_text_light"
-                android:textSize="18sp"
-                android:text="@string/placeholder_description_route"/>
+                android:maxLines="4"
+                style="?android:textAppearanceSmall"
+                tools:text="Description goes here" />
 
             <TextView
                 android:id="@+id/textView3"
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toLeftOf="@id/imageView"
+                android:layout_toRightOf="@id/icon"
                 android:layout_below="@id/textView2"
                 android:layout_marginTop="2dp"
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:textColor="@android:color/secondary_text_light"
                 android:textSize="12sp"
-                android:text="@string/placeholder_city_and_date_route"/>
+                android:text="@string/placeholder_city_and_date_route"
+                style="?android:textAppearanceSmall"/>
         </RelativeLayout>
     </android.support.v7.widget.CardView>
 </RelativeLayout>

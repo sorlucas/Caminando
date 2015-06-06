@@ -41,10 +41,10 @@ public class BrowseSessionsActivity extends BaseActivity  {
 
     private int mMode = MODE_EXPLORE;
 
-    private RoutesFragment mSessionsFrag = null;
+    private BroseSessionsFragment mSessionsFrag = null;
     private DrawShadowFrameLayout mDrawShadowFrameLayout;
 
-    private RoutesFragment mRoutesFragment;
+    private BroseSessionsFragment mRoutesFragment;
 
 
     @Override
@@ -61,7 +61,7 @@ public class BrowseSessionsActivity extends BaseActivity  {
             toolbar.setTitle(null);
         }
 
-        mRoutesFragment = (RoutesFragment) getSupportFragmentManager().findFragmentById(R.id.sessions_fragment);
+        mRoutesFragment = (BroseSessionsFragment) getSupportFragmentManager().findFragmentById(R.id.sessions_fragment);
         mDrawShadowFrameLayout = (DrawShadowFrameLayout) findViewById(R.id.main_content);
 
         //TODO: DELETO FOR RELEASE
@@ -95,7 +95,7 @@ public class BrowseSessionsActivity extends BaseActivity  {
             enableActionBarAutoHide(ListView);
         }
 
-        mSessionsFrag = (RoutesFragment) getSupportFragmentManager().findFragmentById(R.id.sessions_fragment);
+        mSessionsFrag = (BroseSessionsFragment) getSupportFragmentManager().findFragmentById(R.id.sessions_fragment);
         if (mSessionsFrag != null && savedInstanceState == null) {
             //TODO: AÑADIR para funcionalidad de recibir argumentos por intent para cargar desde argumentos
             /*
