@@ -45,7 +45,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.sergio.caminando.BuildConfig;
 import com.example.sergio.caminando.Config;
 import com.example.sergio.caminando.R;
 import com.example.sergio.caminando.ui.widget.MultiSwipeRefreshLayout;
@@ -711,27 +710,6 @@ public abstract class BaseActivity extends ActionBarActivity implements
                 HelpUtils.showAbout(this);
                 return true;
 
-            case R.id.menu_wifi:
-                return true;
-
-            case R.id.menu_i_o_hunt:
-                launchIoHunt();
-                return true;
-
-            case R.id.menu_debug:
-                return true;
-
-            case R.id.menu_refresh:
-                requestDataRefresh();
-                break;
-
-            case R.id.menu_io_extended:
-                startActivity(new Intent(Intent.ACTION_VIEW,
-                        Uri.parse(Config.IO_EXTENDED_LINK)));
-                break;
-
-            case R.id.menu_map:
-                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -867,21 +845,7 @@ public abstract class BaseActivity extends ActionBarActivity implements
 
     protected void configureStandardMenuItems(Menu menu) {
 
-        MenuItem debugItem = menu.findItem(R.id.menu_debug);
-        if (debugItem != null) {
-            debugItem.setVisible(BuildConfig.DEBUG);
-        }
-        // if attendee is remote, show map on the overflow instead of on the nav bar
-        final boolean isRemote = !PrefUtils.isAttendeeAtVenue(this);
-        final MenuItem mapItem = menu.findItem(R.id.menu_map);
-        if (mapItem != null) {
-            mapItem.setVisible(isRemote);
-        }
-
-        MenuItem ioHuntItem = menu.findItem(R.id.menu_i_o_hunt);
-        if (ioHuntItem != null) {
-            ioHuntItem.setVisible(!isRemote && !TextUtils.isEmpty(Config.IO_HUNT_PACKAGE_NAME));
-        }
+        //TODO: FUNCION TO IMPLEMENT algo con los menus dependiendo de condiciones
     }
 
     @Override

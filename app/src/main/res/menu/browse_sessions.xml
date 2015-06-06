@@ -31,33 +31,21 @@
         android:title="@string/description_refresh"
         iosched:showAsAction="never" />
 
-    <item android:id="@+id/menu_wifi"
-        android:orderInCategory="98"
-        android:title="@string/description_configure_wifi"
-        iosched:showAsAction="never" />
-
-    <item android:id="@+id/menu_i_o_hunt"
-          android:orderInCategory="99"
-          android:title="@string/description_i_o_hunt"
-        iosched:showAsAction="never" />
-
-    <item android:id="@+id/menu_io_extended"
-        android:orderInCategory="99"
-        android:title="@string/description_i_o_extended"
-        android:visible="false"
-        iosched:showAsAction="never" />
-
-    <item android:id="@+id/menu_map"
+    <item android:id="@+id/test_notification"
+        android:title="@string/action_test_notification"
         android:orderInCategory="100"
-        android:title="@string/description_map"
-        android:visible="false"
         iosched:showAsAction="never" />
 
-    <item android:id="@+id/menu_debug"
-        android:orderInCategory="101"
-        android:title="@string/description_debug"
-        android:visible="false"
+    <item android:id="@+id/test_microapp"
+        android:title="@string/action_test_microapp"
+        android:orderInCategory="100"
         iosched:showAsAction="never" />
+
+    <item android:id="@+id/test_toggle_geofence"
+        android:title="@string/action_test_toggle_geofence"
+        android:orderInCategory="100"
+        iosched:showAsAction="never" />
+
 
     <item android:id="@+id/menu_about"
         android:orderInCategory="99"
