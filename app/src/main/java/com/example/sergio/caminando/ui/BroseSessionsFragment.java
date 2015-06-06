@@ -1,6 +1,7 @@
 package com.example.sergio.caminando.ui;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -44,6 +45,11 @@ public class BroseSessionsFragment extends Fragment implements
     private TextView mEmptyView;
     private View mLoadingView;
 
+    //TODO Implement Collection View. in MyLisAdapter. Trasladate to InventoryGroup
+    List<DecoratedConference> conferences = null;
+    private int mContentTopClearance = 0;
+
+
     public boolean canCollectionViewScrollUp() {
         return ViewCompat.canScrollVertically(mRecyclerView, -1);
     }
@@ -68,6 +74,12 @@ public class BroseSessionsFragment extends Fragment implements
         mRecyclerView = (RecyclerView) root.findViewById(R.id.sessions_collection_view);
         mEmptyView = (TextView) root.findViewById(R.id.empty_text);
         mLoadingView = root.findViewById(R.id.loading);
+
+        //TODO: DELETE WHEN COLLECTIONVIEW
+        final TypedArray xmlArgs = getActivity().obtainStyledAttributes(null,
+                R.styleable.CollectionView, 0, 0);
+        mContentTopClearance = xmlArgs.getDimensionPixelSize(
+                R.styleable.CollectionView_contentTopClearance, 0);
         return root;
     }
 
@@ -78,6 +90,9 @@ public class BroseSessionsFragment extends Fragment implements
 
     @Override
     public void onLoadFinished(Loader<List<DecoratedConference>> loader, List<DecoratedConference> data) {
+
+        //TODO: DELETE WHEN COLLECTIONVIEW
+        this.conferences = data;
         ConferenceLoader conferenceLoader = (ConferenceLoader) loader;
         if (conferenceLoader.getException() != null) {
             Utils.displayNetworkErrorMessage(getActivity());
@@ -248,5 +263,29 @@ public class BroseSessionsFragment extends Fragment implements
 
     public interface ItemClickListener {
         void onItemClick(View view, int position);
+    }
+
+    private void notifyAdapterDataSetChanged() {
+        // We have to set up a new adapter (as opposed to just calling notifyDataSetChanged()
+        // because we might need MORE view types than before, and ListView isn't prepared to
+        // handle the case where its existing adapter suddenly needs to increase the number of
+        // view types it needs.
+        if (conferences != null){
+            mRecyclerView.setAdapter(new ConferenceDataAdapter(getActivity(),conferences));
+        }
+
+    }
+    public void setContentTopClearance(int topClearance) {
+
+        if(mContentTopClearance != topClearance){
+            //TODO: CollectionView
+            mContentTopClearance = topClearance;
+            mRecyclerView.setPadding(mRecyclerView.getPaddingLeft(),
+                    mContentTopClearance,
+                    mRecyclerView.getPaddingRight(),
+                    mRecyclerView.getPaddingBottom());
+            notifyAdapterDataSetChanged();
+        }
+
     }
 }

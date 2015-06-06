@@ -23,10 +23,14 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
+import com.example.sergio.caminando.Config;
 import com.example.sergio.caminando.R;
 import com.example.sergio.caminando.ui.widget.DrawShadowFrameLayout;
 import com.example.sergio.caminando.util.AccountUtils;
+import com.example.sergio.caminando.util.PrefUtils;
+import com.example.sergio.caminando.util.UIUtils;
 import com.example.sergio.caminando.util.ViewServer;
 
 import static com.example.sergio.caminando.util.LogUtils.makeLogTag;
@@ -44,8 +48,12 @@ public class BrowseSessionsActivity extends BaseActivity  {
     private BroseSessionsFragment mSessionsFrag = null;
     private DrawShadowFrameLayout mDrawShadowFrameLayout;
 
+    private View mButterBar;
+
     private BroseSessionsFragment mRoutesFragment;
 
+    // time when the user last clicked "refresh" from the stale data butter bar
+    private long mLastDataStaleUserActionTime = 0L;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +70,11 @@ public class BrowseSessionsActivity extends BaseActivity  {
         }
 
         mRoutesFragment = (BroseSessionsFragment) getSupportFragmentManager().findFragmentById(R.id.sessions_fragment);
+
+        mButterBar = findViewById(R.id.butter_bar);
         mDrawShadowFrameLayout = (DrawShadowFrameLayout) findViewById(R.id.main_content);
+
+        registerHideableHeaderView(mButterBar);
 
         //TODO: DELETO FOR RELEASE
         ViewServer.get(this).addWindow(this);
@@ -117,6 +129,7 @@ public class BrowseSessionsActivity extends BaseActivity  {
     @Override
     protected void onResume() {
         super.onResume();
+        checkShowStaleDataButterBar();
         getConferencesForList();
     }
 
@@ -146,6 +159,71 @@ public class BrowseSessionsActivity extends BaseActivity  {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    // Updates the Sessions fragment content top clearance to take our chrome into account
+    private void updateFragContentTopClearance() {
+        BroseSessionsFragment frag = (BroseSessionsFragment) getSupportFragmentManager().findFragmentById(
+                R.id.sessions_fragment);
+        if (frag == null) {
+            return;
+        }
+
+        View filtersBox = findViewById(R.id.filters_box);
+
+        final boolean filterBoxVisible = filtersBox != null
+                && filtersBox.getVisibility() == View.VISIBLE;
+        final boolean butterBarVisible = mButterBar != null
+                && mButterBar.getVisibility() == View.VISIBLE;
+
+        int actionBarClearance = UIUtils.calculateActionBarSize(this);
+        int butterBarClearance = butterBarVisible
+                ? getResources().getDimensionPixelSize(R.dimen.butter_bar_height) : 0;
+        int filterBoxClearance = filterBoxVisible
+                ? getResources().getDimensionPixelSize(R.dimen.filterbar_height) : 0;
+        int secondaryClearance = butterBarClearance > filterBoxClearance ? butterBarClearance :
+                filterBoxClearance;
+        int gridPadding = getResources().getDimensionPixelSize(R.dimen.explore_grid_padding);
+
+        setProgressBarTopWhenActionBarShown(actionBarClearance + secondaryClearance);
+        mDrawShadowFrameLayout.setShadowTopOffset(actionBarClearance + secondaryClearance);
+        frag.setContentTopClearance(actionBarClearance + secondaryClearance + gridPadding);
+    }
+
+    private void checkShowStaleDataButterBar() {
+        final boolean showingFilters = findViewById(R.id.filters_box) != null && findViewById(R.id.filters_box).getVisibility() == View.VISIBLE;
+        final long now = UIUtils.getCurrentTime(this);
+        final boolean inSnooze = (now - mLastDataStaleUserActionTime < Config.STALE_DATA_WARNING_SNOOZE);
+        final long staleTime = now - PrefUtils.getLastSyncSucceededTime(this);
+        //TODO: implement para mostrar la barra o no de pendiendo de si la ruta esta en ejecucion para asi mostrar los flitros
+        /*
+        final long staleThreshold = (now >= Config.CONFERENCE_START_MILLIS && now
+                <= Config.CONFERENCE_END_MILLIS) ? Config.STALE_DATA_THRESHOLD_DURING_CONFERENCE :
+                Config.STALE_DATA_THRESHOLD_NOT_DURING_CONFERENCE;
+
+        final boolean isStale = (staleTime >= staleThreshold);
+        */
+        final boolean isStale = true;
+        //final boolean bootstrapDone = PrefUtils.isDataBootstrapDone(this);
+        final boolean mustShowBar = isStale && !inSnooze && !showingFilters;
+
+        if (!mustShowBar) {
+            mButterBar.setVisibility(View.GONE);
+        } else {
+            UIUtils.setUpButterBar(mButterBar, getString(R.string.data_stale_warning),
+                    getString(R.string.description_refresh), new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mButterBar.setVisibility(View.GONE);
+                            updateFragContentTopClearance();
+                            mLastDataStaleUserActionTime = UIUtils.getCurrentTime(
+                                    BrowseSessionsActivity.this);
+                            requestDataRefresh();
+                        }
+                    }
+            );
+        }
+        updateFragContentTopClearance();
     }
 
     private void getConferencesForList() {

@@ -223,8 +223,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
         mNormalStatusBarColor = mThemedStatusBarColor;
     }
 
-    // TODO: implement
-    /*
     private void trySetupSwipeRefresh() {
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
         if (mSwipeRefreshLayout != null) {
@@ -245,7 +243,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
             }
         }
     }
-*/
+
     protected void setProgressBarTopWhenActionBarShown(int progressBarTopWhenActionBarShown) {
         mProgressBarTopWhenActionBarShown = progressBarTopWhenActionBarShown;
         updateSwipeRefreshProgressBarTop();
@@ -709,6 +707,9 @@ public abstract class BaseActivity extends AppCompatActivity implements
             case R.id.menu_about:
                 HelpUtils.showAbout(this);
                 return true;
+            case R.id.menu_refresh:
+                requestDataRefresh();
+                break;
 
         }
         return super.onOptionsItemSelected(item);
@@ -736,6 +737,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
     protected void requestDataRefresh() {
         Account activeAccount = AccountUtils.getActiveAccount(this);
         ContentResolver contentResolver = getContentResolver();
+        Toast.makeText(this, "Manual REquiest,, change to active Sincronizacion",Toast.LENGTH_LONG).show();
         /*
         if (contentResolver.isSyncActive(activeAccount, ScheduleContract.CONTENT_AUTHORITY)) {
             LOGD(TAG, "Ignoring manual sync request because a sync is already in progress.");
@@ -1091,6 +1093,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
             final static int ITEMS_THRESHOLD = 3;
             int lastFvi = 0;
+
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
@@ -1113,6 +1116,11 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     }
 
+    protected void enableDisableSwipeRefresh(boolean enable) {
+        if (mSwipeRefreshLayout != null) {
+            mSwipeRefreshLayout.setEnabled(enable);
+        }
+    }
     private View makeNavDrawerItem(final int itemId, ViewGroup container) {
         boolean selected = getSelfNavDrawerItem() == itemId;
         int layoutToInflate = 0;

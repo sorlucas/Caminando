@@ -31,24 +31,17 @@
         android:clipChildren="false"
         app:shadowDrawable="@drawable/header_shadow">
 
-        <!-- ADD MultiSwipeRefreshLayout -->
-        <LinearLayout
+        <com.example.sergio.caminando.ui.widget.MultiSwipeRefreshLayout
+            android:id="@+id/swipe_refresh_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:background="@drawable/img_action_bar_photo_paula"/>
-        <!-- ADD MultiSwipeRefreshLayout -->
+            android:layout_height="match_parent">
             <!-- Sessions fragment showing the session grid -->
             <fragment android:name="com.example.sergio.caminando.ui.BroseSessionsFragment"
                 android:id="@+id/sessions_fragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 tools:layout="@layout/fragment_sessions"/>
-        </LinearLayout>
-        <!-- -add- -->
+        </com.example.sergio.caminando.ui.widget.MultiSwipeRefreshLayout>
 
         <LinearLayout style="@style/HeaderBar"
             android:id="@+id/headerbar"
@@ -82,6 +75,14 @@
 
             </LinearLayout>
         </LinearLayout>
+
+        <!-- Butter bar -->
+        <FrameLayout android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:layout_marginTop="?actionBarSize">
+            <include layout="@layout/include_butter_bar" />
+        </FrameLayout>
     </com.example.sergio.caminando.ui.widget.DrawShadowFrameLayout>
 
     <!-- Nav drawer -->
