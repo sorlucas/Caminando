@@ -3,13 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".HipotecaFormulario" >
-
-    <android.support.design.widget.CoordinatorLayout
-        android:id="@+id/first_coordinator_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context="net.imthinker.android.dslsample.fragment.FirstFragment">
+    tools:context=".ui.CreateRouteActivity" >
 
         <RelativeLayout
             android:layout_width="wrap_content"
@@ -17,11 +11,65 @@
             android:orientation="vertical"
             android:padding="10dp" >
 
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true" />
+            <ImageView
+                android:id="@+id/imageViewThumb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/image_border"
+                android:padding="10dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_launcher"
+                android:maxWidth="300dp" />
+
+            <TextView
+                android:id="@+id/textViewFile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/imageViewThumb"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:text="Chose an option" />
+
+            <LinearLayout
+                android:id="@+id/layoutButtons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/textViewFile"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp" >
+
+                <Button
+                    android:id="@+id/buttonTakePicture"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Take Picture" />
+
+                <Button
+                    android:id="@+id/buttonChooseImage"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Choose Image" />
+            </LinearLayout>
+
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/inputLayoutRouteName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="16dp"
+                android:layout_below="@id/layoutButtons">
                 <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/route_name_editext"
                     android:layout_width="match_parent"
@@ -144,5 +192,4 @@
                     android:inputType="number"/>
             </android.support.design.widget.TextInputLayout>
         </RelativeLayout>
-    </android.support.design.widget.CoordinatorLayout>
 </ScrollView>
