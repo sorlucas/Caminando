@@ -1,11 +1,12 @@
 package com.example.sergio.caminando.ui;
 
 
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,6 +23,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sergio.caminando.R;
+import com.example.sergio.caminando.endpoints.utils.ConferenceException;
+import com.example.sergio.caminando.endpoints.utils.ConferenceUtils;
+import com.example.sergio.caminando.util.AccountUtils;
+import com.example.sergio.myapplication.backend.domain.conference.model.Conference;
 import com.example.sergio.myapplication.backend.domain.conference.model.ConferenceForm;
 import com.fourmob.datetimepicker.date.DatePickerDialog;
 import com.google.api.client.util.DateTime;
@@ -33,11 +38,15 @@ import com.sleepbot.datetimepicker.time.RadialPickerLayout;
 import com.sleepbot.datetimepicker.time.TimePickerDialog;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+
+import static com.example.sergio.caminando.util.LogUtils.makeLogTag;
+
 /**
  * Created by sergio on 30/05/15.
  */
@@ -45,6 +54,8 @@ public class CreateRouteFragment extends Fragment implements
         com.fourmob.datetimepicker.date.DatePickerDialog.OnDateSetListener,
         TimePickerDialog.OnTimeSetListener,
         ImageChooserListener {
+
+    private static final String TAG = makeLogTag("CreateRouteFragment");
 
     public static final String DATEPICKER_TAG_START = "datepickerstart";
     public static final String DATEPICKER_TAG_END = "datepickerend";
@@ -76,34 +87,9 @@ public class CreateRouteFragment extends Fragment implements
     private ProgressBar pbar;
     private String filePath;
     private int chooserType;
+    private String mFilePath;
 
-    public interface Callbacks {
-        public void uploadRoute(ConferenceForm conference);
-    }
-
-    private static Callbacks sDummyCallbacks = new Callbacks() {
-        @Override
-        public void uploadRoute(ConferenceForm conference) {}
-    };
-
-    private Callbacks mCallbacks = sDummyCallbacks;
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-
-        if (!(activity instanceof Callbacks)) {
-            throw new ClassCastException("Activity must implement fragment's callbacks.");
-        }
-
-        mCallbacks = (Callbacks) activity;
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mCallbacks = sDummyCallbacks;
-    }
+    private CreateRouteTask mAuthTask;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -269,16 +255,23 @@ public class CreateRouteFragment extends Fragment implements
 
         //To create route
         if (id == R.id.menu_create) {
-            createRoute();
+            uploadRoute();
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private void createRoute(){
+    private void uploadRoute(){
 
-        //Implememt anything to check form
-        mCallbacks.uploadRoute(getDataConference());
+        Toast.makeText(getActivity(),"filePath: " + mFilePath,Toast.LENGTH_LONG).show();
+
+        // Cancel previously running tasks.
+        if (mAuthTask != null) {
+            mAuthTask.cancel(true);
+        }
+        // Start task to check authorization.
+        mAuthTask = new CreateRouteTask();
+        mAuthTask.execute(getDataConference());
     }
 
     private ConferenceForm getDataConference(){
@@ -349,6 +342,7 @@ public class CreateRouteFragment extends Fragment implements
             public void run() {
                 pbar.setVisibility(View.GONE);
                 if (image != null) {
+                    mFilePath = image.getFilePathOriginal();
                     textViewFile.setText(image.getFilePathOriginal());
                     imageViewThumbnail.setImageURI(Uri.parse(new File(image
                             .getFileThumbnail()).toString()));
@@ -382,7 +376,7 @@ public class CreateRouteFragment extends Fragment implements
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putInt("chooser_type", chooserType);
-        outState.putString("media_path", filePath);
+        outState.putString("media_path", mFilePath);
         super.onSaveInstanceState(outState);
     }
 
@@ -399,5 +393,73 @@ public class CreateRouteFragment extends Fragment implements
             }
         }
         super.onViewStateRestored(savedInstanceState);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (mAuthTask != null) {
+            mAuthTask.cancel(true);
+            mAuthTask = null;
+        }
+    }
+
+    public class CreateRouteTask extends AsyncTask<ConferenceForm, Integer, Conference> {
+        private final static boolean SUCCESS = true;
+        private final static boolean FAILURE = false;
+        private Exception mException;
+
+
+        @Override
+        protected Conference doInBackground(ConferenceForm... conferenceForms) {
+
+            Log.i(TAG, "Background task started.");
+
+            ConferenceForm conferenceForm = conferenceForms[0];
+            // Ensure only one task is running at a time.
+            mAuthTask = this;
+
+            // Authorization check successful, get conferences.
+            ConferenceUtils.build(getActivity(), AccountUtils.getActiveAccountName(getActivity()));
+
+            try {
+                ConferenceUtils.getProfile();
+                return ConferenceUtils.createConference(conferenceForm);
+            } catch (IOException e) {
+                Log.e(TAG, "Failed to create Route", e);
+                mException = e;
+            } catch (ConferenceException e) {
+                // logged
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... stringIds) {
+            // Toast only the most recent.
+            Integer stringId = stringIds[0];
+            Toast.makeText(getActivity(), getString(stringId), Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        protected void onPreExecute() {
+            mAuthTask = this;
+        }
+
+        @Override
+        protected void onPostExecute(Conference conference) {
+
+            Toast.makeText(getActivity(),"Upload Route",Toast.LENGTH_LONG).show();
+            Log.e(TAG, conference.toString());
+
+            mAuthTask = null;
+            getActivity().finish();
+        }
+
+        @Override
+        protected void onCancelled() {
+            mAuthTask = null;
+        }
     }
 }
