@@ -1,13 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="placeholder_session_day"></string>
-    <string name="placeholder_session_start_time"></string>
-    <string name="placeholder_session_end_time"></string>
-    <string name="placeholder_session_title"></string>
-    <string name="placeholder_session_subtitle"></string>
-    <string name="placeholder_session_subtitle_and_abstract"></string>
-    <string name="placeholder_session_blurb"></string>
-    <string name="placeholder_lorem_ipsum"></string>
-    <string name="placeholder_button_label_1"></string>
-    <string name="placeholder_button_label_2"></string>
+    <string name="placeholder_name_route"/>
+    <string name="placeholder_photo_overlap"/>
+    <string name="placeholder_description_route"/>
+    <string name="placeholder_city_and_date_route"/>
+    <string name="placeholder_lorem_ipsum"/>
 </resources>
