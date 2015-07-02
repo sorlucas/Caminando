@@ -23,13 +23,14 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.BitmapRequestBuilder;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.ModelRequest;
+import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.Transformation;
+import com.bumptech.glide.load.engine.Resource;
 import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.load.model.ModelCache;
 import com.bumptech.glide.load.model.stream.BaseGlideUrlLoader;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
-import com.bumptech.glide.request.bitmap.RequestListener;
+import com.bumptech.glide.request.RequestListener;
 import com.example.sergio.caminando.R;
 
 import java.util.regex.Matcher;
@@ -40,9 +41,9 @@ import static com.example.sergio.caminando.util.LogUtils.makeLogTag;
 
 public class ImageLoader {
     private static final String TAG = makeLogTag(ImageLoader.class);
-    private static final ModelCache<GlideUrl> urlCache = new ModelCache<>(150);
+    private static final ModelCache<String,GlideUrl> urlCache = new ModelCache<>(150);
 
-    private final ModelRequest.ImageModelRequest<String> mGlideModelRequest;
+    private final RequestManager.ImageModelRequest<String> mGlideModelRequest;
     private final CenterCrop mCenterCrop;
     private final Transformation<Bitmap> mNone;
 
@@ -55,7 +56,17 @@ public class ImageLoader {
         VariableWidthImageLoader imageLoader = new VariableWidthImageLoader(context);
         mGlideModelRequest = Glide.with(context).using(imageLoader);
         mCenterCrop = new CenterCrop(Glide.get(context).getBitmapPool());
-        mNone = Transformation.NONE;
+        mNone = new Transformation<Bitmap>() {
+            @Override
+            public Resource<Bitmap> transform(Resource<Bitmap> resource, int outWidth, int outHeight) {
+                return resource;
+            }
+
+            @Override
+            public String getId() {
+                return "NONE.com.bumptech.glide.load.Transformation";
+            }
+        };
     }
 
     /**
@@ -73,7 +84,7 @@ public class ImageLoader {
      * @param imageView The target ImageView to load the image into.
      * @param requestListener A listener to monitor the request result.
      */
-    public void loadImage(String url, ImageView imageView, RequestListener<String> requestListener) {
+    public void loadImage(String url, ImageView imageView, RequestListener<String, Bitmap> requestListener) {
         loadImage(url, imageView, requestListener, null, false);
     }
 
@@ -85,7 +96,7 @@ public class ImageLoader {
      * @param requestListener A listener to monitor the request result.
      * @param placholderOverride A placeholder to use in place of the default placholder.
      */
-    public void loadImage(String url, ImageView imageView, RequestListener<String> requestListener,
+    public void loadImage(String url, ImageView imageView, RequestListener<String, Bitmap> requestListener,
             Drawable placholderOverride) {
         loadImage(url, imageView, requestListener, placholderOverride, false /*crop*/);
     }
@@ -100,7 +111,7 @@ public class ImageLoader {
      *                            If this parameter is present, {@link #mPlaceHolderResId}
      *                            if ignored for this request.
      */
-    public void loadImage(String url, ImageView imageView, RequestListener<String> requestListener,
+    public void loadImage(String url, ImageView imageView, RequestListener<String, Bitmap> requestListener,
                 Drawable placeholderOverride, boolean crop) {
         BitmapRequestBuilder request = beginImageLoad(url, requestListener, crop)
                 .animate(R.anim.image_fade_in);
@@ -113,7 +124,7 @@ public class ImageLoader {
     }
 
     public BitmapRequestBuilder beginImageLoad(String url,
-            RequestListener<String> requestListener, boolean crop) {
+                                               RequestListener<String, Bitmap> requestListener, boolean crop) {
         return mGlideModelRequest.load(url)
                 .asBitmap() // don't allow animated GIFs
                 .listener(requestListener)
@@ -148,10 +159,7 @@ public class ImageLoader {
             super(context, urlCache);
         }
 
-        @Override
-        public String getId(String model) {
-            return model;
-        }
+
 
         /**
          * If the URL contains a special variable width indicator (eg "__w-200-400-800__")
