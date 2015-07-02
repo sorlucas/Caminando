@@ -4,7 +4,7 @@ package com.example.sergio.caminando.endpoints.utils;
 import android.content.Context;
 import android.util.Log;
 
-import com.example.sergio.caminando.endpoints.AppConstants;
+import com.example.sergio.caminando.Config;
 import com.example.sergio.myapplication.backend.domain.conference.model.Conference;
 import com.example.sergio.myapplication.backend.domain.conference.model.ConferenceCollection;
 import com.example.sergio.myapplication.backend.domain.conference.model.ConferenceForm;
@@ -156,13 +156,13 @@ public class ConferenceUtils {
     public static com.example.sergio.myapplication.backend.domain.conference.Conference buildServiceHandler(
             Context context, String email) {
         GoogleAccountCredential credential = GoogleAccountCredential.usingAudience(
-                context, AppConstants.AUDIENCE);
+                context, Config.AUDIENCE);
         credential.setSelectedAccountName(email);
 
         com.example.sergio.myapplication.backend.domain.conference.Conference.Builder builder
                 = new com.example.sergio.myapplication.backend.domain.conference.Conference.Builder(
-                AppConstants.HTTP_TRANSPORT,
-                AppConstants.JSON_FACTORY, credential);
+                Config.HTTP_TRANSPORT,
+                Config.JSON_FACTORY, credential);
         builder.setApplicationName("conference-central-server");
         return builder.build();
     }

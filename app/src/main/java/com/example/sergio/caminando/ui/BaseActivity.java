@@ -14,12 +14,10 @@ import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -45,7 +43,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.sergio.caminando.Config;
 import com.example.sergio.caminando.R;
 import com.example.sergio.caminando.ui.widget.MultiSwipeRefreshLayout;
 import com.example.sergio.caminando.ui.widget.ScrimInsetsScrollView;
@@ -427,11 +424,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
             mNavDrawerItems.add(NAVDRAWER_ITEM_PEOPLE_IVE_MET);
         }
 
-        // If the experts directory hasn't expired, show it
-        if (!Config.hasExpertsDirectoryExpired()) {
-            mNavDrawerItems.add(NAVDRAWER_ITEM_EXPERTS_DIRECTORY);
-        }
-
         // Other items that are always in the nav drawer irrespective of whether the
         // attendee is on-site or remote:
         mNavDrawerItems.add(NAVDRAWER_ITEM_SOCIAL);
@@ -714,25 +706,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
         return super.onOptionsItemSelected(item);
     }
 
-    private void launchIoHunt() {
-        if (!TextUtils.isEmpty(Config.IO_HUNT_PACKAGE_NAME)) {
-            LOGD(TAG, "Attempting to launch I/O hunt.");
-            PackageManager pm = getPackageManager();
-            Intent launchIntent = pm.getLaunchIntentForPackage(Config.IO_HUNT_PACKAGE_NAME);
-            if (launchIntent != null) {
-                // start I/O Hunt
-                LOGD(TAG, "I/O hunt intent found, launching.");
-                startActivity(launchIntent);
-            } else {
-                // send user to the Play Store to download it
-                LOGD(TAG, "I/O hunt intent NOT found, going to Play Store.");
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(
-                        Config.PLAY_STORE_URL_PREFIX + Config.IO_HUNT_PACKAGE_NAME));
-                startActivity(intent);
-            }
-        }
-    }
-
     protected void requestDataRefresh() {
         Account activeAccount = AccountUtils.getActiveAccount(this);
         ContentResolver contentResolver = getContentResolver();
@@ -758,8 +731,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
             case NAVDRAWER_ITEM_MAP:
                 break;
             case NAVDRAWER_ITEM_SOCIAL:
-                break;
-            case NAVDRAWER_ITEM_EXPERTS_DIRECTORY:
                 break;
             case NAVDRAWER_ITEM_PEOPLE_IVE_MET:
                 break;
