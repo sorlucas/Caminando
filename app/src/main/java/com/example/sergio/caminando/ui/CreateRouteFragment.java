@@ -87,7 +87,6 @@ public class CreateRouteFragment extends Fragment implements
     private ProgressBar pbar;
     private String filePath;
     private int chooserType;
-    private String mFilePath;
 
     private CreateRouteTask mAuthTask;
 
@@ -263,7 +262,7 @@ public class CreateRouteFragment extends Fragment implements
 
     private void uploadRoute(){
 
-        Toast.makeText(getActivity(),"filePath: " + mFilePath,Toast.LENGTH_LONG).show();
+        Toast.makeText(getActivity(),"filePath: " + filePath,Toast.LENGTH_LONG).show();
 
         // Cancel previously running tasks.
         if (mAuthTask != null) {
@@ -342,7 +341,7 @@ public class CreateRouteFragment extends Fragment implements
             public void run() {
                 pbar.setVisibility(View.GONE);
                 if (image != null) {
-                    mFilePath = image.getFilePathOriginal();
+                    filePath = image.getFilePathOriginal();
                     textViewFile.setText(image.getFilePathOriginal());
                     imageViewThumbnail.setImageURI(Uri.parse(new File(image
                             .getFileThumbnail()).toString()));
@@ -376,7 +375,7 @@ public class CreateRouteFragment extends Fragment implements
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putInt("chooser_type", chooserType);
-        outState.putString("media_path", mFilePath);
+        outState.putString("media_path", filePath);
         super.onSaveInstanceState(outState);
     }
 
