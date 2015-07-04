@@ -25,6 +25,8 @@ import android.widget.Toast;
 import com.example.sergio.caminando.R;
 import com.example.sergio.caminando.endpoints.utils.ConferenceException;
 import com.example.sergio.caminando.endpoints.utils.ConferenceUtils;
+import com.example.sergio.caminando.endpoints.utils.StorageException;
+import com.example.sergio.caminando.endpoints.utils.StorageUtils;
 import com.example.sergio.caminando.util.AccountUtils;
 import com.example.sergio.myapplication.backend.domain.conference.model.Conference;
 import com.example.sergio.myapplication.backend.domain.conference.model.ConferenceForm;
@@ -89,6 +91,7 @@ public class CreateRouteFragment extends Fragment implements
     private int chooserType;
 
     private CreateRouteTask mAuthTask;
+    private UploadPhotoTask mAuthPhoto;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -264,10 +267,19 @@ public class CreateRouteFragment extends Fragment implements
 
         Toast.makeText(getActivity(),"filePath: " + filePath,Toast.LENGTH_LONG).show();
 
-        // Cancel previously running tasks.
+        // TODO: Cambiar unresponsabilidad mientras sube ruta. Volver rapido a fragment_routes
+        // Cancel previously running ROUTE tasks.
         if (mAuthTask != null) {
             mAuthTask.cancel(true);
         }
+        // Cancel previously running PHOTO tasks.
+        if (mAuthPhoto != null) {
+            mAuthPhoto.cancel(true);
+        }
+
+        // Start task to upload photo
+        mAuthPhoto = new UploadPhotoTask();
+        mAuthPhoto.execute("photos_routes",filePath);
         // Start task to check authorization.
         mAuthTask = new CreateRouteTask();
         mAuthTask.execute(getDataConference());
@@ -401,14 +413,14 @@ public class CreateRouteFragment extends Fragment implements
             mAuthTask.cancel(true);
             mAuthTask = null;
         }
+
+        if (mAuthPhoto != null) {
+            mAuthPhoto.cancel(true);
+            mAuthPhoto = null;
+        }
     }
 
     public class CreateRouteTask extends AsyncTask<ConferenceForm, Integer, Conference> {
-        private final static boolean SUCCESS = true;
-        private final static boolean FAILURE = false;
-        private Exception mException;
-
-
         @Override
         protected Conference doInBackground(ConferenceForm... conferenceForms) {
 
@@ -426,39 +438,58 @@ public class CreateRouteFragment extends Fragment implements
                 return ConferenceUtils.createConference(conferenceForm);
             } catch (IOException e) {
                 Log.e(TAG, "Failed to create Route", e);
-                mException = e;
             } catch (ConferenceException e) {
                 // logged
             }
-
             return null;
         }
-
-        @Override
-        protected void onProgressUpdate(Integer... stringIds) {
-            // Toast only the most recent.
-            Integer stringId = stringIds[0];
-            Toast.makeText(getActivity(), getString(stringId), Toast.LENGTH_SHORT).show();
-        }
-
         @Override
         protected void onPreExecute() {
             mAuthTask = this;
         }
-
         @Override
         protected void onPostExecute(Conference conference) {
-
             Toast.makeText(getActivity(),"Upload Route",Toast.LENGTH_LONG).show();
-            Log.e(TAG, conference.toString());
-
             mAuthTask = null;
-            getActivity().finish();
         }
-
         @Override
         protected void onCancelled() {
             mAuthTask = null;
+        }
+    }
+
+    public class UploadPhotoTask extends AsyncTask<String,Void,Void> {
+
+        @Override
+        protected Void doInBackground(String... params) {
+            mAuthPhoto = this;
+            try {
+                StorageUtils.build(getActivity());
+                StorageUtils.uploadPhotoToBucket(params[0],params[1]);
+            } catch (IOException e) {
+                Log.e(TAG, "Failed to create Route", e);
+            } catch (StorageException e) {
+                // logged
+            } catch (Exception e){
+                // create build to Storage
+                Log.e(TAG, "Failed to create credential",e);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+            Toast.makeText(getActivity(),"!footo Subida!!!",Toast.LENGTH_LONG).show();
+        }
+        @Override
+        protected void onPreExecute() {
+            mAuthPhoto = this;
+        }
+        @Override
+        protected void onCancelled() {
+            mAuthPhoto = null;
         }
     }
 }

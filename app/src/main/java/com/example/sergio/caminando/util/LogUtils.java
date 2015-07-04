@@ -22,7 +22,7 @@ import com.example.sergio.caminando.BuildConfig;
 import com.example.sergio.caminando.Config;
 
 public class LogUtils {
-    private static final String LOG_PREFIX = "iosched_";
+    private static final String LOG_PREFIX = "caminando_";
     private static final int LOG_PREFIX_LENGTH = LOG_PREFIX.length();
     private static final int MAX_LOG_TAG_LENGTH = 23;
 
