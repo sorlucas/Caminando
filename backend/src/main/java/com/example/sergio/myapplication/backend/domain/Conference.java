@@ -104,6 +104,11 @@ public class Conference {
     private int seatsAvailable;
 
     /**
+     * Url to cover Route
+     */
+    private String photoUrlRouteCover;
+
+    /**
      * Just making the default constructor private.
      */
     private Conference() {}
@@ -229,6 +234,10 @@ public class Conference {
             throw new IllegalArgumentException(seatsAllocated + " seats are already allocated, "
                     + "but you tried to set maxAttendees to " + conferenceForm.getMaxAttendees());
         }
+
+        // The url photo Route Cover.
+        this.photoUrlRouteCover = conferenceForm.getUrlPhotoCover();
+
         // The initial number of seatsAvailable is the same as maxAttendees.
         // However, if there are already some seats allocated, we should subtract that numbers.
         this.maxAttendees = conferenceForm.getMaxAttendees();

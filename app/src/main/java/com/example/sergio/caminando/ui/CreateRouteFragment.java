@@ -90,6 +90,9 @@ public class CreateRouteFragment extends Fragment implements
     private String filePath;
     private int chooserType;
 
+    // Url object public link
+    private String mUrlPhotoLink;
+
     private CreateRouteTask mAuthTask;
     private UploadPhotoTask mAuthPhoto;
 
@@ -265,8 +268,6 @@ public class CreateRouteFragment extends Fragment implements
 
     private void uploadRoute(){
 
-        Toast.makeText(getActivity(),"filePath: " + filePath,Toast.LENGTH_LONG).show();
-
         // TODO: Cambiar unresponsabilidad mientras sube ruta. Volver rapido a fragment_routes
         // Cancel previously running ROUTE tasks.
         if (mAuthTask != null) {
@@ -280,9 +281,10 @@ public class CreateRouteFragment extends Fragment implements
         // Start task to upload photo
         mAuthPhoto = new UploadPhotoTask();
         mAuthPhoto.execute("photos_routes",filePath);
+
         // Start task to check authorization.
         mAuthTask = new CreateRouteTask();
-        mAuthTask.execute(getDataConference());
+
     }
 
     private ConferenceForm getDataConference(){
@@ -298,6 +300,7 @@ public class CreateRouteFragment extends Fragment implements
         conferenceForm.setCity(mCityName.getText().toString());
         conferenceForm.setStartDate(startDate);
         conferenceForm.setEndDate(endDate);
+        conferenceForm.setUrlPhotoCover(mUrlPhotoLink);
         conferenceForm.setMaxAttendees(Integer.parseInt(mMaxAttendees.getText().toString()));
         return conferenceForm;
     }
@@ -451,6 +454,7 @@ public class CreateRouteFragment extends Fragment implements
         protected void onPostExecute(Conference conference) {
             Toast.makeText(getActivity(),"Upload Route",Toast.LENGTH_LONG).show();
             mAuthTask = null;
+            getActivity().finish();
         }
         @Override
         protected void onCancelled() {
@@ -458,14 +462,15 @@ public class CreateRouteFragment extends Fragment implements
         }
     }
 
-    public class UploadPhotoTask extends AsyncTask<String,Void,Void> {
+    public class UploadPhotoTask extends AsyncTask<String,Void,String> {
 
         @Override
-        protected Void doInBackground(String... params) {
+        protected String doInBackground(String... params) {
             mAuthPhoto = this;
+            String urlPath = null;
             try {
                 StorageUtils.build(getActivity());
-                StorageUtils.uploadPhotoToBucket(params[0],params[1]);
+                urlPath = StorageUtils.uploadPhotoToBucket(params[0],params[1]);
             } catch (IOException e) {
                 Log.e(TAG, "Failed to create Route", e);
             } catch (StorageException e) {
@@ -474,15 +479,18 @@ public class CreateRouteFragment extends Fragment implements
                 // create build to Storage
                 Log.e(TAG, "Failed to create credential",e);
             }
-            return null;
+            return urlPath;
         }
 
         @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-
-            Toast.makeText(getActivity(),"!footo Subida!!!",Toast.LENGTH_LONG).show();
+        protected void onPostExecute(String urlPublicLink) {
+            super.onPostExecute(urlPublicLink);
+            Toast.makeText(getActivity(),"Foto subida: " + urlPublicLink ,Toast.LENGTH_LONG).show();
+            mUrlPhotoLink = urlPublicLink;
+            // Now I have mUrlPhotoLink to add in getDataConference()
+            mAuthTask.execute(getDataConference());
         }
+
         @Override
         protected void onPreExecute() {
             mAuthPhoto = this;

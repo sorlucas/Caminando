@@ -75,7 +75,7 @@ public class StorageUtils {
         return map;
     }
 
-    public static void uploadPhotoToBucket (String bucketName, String filePath)
+    public static String uploadPhotoToBucket (String bucketName, String filePath)
         throws Exception {
 
         Boolean useCustomMetadata = false;
@@ -120,9 +120,9 @@ public class StorageUtils {
             insertObject.getMediaHttpUploader().setDirectUploadEnabled(true);
         }
 
-        insertObject.execute();
+        StorageObject objectInserted = insertObject.execute();
 
-        // TODO: return url to objet
+        return objectInserted.getMediaLink();
     }
 
     /**

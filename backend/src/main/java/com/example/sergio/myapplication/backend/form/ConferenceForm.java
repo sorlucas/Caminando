@@ -40,6 +40,10 @@ public class ConferenceForm {
     private Date endDate;
 
     /**
+     * The Url Route Cover
+     */
+    private String urlPhotoCover;
+    /**
      * The capacity of the conference.
      */
     private int maxAttendees;
@@ -89,6 +93,10 @@ public class ConferenceForm {
 
     public Date getEndDate() {
         return endDate;
+    }
+
+    public String getUrlPhotoCover() {
+        return urlPhotoCover;
     }
 
     public int getMaxAttendees() {
