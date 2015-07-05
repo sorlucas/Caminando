@@ -48,6 +48,7 @@ import com.example.sergio.caminando.sync.CaminandoSyncAdapter;
 import com.example.sergio.caminando.ui.widget.MultiSwipeRefreshLayout;
 import com.example.sergio.caminando.ui.widget.ScrimInsetsScrollView;
 import com.example.sergio.caminando.util.AccountUtils;
+import com.example.sergio.caminando.util.AndroidDatabaseManager;
 import com.example.sergio.caminando.util.HelpUtils;
 import com.example.sergio.caminando.util.ImageLoader;
 import com.example.sergio.caminando.util.LUtils;
@@ -704,6 +705,10 @@ public abstract class BaseActivity extends AppCompatActivity implements
             case R.id.menu_refresh:
                 requestDataRefresh();
                 break;
+            case R.id.debug_view_database:
+                Intent dbmanager = new Intent(getApplicationContext(),AndroidDatabaseManager.class);
+                startActivity(dbmanager);
+                return true;
 
         }
         return super.onOptionsItemSelected(item);

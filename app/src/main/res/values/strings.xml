@@ -25,7 +25,6 @@
     <string name="format_notification">Nueva ruta: <xliff:g id="condition">%1$s</xliff:g> High: <xliff:g id="high">%2$s</xliff:g> Low: <xliff:g id="low">%3$s</xliff:g></string>
 
     <!-- Format date -->
-
     <!-- Language-specific constants -->
     <string name="today">Today</string>
     <!-- For labelling tomorrow's forecast [CHAR LIMIT=15] -->
@@ -33,6 +32,8 @@
     <!-- Date format [CHAR LIMIT=NONE] -->
     <string name="format_full_friendly_date"><xliff:g id="month">%1$s</xliff:g>, <xliff:g id="day">%2$s</xliff:g></string>
 
+    <!-- View database device -->
+    <string name="action_view_database">View Database</string>
     <!-- xzvTourist -->
     <string name="empty_list">No attractions found nearby!</string>
     <string name="nearby_attraction">Nearby tourist attraction</string>

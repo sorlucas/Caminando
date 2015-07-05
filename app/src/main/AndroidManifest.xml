@@ -44,6 +44,10 @@
             android:label="@string/title_activity_create_routes" >
         </activity>
 
+        <!-- Helper Activity to see database -->
+        <activity android:name=".util.AndroidDatabaseManager"
+            android:theme="@style/Theme.AppCompat.Light"/>
+
         <provider
             android:authorities="@string/content_authority"
             android:name=".provider.RouteProvider"

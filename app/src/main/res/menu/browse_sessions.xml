@@ -21,11 +21,13 @@
         android:orderInCategory="1"
         android:title="@string/description_search"
         iosched:showAsAction="always" />
+
     <item android:id="@+id/menu_add_route"
         android:icon="@drawable/add_schedule_button_icon_unchecked"
         android:orderInCategory="2"
         android:title="@string/description_add_schedule"
-        iosched:showAsAction="always" />
+        iosched:showAsAction="ifRoom" />
+
     <item android:id="@+id/menu_refresh"
         android:orderInCategory="1"
         android:title="@string/description_refresh"
@@ -43,6 +45,11 @@
 
     <item android:id="@+id/test_toggle_geofence"
         android:title="@string/action_test_toggle_geofence"
+        android:orderInCategory="100"
+        iosched:showAsAction="never" />
+
+    <item android:id="@+id/debug_view_database"
+        android:title="@string/action_view_database"
         android:orderInCategory="100"
         iosched:showAsAction="never" />
 
