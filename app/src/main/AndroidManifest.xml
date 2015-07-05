@@ -40,6 +40,12 @@
             android:name=".ui.CreateRouteActivity"
             android:label="@string/title_activity_create_routes" >
         </activity>
+
+        <provider
+            android:authorities="@string/content_authority"
+            android:name=".provider.RouteProvider"
+            android:exported="false"
+            android:syncable="true" />
     </application>
 
 </manifest>

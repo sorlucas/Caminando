@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
+    <!-- Provider and SyncAdapter -->
+    <string name="sync_account_type">sergio.example.com</string>
+    <string name="content_authority">com.example.sergio.caminando</string>
+
     <!-- xzvTourist -->
     <string name="empty_list">No attractions found nearby!</string>
     <string name="nearby_attraction">Nearby tourist attraction</string>
