@@ -76,6 +76,9 @@ public class BrowseSessionsActivity extends BaseActivity  {
 
         registerHideableHeaderView(mButterBar);
 
+        // TODO: Implement to sync Inmediately
+        //QuemedejesSyncAdapter.syncImmediately(getApplicationContext());
+
         //TODO: DELETO FOR RELEASE
         ViewServer.get(this).addWindow(this);
     }

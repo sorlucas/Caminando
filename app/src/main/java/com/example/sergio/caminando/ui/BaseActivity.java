@@ -44,6 +44,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sergio.caminando.R;
+import com.example.sergio.caminando.sync.CaminandoSyncAdapter;
 import com.example.sergio.caminando.ui.widget.MultiSwipeRefreshLayout;
 import com.example.sergio.caminando.ui.widget.ScrimInsetsScrollView;
 import com.example.sergio.caminando.util.AccountUtils;
@@ -218,6 +219,8 @@ public abstract class BaseActivity extends AppCompatActivity implements
         mLUtils = LUtils.getInstance(this);
         mThemedStatusBarColor = getResources().getColor(R.color.theme_primary_dark);
         mNormalStatusBarColor = mThemedStatusBarColor;
+
+        CaminandoSyncAdapter.initializeSyncAdapter(this);
     }
 
     private void trySetupSwipeRefresh() {
