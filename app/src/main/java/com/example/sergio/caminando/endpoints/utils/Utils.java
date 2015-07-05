@@ -5,6 +5,7 @@ import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -12,6 +13,7 @@ import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 
+import com.example.sergio.caminando.provider.RouteContract;
 import com.example.sergio.myapplication.backend.domain.conference.model.Conference;
 import com.example.sergio.caminando.R;
 import com.google.android.gms.auth.GoogleAuthUtil;
@@ -203,5 +205,24 @@ public class Utils {
                             }
                         }
                 ).create().show();
+    }
+
+    public static ContentValues convertRouteGCStoSQLite (DecoratedConference decoratedConference){
+
+        Conference conference = decoratedConference.getConference();
+        // Create a new map of values, where column names are the keys
+        ContentValues routeValues = new ContentValues();
+        routeValues.put(RouteContract.RouteEntry._ID, conference.getId());
+        routeValues.put(RouteContract.RouteEntry.COLUMN_NAME_ROUTE, conference.getName());
+        routeValues.put(RouteContract.RouteEntry.COLUMN_DESCRIPTION,conference.getDescription() );
+        routeValues.put(RouteContract.RouteEntry.COLUMN_TOPICS, conference.getTopics().toString());
+        routeValues.put(RouteContract.RouteEntry.COLUMN_CITY_NAME_INIT, conference.getCity());
+        routeValues.put(RouteContract.RouteEntry.COLUMN_START_DATE, conference.getStartDate().getValue());
+        routeValues.put(RouteContract.RouteEntry.COLUMN_MAX_ATTENDEES, conference.getMaxAttendees());
+        routeValues.put(RouteContract.RouteEntry.COLUMN_SEATS_AVAILABLE, conference.getSeatsAvailable());
+        routeValues.put(RouteContract.RouteEntry.COLUMN_URL_ROUTE_COVER, conference.getPhotoUrlRouteCover());
+        routeValues.put(RouteContract.RouteEntry.COLUMN_WEBSAFE_KEY, conference.getWebsafeKey());
+        routeValues.put(RouteContract.RouteEntry.COLUMN_ORGANIZER_DISPLAY_NAME, conference.getOrganizerDisplayName());
+        return routeValues;
     }
 }

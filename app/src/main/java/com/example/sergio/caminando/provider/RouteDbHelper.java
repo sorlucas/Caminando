@@ -31,6 +31,7 @@ public class RouteDbHelper extends SQLiteOpenHelper {
 
         final String SQL_CREATE_ROUTE_TABLE = "CREATE TABLE IF NOT EXISTS " + RouteEntry.TABLE_NAME + " (" +
 
+                //TODO: Add campos registrado
                 RouteEntry._ID + " INTEGER PRIMARY KEY NOT NULL," +
                 RouteEntry.COLUMN_NAME_ROUTE + " TEXT NOT NULL, "  +
                 RouteEntry.COLUMN_DESCRIPTION + " TEXT NOT NULL, " +

@@ -15,14 +15,18 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.example.sergio.caminando.R;
-import com.example.sergio.caminando.RouteUtilities;
+import com.example.sergio.caminando.endpoints.ConferenceLoader;
+import com.example.sergio.caminando.endpoints.utils.DecoratedConference;
+import com.example.sergio.caminando.endpoints.utils.Utils;
 import com.example.sergio.caminando.provider.RouteContract;
+
+import java.util.List;
 
 public class CaminandoSyncAdapter extends AbstractThreadedSyncAdapter {
     public final String LOG_TAG = CaminandoSyncAdapter.class.getSimpleName();
     // Interval at which to sync with the weather, in seconds.
     // 60 seconds (1 minute) * 180 = 3 hours
-    public static final int SYNC_INTERVAL = 120;
+    public static final int SYNC_INTERVAL = 20;
     public static final int SYNC_FLEXTIME = SYNC_INTERVAL/3;
     private static final long DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
     private static final int WEATHER_NOTIFICATION_ID = 3004;
@@ -49,9 +53,14 @@ public class CaminandoSyncAdapter extends AbstractThreadedSyncAdapter {
         
         Log.d(LOG_TAG, "Starting sync");
 
+        ConferenceLoader conferenceLoader = new ConferenceLoader(getContext());
+        List<DecoratedConference> decoratedConferences = conferenceLoader.loadInBackground();
+        // TODO: FIX to implement all conferences
+        DecoratedConference decoratedConference = decoratedConferences.get(0);
+
         //Create route values today an insert in database
-        ContentValues routeValuesToday = RouteUtilities.createRouteValuesToday(System.currentTimeMillis() + 3600000);
-        Uri uriInsertToday = getContext().getContentResolver().insert(RouteContract.RouteEntry.CONTENT_URI, routeValuesToday);
+        ContentValues routeValuesSQLite = Utils.convertRouteGCStoSQLite(decoratedConference);
+        Uri uriInsertToday = getContext().getContentResolver().insert(RouteContract.RouteEntry.CONTENT_URI, routeValuesSQLite);
         Log.d(LOG_TAG, "Sync Complete. " + uriInsertToday.getLastPathSegment() + " Inserted");
 
         // TODO: Implement
