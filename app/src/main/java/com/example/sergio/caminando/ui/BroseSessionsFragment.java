@@ -2,6 +2,7 @@ package com.example.sergio.caminando.ui;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -20,6 +21,9 @@ import android.view.animation.LayoutAnimationController;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.example.sergio.caminando.R;
 import com.example.sergio.caminando.endpoints.ConferenceLoader;
 import com.example.sergio.caminando.endpoints.utils.ConferenceException;
@@ -27,6 +31,7 @@ import com.example.sergio.caminando.endpoints.utils.ConferenceUtils;
 import com.example.sergio.caminando.endpoints.utils.DecoratedConference;
 import com.example.sergio.caminando.endpoints.utils.Utils;
 import com.example.sergio.caminando.util.AccountUtils;
+import com.example.sergio.caminando.util.ImageLoader;
 
 import java.io.IOException;
 import java.util.List;
@@ -44,6 +49,9 @@ public class BroseSessionsFragment extends Fragment implements
     private RecyclerView mRecyclerView;
     private TextView mEmptyView;
     private View mLoadingView;
+
+    // TODO: Utilizo diferente ImageLoader. Utilizo el mismo de BaseActivty??
+    private ImageLoader mImageloaderCover;
 
     //TODO Implement Collection View. in MyLisAdapter. Trasladate to InventoryGroup
     List<DecoratedConference> conferences = null;
@@ -66,6 +74,7 @@ public class BroseSessionsFragment extends Fragment implements
         mRecyclerView.setLayoutAnimation(controller);
         //mRecyclerView.setEmptyView(mEmptyView);
 
+        mImageloaderCover = new ImageLoader(getActivity());
     }
 
     @Override
@@ -194,6 +203,7 @@ public class BroseSessionsFragment extends Fragment implements
             implements View.OnClickListener {
 
         CardView cardView;
+        ImageView photoRouteCover;
         TextView titleView;
         TextView descriptionView;
         TextView cityAndDateView;
@@ -203,6 +213,7 @@ public class BroseSessionsFragment extends Fragment implements
         ConferenceViewHolder(View itemView, BroseSessionsFragment.ItemClickListener itemClickListener) {
             super(itemView);
             cardView = (CardView)itemView.findViewById(R.id.cardView);
+            photoRouteCover = (ImageView) cardView.findViewById(R.id.imageRouteCover);
             titleView = (TextView)cardView.findViewById(R.id.textView1);
             descriptionView = (TextView)cardView.findViewById(R.id.textView2);
             cityAndDateView = (TextView)cardView.findViewById(R.id.textView3);
@@ -238,11 +249,27 @@ public class BroseSessionsFragment extends Fragment implements
 
         @Override
         public void onBindViewHolder(ConferenceViewHolder conferenceViewHolder, int i) {
+
+            String urlPath = conferences.get(i).getConference().getPhotoUrlRouteCover();
+            //mImageloaderCover.loadImage("",conferenceViewHolder.photoRouteCover);
+            //TODO: Change Glide to ImageLoader
+            final ImageView mImageView = conferenceViewHolder.photoRouteCover;
+            Glide.with(getActivity())
+                    .load(urlPath)
+                    .asBitmap()
+                    .into(new SimpleTarget<Bitmap>(100,100) {
+                        @Override
+                        public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                            mImageView.setImageBitmap(resource);
+                        }
+                    });
+
             conferenceViewHolder.titleView.setText(conferences.get(i).getConference().getName());
             conferenceViewHolder.descriptionView.setText(conferences.get(i).getConference().getDescription());
             conferenceViewHolder.cityAndDateView.setText(conferences.get(i).getConference().getCity() + ", " +
                     Utils.getConferenceDate(mContext, conferences.get(i).getConference()));
             conferenceViewHolder.registerView.setVisibility(conferences.get(i).isRegistered() ? View.VISIBLE : View.GONE);
+
         }
 
         @Override

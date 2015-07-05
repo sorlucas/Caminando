@@ -196,6 +196,10 @@ public class Conference {
         return month;
     }
 
+    public String getPhotoUrlRouteCover() {
+        return photoUrlRouteCover;
+    }
+
     public int getMaxAttendees() {
         return maxAttendees;
     }

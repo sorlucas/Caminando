@@ -78,6 +78,7 @@ public class StorageUtils {
     public static String uploadPhotoToBucket (String bucketName, String filePath)
         throws Exception {
 
+        // TODO: Change to true to useCustomMetadata
         Boolean useCustomMetadata = false;
 
         File file = new File(filePath);
@@ -120,9 +121,10 @@ public class StorageUtils {
             insertObject.getMediaHttpUploader().setDirectUploadEnabled(true);
         }
 
-        StorageObject objectInserted = insertObject.execute();
+        insertObject.execute();
 
-        return objectInserted.getMediaLink();
+        // TODO: Create url object manualmente (only PUBLIC)
+        return "https://storage.googleapis.com/photos_routes/" + file.getName();
     }
 
     /**

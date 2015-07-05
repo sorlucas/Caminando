@@ -63,7 +63,7 @@ dependencies {
     compile 'com.kbeanie:image-chooser-library:1.4.4@aar'
     compile 'com.google.apis:google-api-services-storage:v1-rev35-1.20.0'
     compile('com.google.oauth-client:google-oauth-client-jetty:1.20.0') {
-        exclude group: 'org.mortbay.jetty', module: 'servlet-api'
+        exclude group: 'org.mortbay.jetty'
         exclude group: 'com.google.guava', module: 'guava-jdk5'
     }
     compile ('com.google.api-client:google-api-client-java6:1.20.0'){
