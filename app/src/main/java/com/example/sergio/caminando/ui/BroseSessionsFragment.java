@@ -31,7 +31,6 @@ import com.example.sergio.caminando.endpoints.utils.ConferenceUtils;
 import com.example.sergio.caminando.endpoints.utils.DecoratedConference;
 import com.example.sergio.caminando.endpoints.utils.Utils;
 import com.example.sergio.caminando.util.AccountUtils;
-import com.example.sergio.caminando.util.ImageLoader;
 
 import java.io.IOException;
 import java.util.List;
@@ -49,9 +48,6 @@ public class BroseSessionsFragment extends Fragment implements
     private RecyclerView mRecyclerView;
     private TextView mEmptyView;
     private View mLoadingView;
-
-    // TODO: Utilizo diferente ImageLoader. Utilizo el mismo de BaseActivty??
-    private ImageLoader mImageloaderCover;
 
     //TODO Implement Collection View. in MyLisAdapter. Trasladate to InventoryGroup
     List<DecoratedConference> conferences = null;
@@ -73,8 +69,6 @@ public class BroseSessionsFragment extends Fragment implements
                 .loadLayoutAnimation(getActivity(), R.anim.list_layout_controller);
         mRecyclerView.setLayoutAnimation(controller);
         //mRecyclerView.setEmptyView(mEmptyView);
-
-        mImageloaderCover = new ImageLoader(getActivity());
     }
 
     @Override
