@@ -204,6 +204,8 @@ public abstract class BaseActivity extends AppCompatActivity implements
             Intent intent = new Intent(this, WelcomeActivity.class);
             startActivity(intent);
             finish();
+        } else {
+            CaminandoSyncAdapter.initializeSyncAdapter(this);
         }
 
         mImageLoader = new ImageLoader(this);
@@ -221,7 +223,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
         mThemedStatusBarColor = getResources().getColor(R.color.theme_primary_dark);
         mNormalStatusBarColor = mThemedStatusBarColor;
 
-        CaminandoSyncAdapter.initializeSyncAdapter(this);
     }
 
     private void trySetupSwipeRefresh() {

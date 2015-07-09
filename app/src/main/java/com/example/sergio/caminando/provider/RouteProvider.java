@@ -130,11 +130,12 @@ public class RouteProvider extends ContentProvider {
 
         switch (match) {
             case ROUTE: {
-                long _id = db.insert(RouteContract.RouteEntry.TABLE_NAME, null, values);
-                if ( _id > 0 )
-                    returnUri = RouteContract.RouteEntry.buildRouteUri(_id);
-                else
-                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                long _id = db.insertWithOnConflict(RouteContract.RouteEntry.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_IGNORE);
+                if (_id == -1){
+                    _id = db.update(RouteContract.RouteEntry.TABLE_NAME, values, RouteContract.RouteEntry._ID + " = ?", new String[]{values.get(RouteContract.RouteEntry._ID).toString()});
+                }
+                returnUri = RouteContract.RouteEntry.buildRouteUri(_id);
+
                 break;
             }
             default:

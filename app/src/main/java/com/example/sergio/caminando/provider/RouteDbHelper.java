@@ -18,7 +18,7 @@ import java.util.ArrayList;
 public class RouteDbHelper extends SQLiteOpenHelper {
 
     // If you change the database schema, you must increment the database version.
-    private static final int DATABASE_VERSION = 101;
+    private static final int DATABASE_VERSION = 102;
 
     public static final String DATABASE_NAME = "route.db";
 
@@ -32,7 +32,7 @@ public class RouteDbHelper extends SQLiteOpenHelper {
         final String SQL_CREATE_ROUTE_TABLE = "CREATE TABLE IF NOT EXISTS " + RouteEntry.TABLE_NAME + " (" +
 
                 //TODO: Add campos registrado
-                RouteEntry._ID + " INTEGER PRIMARY KEY NOT NULL," +
+                RouteEntry._ID + " INTEGER PRIMARY KEY," +
                 RouteEntry.COLUMN_NAME_ROUTE + " TEXT NOT NULL, "  +
                 RouteEntry.COLUMN_DESCRIPTION + " TEXT NOT NULL, " +
                 RouteEntry.COLUMN_TOPICS + " TEXT NOT NULL, " +
