@@ -9,25 +9,34 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
+import android.util.Log;
 
+import com.example.sergio.caminando.BuildConfig;
+import com.example.sergio.caminando.R;
 import com.example.sergio.caminando.provider.RouteContract;
 import com.example.sergio.myapplication.backend.domain.conference.model.Conference;
-import com.example.sergio.caminando.R;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.api.client.util.DateTime;
 
 import java.util.Calendar;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
+import static com.example.sergio.caminando.util.LogUtils.makeLogTag;
 
 /**
  * A general utility class. All methods here are static and no state is maintained.
  */
 public class Utils {
 
-    private static final String LOG_TAG = "Utils";
+    private static final String TAG = makeLogTag(Utils.class);
 
 
     /**
@@ -207,22 +216,69 @@ public class Utils {
                 ).create().show();
     }
 
-    public static ContentValues convertRouteGCStoSQLite (DecoratedConference decoratedConference){
+    public static int addRoutesToSQLite (Context context, List<DecoratedConference> decoratedConferences){
 
-        Conference conference = decoratedConference.getConference();
-        // Create a new map of values, where column names are the keys
-        ContentValues routeValues = new ContentValues();
-        routeValues.put(RouteContract.RouteEntry._ID, conference.getId());
-        routeValues.put(RouteContract.RouteEntry.COLUMN_NAME_ROUTE, conference.getName());
-        routeValues.put(RouteContract.RouteEntry.COLUMN_DESCRIPTION,conference.getDescription() );
-        routeValues.put(RouteContract.RouteEntry.COLUMN_TOPICS, conference.getTopics().toString());
-        routeValues.put(RouteContract.RouteEntry.COLUMN_CITY_NAME_INIT, conference.getCity());
-        routeValues.put(RouteContract.RouteEntry.COLUMN_START_DATE, conference.getStartDate().getValue());
-        routeValues.put(RouteContract.RouteEntry.COLUMN_MAX_ATTENDEES, conference.getMaxAttendees());
-        routeValues.put(RouteContract.RouteEntry.COLUMN_SEATS_AVAILABLE, conference.getSeatsAvailable());
-        routeValues.put(RouteContract.RouteEntry.COLUMN_URL_ROUTE_COVER, conference.getPhotoUrlRouteCover());
-        routeValues.put(RouteContract.RouteEntry.COLUMN_WEBSAFE_KEY, conference.getWebsafeKey());
-        routeValues.put(RouteContract.RouteEntry.COLUMN_ORGANIZER_DISPLAY_NAME, conference.getOrganizerDisplayName());
-        return routeValues;
+        // Insert the new weather information into the database
+        Vector<ContentValues> cVVector = new Vector<>(decoratedConferences.size());
+        ContentValues[] cvArray = new ContentValues[cVVector.size()];
+
+        Iterator<DecoratedConference> decoratedConferenceIterator = decoratedConferences.iterator();
+
+        while (decoratedConferenceIterator.hasNext()){
+            Conference conference = decoratedConferenceIterator.next().getConference();
+            // Create a new map of values, where column names are the keys
+            ContentValues routeValues = new ContentValues();
+            routeValues.put(RouteContract.RouteEntry._ID, conference.getId());
+            routeValues.put(RouteContract.RouteEntry.COLUMN_NAME_ROUTE, conference.getName());
+            routeValues.put(RouteContract.RouteEntry.COLUMN_DESCRIPTION,conference.getDescription() );
+            routeValues.put(RouteContract.RouteEntry.COLUMN_TOPICS, conference.getTopics().toString());
+            routeValues.put(RouteContract.RouteEntry.COLUMN_CITY_NAME_INIT, conference.getCity());
+            routeValues.put(RouteContract.RouteEntry.COLUMN_START_DATE, conference.getStartDate().getValue());
+            routeValues.put(RouteContract.RouteEntry.COLUMN_MAX_ATTENDEES, conference.getMaxAttendees());
+            routeValues.put(RouteContract.RouteEntry.COLUMN_SEATS_AVAILABLE, conference.getSeatsAvailable());
+            routeValues.put(RouteContract.RouteEntry.COLUMN_URL_ROUTE_COVER, conference.getPhotoUrlRouteCover());
+            routeValues.put(RouteContract.RouteEntry.COLUMN_WEBSAFE_KEY, conference.getWebsafeKey());
+            routeValues.put(RouteContract.RouteEntry.COLUMN_ORGANIZER_DISPLAY_NAME, conference.getOrganizerDisplayName());
+
+            cVVector.add(routeValues);
+        }
+
+        /** Insert weather data into database */
+        return insertWeatherIntoDatabase(context, cVVector);
+    }
+
+    public static int insertWeatherIntoDatabase(Context context, Vector<ContentValues> CVVector) {
+        int rowsInserted = 0;
+        if (CVVector.size() > 0) {
+            ContentValues[] contentValuesArray = new ContentValues[CVVector.size()];
+            CVVector.toArray(contentValuesArray);
+
+            rowsInserted = context.getContentResolver().bulkInsert(RouteContract.RouteEntry.CONTENT_URI, contentValuesArray);
+
+            // Use a DEBUG variable to gate whether or not you do this, so you can easily
+            // turn it on and off, and so that it's easy to see what you can rip out if
+            // you ever want to remove it.
+            if (BuildConfig.DEBUG) {
+                Cursor weatherCursor = context.getContentResolver().query(
+                        RouteContract.RouteEntry.CONTENT_URI,
+                        null,
+                        null,
+                        null,
+                        null
+                );
+
+                if (weatherCursor.moveToFirst()) {
+                    ContentValues resultValues = new ContentValues();
+                    DatabaseUtils.cursorRowToContentValues(weatherCursor, resultValues);
+                    Log.v(TAG, "Query succeeded! **********");
+                    for (String key : resultValues.keySet()) {
+                        Log.v(TAG, key + ": " + resultValues.getAsString(key));
+                    }
+                } else {
+                    Log.v(TAG, "Query failed! :( **********");
+                }
+            }
+        }
+        return rowsInserted;
     }
 }

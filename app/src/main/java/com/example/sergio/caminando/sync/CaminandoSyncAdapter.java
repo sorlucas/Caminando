@@ -5,11 +5,9 @@ import android.accounts.AccountManager;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.SyncRequest;
 import android.content.SyncResult;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -55,13 +53,12 @@ public class CaminandoSyncAdapter extends AbstractThreadedSyncAdapter {
 
         ConferenceLoader conferenceLoader = new ConferenceLoader(getContext());
         List<DecoratedConference> decoratedConferences = conferenceLoader.loadInBackground();
-        // TODO: FIX to implement all conferences
-        DecoratedConference decoratedConference = decoratedConferences.get(0);
 
-        //Create route values today an insert in database
-        ContentValues routeValuesSQLite = Utils.convertRouteGCStoSQLite(decoratedConference);
-        Uri uriInsertToday = getContext().getContentResolver().insert(RouteContract.RouteEntry.CONTENT_URI, routeValuesSQLite);
-        Log.d(LOG_TAG, "Sync Complete. " + uriInsertToday.getLastPathSegment() + " Inserted");
+        if (decoratedConferences.size() > 0){
+            //Create route values today an insert in database
+            int rowsInserted = Utils.addRoutesToSQLite(getContext(), decoratedConferences);
+            Log.d(LOG_TAG, "Sync Complete. " + rowsInserted + " new Routes Inserted");
+        }
 
         // TODO: Implement
         //notifyRoute();

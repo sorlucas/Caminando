@@ -146,6 +146,34 @@ public class RouteProvider extends ContentProvider {
     }
 
     @Override
+    public int bulkInsert(Uri uri, ContentValues[] values) {
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        final int match = sUriMatcher.match(uri);
+        switch (match) {
+            case ROUTE:
+                db.beginTransaction();
+                int returnCount = 0;
+                try {
+                    for (ContentValues value : values) {
+                        long _id = db.insertWithOnConflict(RouteContract.RouteEntry.TABLE_NAME, null, value, SQLiteDatabase.CONFLICT_IGNORE);
+                        if (_id != -1){
+                            returnCount++;
+
+                        } else {
+                            db.update(RouteContract.RouteEntry.TABLE_NAME, value, RouteContract.RouteEntry._ID + " = ?", new String[]{value.get(RouteContract.RouteEntry._ID).toString()});
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+                getContext().getContentResolver().notifyChange(uri, null);
+                return returnCount;
+            default:
+                return super.bulkInsert(uri, values);
+        }
+    }
+    @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         final int match = sUriMatcher.match(uri);
