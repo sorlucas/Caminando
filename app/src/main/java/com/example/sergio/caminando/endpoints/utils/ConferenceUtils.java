@@ -8,6 +8,7 @@ import com.example.sergio.caminando.Config;
 import com.example.sergio.myapplication.backend.domain.conference.model.Conference;
 import com.example.sergio.myapplication.backend.domain.conference.model.ConferenceCollection;
 import com.example.sergio.myapplication.backend.domain.conference.model.ConferenceForm;
+import com.example.sergio.myapplication.backend.domain.conference.model.ConferenceQueryForm;
 import com.example.sergio.myapplication.backend.domain.conference.model.Profile;
 import com.example.sergio.myapplication.backend.domain.conference.model.WrappedBoolean;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
@@ -38,7 +39,7 @@ public class ConferenceUtils {
      * @throws ConferenceException
      * @see <code>getProfile</code>
      */
-    public static List<DecoratedConference> getConferences()
+    public static List<DecoratedConference> getConferences(ConferenceQueryForm conferenceQueryForm)
             throws ConferenceException, IOException {
         if (null == sApiServiceHandler) {
             Log.e(TAG, "getConferences(): no service handler was built");
@@ -46,7 +47,7 @@ public class ConferenceUtils {
         }
 
         com.example.sergio.myapplication.backend.domain.conference.Conference.QueryConferences
-                queryConferences = sApiServiceHandler.queryConferences(null);
+                queryConferences = sApiServiceHandler.queryConferences(conferenceQueryForm);
         ConferenceCollection conferenceCollection = queryConferences.execute();
 
         if (conferenceCollection != null && conferenceCollection.getItems() != null) {

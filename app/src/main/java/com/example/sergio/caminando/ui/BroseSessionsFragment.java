@@ -134,14 +134,14 @@ public class BroseSessionsFragment extends Fragment implements
                         boolean success = ConferenceUtils
                                 .unregisterFromConference(mDecoratedConference.getConference());
                         if (success) {
-                            mDecoratedConferences = ConferenceUtils.getConferences();
+                            mDecoratedConferences = ConferenceUtils.getConferences(null);
                         }
                         return success;
                     } else {
                         boolean success = ConferenceUtils.registerForConference(
                                 mDecoratedConference.getConference());
                         if (success) {
-                            mDecoratedConferences = ConferenceUtils.getConferences();
+                            mDecoratedConferences = ConferenceUtils.getConferences(null);
                         }
                         return success;
                     }
