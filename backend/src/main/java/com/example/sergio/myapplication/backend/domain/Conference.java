@@ -14,7 +14,6 @@ import com.googlecode.objectify.annotation.Parent;
 import com.googlecode.objectify.condition.IfNotDefault;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import static com.example.sergio.myapplication.backend.service.OfyService.ofy;
@@ -76,12 +75,8 @@ public class Conference {
     /**
      * The starting date of this conference.
      */
-    private Date startDate;
-
-    /**
-     * The ending date of this conference.
-     */
-    private Date endDate;
+    @Index
+    private Long startDate;
 
     /**
      * Indicating the starting month derived from startDate.
@@ -180,16 +175,8 @@ public class Conference {
      * Returns a defensive copy of startDate if not null.
      * @return a defensive copy of startDate if not null.
      */
-    public Date getStartDate() {
-        return startDate == null ? null : new Date(startDate.getTime());
-    }
-
-    /**
-     * Returns a defensive copy of endDate if not null.
-     * @return a defensive copy of endDate if not null.
-     */
-    public Date getEndDate() {
-        return endDate == null ? null : new Date(endDate.getTime());
+    public Long getStartDate() {
+        return startDate == null ? null : startDate;
     }
 
     public int getMonth() {
@@ -221,14 +208,13 @@ public class Conference {
         this.topics = topics == null || topics.isEmpty() ? DEFAULT_TOPICS : topics;
         this.city = conferenceForm.getCity() == null ? DEFAULT_CITY : conferenceForm.getCity();
 
-        Date startDate = conferenceForm.getStartDate();
-        this.startDate = startDate == null ? null : new Date(startDate.getTime());
-        Date endDate = conferenceForm.getEndDate();
-        this.endDate = endDate == null ? null : new Date(endDate.getTime());
+        Long startDate = conferenceForm.getStartDate();
+        this.startDate = startDate == null ? null : startDate;
+
         if (this.startDate != null) {
             // Getting the starting month for a composite query.
             Calendar calendar = Calendar.getInstance();
-            calendar.setTime(this.startDate);
+            calendar.setTimeInMillis(this.startDate);
             // Calendar.MONTH is zero based, so adding 1.
             this.month = calendar.get(calendar.MONTH) + 1;
         }
@@ -277,9 +263,6 @@ public class Conference {
         }
         if (startDate != null) {
             stringBuilder.append("StartDate: ").append(startDate.toString()).append("\n");
-        }
-        if (endDate != null) {
-            stringBuilder.append("EndDate: ").append(endDate.toString()).append("\n");
         }
         stringBuilder.append("Max Attendees: ").append(maxAttendees).append("\n");
         return stringBuilder.toString();

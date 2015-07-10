@@ -24,7 +24,7 @@ public class ConferenceLoader extends AsyncTaskLoader<List<DecoratedConference>>
         super(context);
     }
 
-    public void setmConferenceQueryForm (ConferenceQueryForm conferenceQueryForm){
+    public void setConferenceQueryForm (ConferenceQueryForm conferenceQueryForm){
         this.mConferenceQueryForm = conferenceQueryForm;
     }
 

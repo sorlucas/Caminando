@@ -23,7 +23,7 @@ public class ConferenceQueryForm {
      * Enum representing a field type.
      */
     public enum FieldType {
-        STRING, INTEGER
+        STRING, INTEGER, DATELONG
     }
 
     /**
@@ -33,6 +33,7 @@ public class ConferenceQueryForm {
         CITY("city", FieldType.STRING),
         TOPIC("topics", FieldType.STRING),
         MONTH("month", FieldType.INTEGER),
+        STARTDATE("startDate", FieldType.DATELONG),
         MAX_ATTENDEES("maxAttendees", FieldType.INTEGER);
 
         private String fieldName;
@@ -190,6 +191,9 @@ public class ConferenceQueryForm {
             } else if (filter.field.fieldType == FieldType.INTEGER) {
                 query = query.filter(String.format("%s %s", filter.field.getFieldName(),
                         filter.operator.getQueryOperator()), Integer.parseInt(filter.value));
+            } else if (filter.field.fieldType == FieldType.DATELONG) {
+                query = query.filter(String.format("%s %s", filter.field.getFieldName(),
+                        filter.operator.getQueryOperator()), Long.parseLong(filter.value));
             }
         }
         LOG.info(query.toString());

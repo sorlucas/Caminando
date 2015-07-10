@@ -140,7 +140,7 @@
                 android:id="@+id/imageButtonStartDate"
                 android:src="@android:drawable/ic_menu_my_calendar"
                 android:layout_alignBottom="@+id/inputLayoutStartDate"
-                android:layout_toEndOf="@+id/inputLayoutEndDate" />
+                android:layout_toStartOf="@+id/imageButtonStartTime" />
             <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -150,40 +150,11 @@
                 android:layout_alignParentEnd="true" />
 
             <android.support.design.widget.TextInputLayout
-                android:id="@+id/inputLayoutEndDate"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:layout_below="@id/inputLayoutStartDate"
-                android:layout_toStartOf="@+id/imageButtoEndDate">
-                <android.support.v7.widget.AppCompatEditText
-                    android:id="@+id/end_date_route_editext"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/create_route_end_date"
-                    android:inputType="date"/>
-            </android.support.design.widget.TextInputLayout>
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/imageButtoEndDate"
-                android:src="@android:drawable/ic_menu_my_calendar"
-                android:layout_alignTop="@+id/imageButtonEndTime"
-                android:layout_toStartOf="@+id/imageButtonEndTime" />
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/imageButtonEndTime"
-                android:src="@drawable/ic_alarm_holo_dark"
-                android:layout_below="@+id/inputLayoutStartDate"
-                android:layout_alignEnd="@+id/inputLayoutMaxAttendees" />
-
-            <android.support.design.widget.TextInputLayout
                 android:id="@+id/inputLayoutMaxAttendees"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:layout_below="@id/inputLayoutEndDate">
+                android:layout_below="@+id/inputLayoutStartDate"
+                android:layout_alignParentStart="true">
                 <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/max_attendees_editext"
                     android:layout_width="match_parent"

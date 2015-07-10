@@ -2,7 +2,6 @@ package com.example.sergio.myapplication.backend.form;
 
 import com.google.common.collect.ImmutableList;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -32,12 +31,7 @@ public class ConferenceForm {
     /**
      * The start date of the conference.
      */
-    private Date startDate;
-
-    /**
-     * The end date of the conference.
-     */
-    private Date endDate;
+    private Long startDate;
 
     /**
      * The Url Route Cover
@@ -57,17 +51,15 @@ public class ConferenceForm {
      * @param topics
      * @param city
      * @param startDate
-     * @param endDate
      * @param maxAttendees
      */
     public ConferenceForm(String name, String description, List<String> topics, String city,
-                          Date startDate, Date endDate, int maxAttendees) {
+                          Long startDate, int maxAttendees) {
         this.name = name;
         this.description = description;
         this.topics = topics == null ? null : ImmutableList.copyOf(topics);
         this.city = city;
-        this.startDate = startDate == null ? null : new Date(startDate.getTime());
-        this.endDate = endDate == null ? null : new Date(endDate.getTime());
+        this.startDate = startDate == null ? null : startDate;
         this.maxAttendees = maxAttendees;
     }
 
@@ -87,12 +79,8 @@ public class ConferenceForm {
         return city;
     }
 
-    public Date getStartDate() {
+    public Long getStartDate() {
         return startDate;
-    }
-
-    public Date getEndDate() {
-        return endDate;
     }
 
     public String getUrlPhotoCover() {

@@ -9,14 +9,10 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
-import android.util.Log;
 
-import com.example.sergio.caminando.BuildConfig;
 import com.example.sergio.caminando.R;
 import com.example.sergio.caminando.provider.RouteContract;
 import com.example.sergio.myapplication.backend.domain.conference.model.Conference;
@@ -111,13 +107,22 @@ public class Utils {
      * @return date in String
      */
     public static String getConferenceDate(Context context, Conference conference) {
+
         StringBuffer sb = new StringBuffer();
+        if(null != conference.getStartDate()) {
+            sb.append(getFormattedDate(context, conference.getStartDate()));
+        }
+
+        // TODO. TRUCO PARA CONCATENAR DATOS PARA MOSTRAR POR PANTALLA
+        /* original
+
         if (null != conference.getStartDate() && null != conference.getEndDate()) {
             sb.append(getFormattedDateRange(context, conference.getStartDate(),
                     conference.getEndDate()));
         } else if (null != conference.getStartDate()) {
             sb.append(getFormattedDate(context, conference.getStartDate()));
         }
+        */
         return sb.toString();
     }
 
@@ -125,12 +130,12 @@ public class Utils {
      * Returns a user-friendly localized date.
      *
      * @param context context of running application
-     * @param dateTime date in string
+     * @param dateLong date in string
      * @return
      */
-    public static String getFormattedDate(Context context, DateTime dateTime) {
+    public static String getFormattedDate(Context context, Long dateLong) {
         Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(dateTime.getValue());
+        cal.setTimeInMillis(dateLong);
         return DateUtils
                 .formatDateTime(context, cal.getTimeInMillis(),
                         DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_ABBREV_MONTH);
@@ -233,7 +238,7 @@ public class Utils {
             routeValues.put(RouteContract.RouteEntry.COLUMN_DESCRIPTION,conference.getDescription() );
             routeValues.put(RouteContract.RouteEntry.COLUMN_TOPICS, conference.getTopics().toString());
             routeValues.put(RouteContract.RouteEntry.COLUMN_CITY_NAME_INIT, conference.getCity());
-            routeValues.put(RouteContract.RouteEntry.COLUMN_START_DATE, conference.getStartDate().getValue());
+            routeValues.put(RouteContract.RouteEntry.COLUMN_START_DATE, conference.getStartDate());
             routeValues.put(RouteContract.RouteEntry.COLUMN_MAX_ATTENDEES, conference.getMaxAttendees());
             routeValues.put(RouteContract.RouteEntry.COLUMN_SEATS_AVAILABLE, conference.getSeatsAvailable());
             routeValues.put(RouteContract.RouteEntry.COLUMN_URL_ROUTE_COVER, conference.getPhotoUrlRouteCover());
@@ -255,29 +260,7 @@ public class Utils {
 
             rowsInserted = context.getContentResolver().bulkInsert(RouteContract.RouteEntry.CONTENT_URI, contentValuesArray);
 
-            // Use a DEBUG variable to gate whether or not you do this, so you can easily
-            // turn it on and off, and so that it's easy to see what you can rip out if
-            // you ever want to remove it.
-            if (BuildConfig.DEBUG) {
-                Cursor weatherCursor = context.getContentResolver().query(
-                        RouteContract.RouteEntry.CONTENT_URI,
-                        null,
-                        null,
-                        null,
-                        null
-                );
 
-                if (weatherCursor.moveToFirst()) {
-                    ContentValues resultValues = new ContentValues();
-                    DatabaseUtils.cursorRowToContentValues(weatherCursor, resultValues);
-                    Log.v(TAG, "Query succeeded! **********");
-                    for (String key : resultValues.keySet()) {
-                        Log.v(TAG, key + ": " + resultValues.getAsString(key));
-                    }
-                } else {
-                    Log.v(TAG, "Query failed! :( **********");
-                }
-            }
         }
         return rowsInserted;
     }

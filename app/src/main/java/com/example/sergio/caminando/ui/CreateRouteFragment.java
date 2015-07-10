@@ -31,7 +31,6 @@ import com.example.sergio.caminando.util.AccountUtils;
 import com.example.sergio.myapplication.backend.domain.conference.model.Conference;
 import com.example.sergio.myapplication.backend.domain.conference.model.ConferenceForm;
 import com.fourmob.datetimepicker.date.DatePickerDialog;
-import com.google.api.client.util.DateTime;
 import com.kbeanie.imagechooser.api.ChooserType;
 import com.kbeanie.imagechooser.api.ChosenImage;
 import com.kbeanie.imagechooser.api.ImageChooserListener;
@@ -60,9 +59,7 @@ public class CreateRouteFragment extends Fragment implements
     private static final String TAG = makeLogTag("CreateRouteFragment");
 
     public static final String DATEPICKER_TAG_START = "datepickerstart";
-    public static final String DATEPICKER_TAG_END = "datepickerend";
     public static final String TIMEPICKER_TAG_START = "timepickerstart";
-    public static final String TIMEPICKER_TAG_END = "timepickerend";
 
     //Declarate UI Rerferences
 
@@ -73,14 +70,10 @@ public class CreateRouteFragment extends Fragment implements
     private EditText mStartDate;
     private ImageButton mImageButtonStartDate;
     private ImageButton mImageButtonStartTime;
-    private EditText mEndDate;
-    private ImageButton mImageButtonEndDate;
-    private ImageButton mImageButtonEndTime;
     private EditText mMaxAttendees;
 
     private SimpleDateFormat dateFormatter;
-    private DateTime startDate;
-    private DateTime endDate;
+    private Long startDate;
 
     //Delarate Views to catch photo route
     private ImageView imageViewThumbnail;
@@ -132,10 +125,6 @@ public class CreateRouteFragment extends Fragment implements
         mImageButtonStartDate = (ImageButton) root.findViewById(R.id.imageButtonStartDate);
         mImageButtonStartTime = (ImageButton) root.findViewById(R.id.imageButtonStartTime);
 
-        mEndDate = (EditText) root.findViewById(R.id.end_date_route_editext);
-        mImageButtonEndDate = (ImageButton) root.findViewById(R.id.imageButtoEndDate);
-        mImageButtonEndTime = (ImageButton) root.findViewById(R.id.imageButtonEndTime);
-
         mMaxAttendees = (EditText) root.findViewById(R.id.max_attendees_editext);
 
         return root;
@@ -147,21 +136,13 @@ public class CreateRouteFragment extends Fragment implements
 
         if (savedInstanceState != null) {
             DatePickerDialog dpdS = (DatePickerDialog) getFragmentManager().findFragmentByTag(DATEPICKER_TAG_START);
-            DatePickerDialog dpdE = (DatePickerDialog) getFragmentManager().findFragmentByTag(DATEPICKER_TAG_END);
             TimePickerDialog tpdS = (TimePickerDialog) getFragmentManager().findFragmentByTag(TIMEPICKER_TAG_START);
-            TimePickerDialog tpdE = (TimePickerDialog) getFragmentManager().findFragmentByTag(TIMEPICKER_TAG_END);
 
             if (dpdS != null) {
                 dpdS.setOnDateSetListener(this);
             }
-            if (dpdE != null) {
-                dpdE.setOnDateSetListener(this);
-            }
             if (tpdS != null) {
                 tpdS.setOnTimeSetListener(this);
-            }
-            if (tpdE != null) {
-                tpdE.setOnTimeSetListener(this);
             }
         }
         dateFormatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.US);
@@ -197,26 +178,6 @@ public class CreateRouteFragment extends Fragment implements
             }
         });
 
-
-        mImageButtonEndDate.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                datePickerDialog.setVibrate(true); //Add vibrate
-                datePickerDialog.setYearRange(1985, 2028);
-                datePickerDialog.setCloseOnSingleTapDay(false);
-                datePickerDialog.show(getFragmentManager(), DATEPICKER_TAG_END);
-            }
-        });
-
-        mImageButtonEndTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                timePickerDialog.setVibrate(true);
-                timePickerDialog.setCloseOnSingleTapMinute(false);
-                timePickerDialog.show(getFragmentManager(), TIMEPICKER_TAG_END);
-            }
-        });
     }
 
     @Override
@@ -228,15 +189,8 @@ public class CreateRouteFragment extends Fragment implements
                 Toast.makeText(getActivity(), "Start date:" + year + "-" + month + "-" + day, Toast.LENGTH_LONG).show();
                 newDate.set(year, month, day);
                 mStartDate.setText(dateFormatter.format(newDate.getTime()));
-                startDate = new DateTime(newDate.getTime());
+                startDate = newDate.getTime().getTime();
                 break;
-            case DATEPICKER_TAG_END:
-                Toast.makeText(getActivity(), "End date:" + year + "-" + month + "-" + day, Toast.LENGTH_LONG).show();
-                newDate.set(year, month, day);
-                mEndDate.setText(dateFormatter.format(newDate.getTime()));
-                endDate = new DateTime(newDate.getTime());
-                break;
-
         }
     }
 
@@ -299,7 +253,6 @@ public class CreateRouteFragment extends Fragment implements
         conferenceForm.setTopics(listTopics);
         conferenceForm.setCity(mCityName.getText().toString());
         conferenceForm.setStartDate(startDate);
-        conferenceForm.setEndDate(endDate);
         conferenceForm.setUrlPhotoCover(mUrlPhotoLink);
         conferenceForm.setMaxAttendees(Integer.parseInt(mMaxAttendees.getText().toString()));
         return conferenceForm;
