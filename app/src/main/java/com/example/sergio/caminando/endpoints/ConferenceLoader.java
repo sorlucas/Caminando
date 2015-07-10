@@ -9,8 +9,10 @@ import com.example.sergio.caminando.endpoints.utils.ConferenceUtils;
 import com.example.sergio.caminando.endpoints.utils.DecoratedConference;
 import com.example.sergio.caminando.endpoints.utils.Utils;
 import com.example.sergio.myapplication.backend.domain.conference.model.ConferenceQueryForm;
+import com.example.sergio.myapplication.backend.domain.conference.model.Filter;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ConferenceLoader extends AsyncTaskLoader<List<DecoratedConference>> {
@@ -24,8 +26,13 @@ public class ConferenceLoader extends AsyncTaskLoader<List<DecoratedConference>>
         super(context);
     }
 
-    public void setConferenceQueryForm (ConferenceQueryForm conferenceQueryForm){
-        this.mConferenceQueryForm = conferenceQueryForm;
+    public void setFiltersQueryForm (String field, String operator, String value){
+        mConferenceQueryForm = new ConferenceQueryForm();
+        List<Filter> filters = new ArrayList<>();
+        Filter filter = new Filter();
+        filter.setField(field).setOperator(operator).setValue(value);
+        filters.add(filter);
+        mConferenceQueryForm.setFilters(filters);
     }
 
     @Override

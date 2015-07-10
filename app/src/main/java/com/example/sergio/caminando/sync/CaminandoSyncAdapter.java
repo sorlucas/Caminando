@@ -17,10 +17,7 @@ import com.example.sergio.caminando.endpoints.ConferenceLoader;
 import com.example.sergio.caminando.endpoints.utils.DecoratedConference;
 import com.example.sergio.caminando.endpoints.utils.Utils;
 import com.example.sergio.caminando.provider.RouteContract;
-import com.example.sergio.myapplication.backend.domain.conference.model.ConferenceQueryForm;
-import com.example.sergio.myapplication.backend.domain.conference.model.Filter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class CaminandoSyncAdapter extends AbstractThreadedSyncAdapter {
@@ -55,17 +52,9 @@ public class CaminandoSyncAdapter extends AbstractThreadedSyncAdapter {
         Log.d(LOG_TAG, "Starting sync");
 
         ConferenceLoader conferenceLoader = new ConferenceLoader(getContext());
-
-        // TODO: FIX IMPLEMENTATION conferenceQueryForm
-        ConferenceQueryForm conferenceQueryForm = new ConferenceQueryForm();
-        List<Filter> filters = new ArrayList<>();
-        Filter filter = new Filter();
-        filter.setField("STARTDATE").setOperator("GT").setValue(String.valueOf(System.currentTimeMillis()));
-        filters.add(filter);
-        conferenceQueryForm.setFilters(filters);
-        conferenceLoader.setConferenceQueryForm(conferenceQueryForm);
-
+        conferenceLoader.setFiltersQueryForm("STARTDATE", "GT",String.valueOf(System.currentTimeMillis()));
         List<DecoratedConference> decoratedConferences = conferenceLoader.loadInBackground();
+
         if (decoratedConferences.size() > 0){
             //Create route values today an insert in database
             int rowsInserted = Utils.addRoutesToSQLite(getContext(), decoratedConferences);
