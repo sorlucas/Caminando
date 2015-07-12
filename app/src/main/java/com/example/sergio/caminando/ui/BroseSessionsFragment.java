@@ -1,15 +1,15 @@
 package com.example.sergio.caminando.ui;
 
-import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewCompat;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -18,18 +18,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
-import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
 import com.example.sergio.caminando.R;
-import com.example.sergio.caminando.endpoints.ConferenceLoader;
 import com.example.sergio.caminando.endpoints.utils.ConferenceException;
 import com.example.sergio.caminando.endpoints.utils.ConferenceUtils;
 import com.example.sergio.caminando.endpoints.utils.DecoratedConference;
 import com.example.sergio.caminando.endpoints.utils.Utils;
+import com.example.sergio.caminando.provider.RouteContract;
+import com.example.sergio.caminando.sync.CaminandoSyncAdapter;
 import com.example.sergio.caminando.util.AccountUtils;
 
 import java.io.IOException;
@@ -39,20 +37,53 @@ import java.util.List;
  * Created by sergio on 25/05/15.
  */
 public class BroseSessionsFragment extends Fragment implements
-        LoaderManager.LoaderCallbacks<List<DecoratedConference>>  {
+        LoaderManager.LoaderCallbacks<Cursor>  {
 
     private static final String TAG = "RoutesFragment";
 
-    private ConferenceDataAdapter mAdapter;
+    private ForecastAdapter mAdapter;
 
     private RecyclerView mRecyclerView;
     private TextView mEmptyView;
     private View mLoadingView;
 
+    private int mPosition = RecyclerView.INVALID_TYPE;
+    private static final String SELECTED_KEY = "selected_position";
+    private boolean mUseTodayLayout;
+
     //TODO Implement Collection View. in MyLisAdapter. Trasladate to InventoryGroup
     List<DecoratedConference> conferences = null;
     private int mContentTopClearance = 0;
 
+    private static final int FORECAST_LOADER = 0;
+    // For the forecast view we're showing only a small subset of the stored data. Specify the columns we need.
+    private static final String[] FORECAST_COLUMNS = {
+            RouteContract.RouteEntry.TABLE_NAME + "." + RouteContract.RouteEntry._ID,
+            RouteContract.RouteEntry.COLUMN_NAME_ROUTE,
+            RouteContract.RouteEntry.COLUMN_DESCRIPTION,
+            RouteContract.RouteEntry.COLUMN_TOPICS,
+            RouteContract.RouteEntry.COLUMN_CITY_NAME_INIT,
+            RouteContract.RouteEntry.COLUMN_START_DATE,
+            RouteContract.RouteEntry.COLUMN_MAX_ATTENDEES,
+            RouteContract.RouteEntry.COLUMN_URL_ROUTE_COVER,
+            RouteContract.RouteEntry.COLUMN_SEATS_AVAILABLE,
+            RouteContract.RouteEntry.COLUMN_WEBSAFE_KEY,
+            RouteContract.RouteEntry.COLUMN_ORGANIZER_DISPLAY_NAME,
+    };
+
+    // These indices are tied to FORECAST_COLUMNS.  If FORECAST_COLUMNS changes, these
+    // must change.
+    static final int COL_ROUTE_ID = 0;
+    static final int COL_NAME_ROUTE = 1;
+    static final int COL_DESCRIPTION = 2;
+    static final int COL_TOPICS = 3;
+    static final int COL_CITY_NAME_INIT = 4;
+    static final int COL_START_DATE = 5;
+    static final int COL_MAX_ATTENDEES = 6;
+    static final int COL_URL_ROUTE_COVER = 7;
+    static final int COL_SEATS_AVAILABLE = 8;
+    static final int COL_WEBSAFE_KEY = 9;
+    static final int COL_ORGANIZER_DISPLAY_NAME = 10;
 
     public boolean canCollectionViewScrollUp() {
         return ViewCompat.canScrollVertically(mRecyclerView, -1);
@@ -61,6 +92,10 @@ public class BroseSessionsFragment extends Fragment implements
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        // Authorization check successful, get conferences.
+        ConferenceUtils.build(getActivity(), AccountUtils.getActiveAccountName(getActivity()));
+        getLoaderManager().initLoader(FORECAST_LOADER, null, this);
 
         LinearLayoutManager llm = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(llm);
@@ -87,28 +122,53 @@ public class BroseSessionsFragment extends Fragment implements
     }
 
     @Override
-    public Loader<List<DecoratedConference>> onCreateLoader(int id, Bundle args) {
-        return new ConferenceLoader(getActivity());
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        // This is called when a new Loader needs to be created.  This
+        // fragment only uses one loader, so we don't care about checking the id.
+
+        // To only show current and future dates, filter the query to return weather only for
+        // dates after or including today.
+
+        // Sort order:  Ascending, by date.
+        String sortOrder = RouteContract.RouteEntry.COLUMN_START_DATE + " ASC";
+
+        Uri weatherForLocationUri = RouteContract.RouteEntry.buildRouteUriWithStartDate(System.currentTimeMillis());
+
+        return new CursorLoader(getActivity(),
+                weatherForLocationUri,
+                FORECAST_COLUMNS,
+                null,
+                null,
+                sortOrder);
     }
 
     @Override
-    public void onLoadFinished(Loader<List<DecoratedConference>> loader, List<DecoratedConference> data) {
+    public void onLoadFinished(Loader<Cursor> loader, Cursor dataCursor) {
 
-        //TODO: DELETE WHEN COLLECTIONVIEW
-        this.conferences = data;
-        ConferenceLoader conferenceLoader = (ConferenceLoader) loader;
-        if (conferenceLoader.getException() != null) {
-            Utils.displayNetworkErrorMessage(getActivity());
-            return;
-        }
-        mAdapter = new ConferenceDataAdapter(getActivity(),data);
+        mAdapter = new ForecastAdapter(getActivity(),dataCursor);
         mRecyclerView.setAdapter(mAdapter);
+        if (mPosition != ListView.INVALID_POSITION) {
+            // If we don't need to restart the loader, and there's a desired position to restore
+            // to, do so now.
+            mRecyclerView.smoothScrollToPosition(mPosition);
+        }
 
     }
 
     @Override
-    public void onLoaderReset(Loader<List<DecoratedConference>> loader) {
-        mAdapter = new ConferenceDataAdapter(getActivity(),null);
+    public void onSaveInstanceState(Bundle outState) {
+        // When tablets rotate, the currently selected list item needs to be saved.
+        // When no item is selected, mPosition will be set to Listview.INVALID_POSITION,
+        // so check for that before storing.
+        if (mPosition != RecyclerView.INVALID_TYPE) {
+            outState.putInt(SELECTED_KEY, mPosition);
+        }
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mAdapter.swapCursor(null);
     }
 
 
@@ -158,7 +218,7 @@ public class BroseSessionsFragment extends Fragment implements
         protected void onPostExecute(Boolean result) {
             if (null != result && result) {
                 // success
-                reload(mDecoratedConferences);
+                //reload(mDecoratedConferences);
             } else {
                 // failure
                 Log.e(TAG, "Failed to perform registration update", mException);
@@ -183,109 +243,22 @@ public class BroseSessionsFragment extends Fragment implements
     }
 
     public void reload() {
+        CaminandoSyncAdapter.syncImmediately(getActivity());
         getLoaderManager().restartLoader(0, null, this).startLoading();
     }
 
+    /*
     public void reload(List<DecoratedConference> conferences) {
         mAdapter = new ConferenceDataAdapter(getActivity(),conferences);
         mAdapter.notifyDataSetChanged();
     }
+    */
 
-
-
-    public static class ConferenceViewHolder extends RecyclerView.ViewHolder
-            implements View.OnClickListener {
-
-        CardView cardView;
-        ImageView photoRouteCover;
-        TextView titleView;
-        TextView descriptionView;
-        TextView cityAndDateView;
-        ImageView registerView;
-        BroseSessionsFragment.ItemClickListener mItemClickListener;
-
-        ConferenceViewHolder(View itemView, BroseSessionsFragment.ItemClickListener itemClickListener) {
-            super(itemView);
-            cardView = (CardView)itemView.findViewById(R.id.cardView);
-            photoRouteCover = (ImageView) cardView.findViewById(R.id.imageRouteCover);
-            titleView = (TextView)cardView.findViewById(R.id.textView1);
-            descriptionView = (TextView)cardView.findViewById(R.id.textView2);
-            cityAndDateView = (TextView)cardView.findViewById(R.id.textView3);
-            registerView = (ImageView)cardView.findViewById(R.id.imageView);
-            mItemClickListener = itemClickListener;
-            itemView.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View v) {
-            mItemClickListener.onItemClick(v, getAdapterPosition());
-        }
-    }
-
-    private class ConferenceDataAdapter extends RecyclerView.Adapter<ConferenceViewHolder>
-            implements ItemClickListener{
-
-        public List<DecoratedConference> conferences;
-        private Context mContext;
-
-        public ConferenceDataAdapter(Context context, List<DecoratedConference> attractions) {
-            super();
-            mContext = context;
-            conferences = attractions;
-        }
-
-        @Override
-        public ConferenceViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            LayoutInflater inflater = LayoutInflater.from(mContext);
-            View view = inflater.inflate(R.layout.conference_row, parent, false);
-            return new ConferenceViewHolder(view, this);
-        }
-
-        @Override
-        public void onBindViewHolder(ConferenceViewHolder conferenceViewHolder, int i) {
-
-            String urlPath = conferences.get(i).getConference().getPhotoUrlRouteCover();
-            //mImageloaderCover.loadImage("",conferenceViewHolder.photoRouteCover);
-            //TODO: Change Glide to ImageLoader
-            final ImageView mImageView = conferenceViewHolder.photoRouteCover;
-            Glide.with(getActivity())
-                    .load(urlPath)
-                    .asBitmap()
-                    .into(new SimpleTarget<Bitmap>(100,100) {
-                        @Override
-                        public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                            mImageView.setImageBitmap(resource);
-                        }
-                    });
-
-            conferenceViewHolder.titleView.setText(conferences.get(i).getConference().getName());
-            conferenceViewHolder.descriptionView.setText(conferences.get(i).getConference().getDescription());
-            conferenceViewHolder.cityAndDateView.setText(conferences.get(i).getConference().getCity() + ", " +
-                    Utils.getConferenceDate(mContext, conferences.get(i).getConference()));
-            conferenceViewHolder.registerView.setVisibility(conferences.get(i).isRegistered() ? View.VISIBLE : View.GONE);
-
-        }
-
-        @Override
-        public int getItemCount() {
-            return conferences.size();
-        }
-
-        @Override
-        public void onItemClick(View view, int position) {
-            View heroView = view.findViewById(android.R.id.icon);
-            // TODO: ADD Detail Activity
-            /*
-            DetailActivity.launch(
-                    getActivity(), mAdapter.mAttractionList.get(position).name, heroView);
-            */
-        }
-    }
 
     public interface ItemClickListener {
         void onItemClick(View view, int position);
     }
-
+    /*
     private void notifyAdapterDataSetChanged() {
         // We have to set up a new adapter (as opposed to just calling notifyDataSetChanged()
         // because we might need MORE view types than before, and ListView isn't prepared to
@@ -296,6 +269,7 @@ public class BroseSessionsFragment extends Fragment implements
         }
 
     }
+    */
     public void setContentTopClearance(int topClearance) {
 
         if(mContentTopClearance != topClearance){
@@ -305,7 +279,7 @@ public class BroseSessionsFragment extends Fragment implements
                     mContentTopClearance,
                     mRecyclerView.getPaddingRight(),
                     mRecyclerView.getPaddingBottom());
-            notifyAdapterDataSetChanged();
+            //TODO: notifyAdapterDataSetChanged();
         }
 
     }

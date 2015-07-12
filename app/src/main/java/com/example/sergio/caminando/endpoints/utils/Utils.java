@@ -80,7 +80,7 @@ public class Utils {
         }
 
         if (null != conference.getStartDate()) {
-            sb.append("\n" + getConferenceDate(context, conference));
+            sb.append("\n" + getConferenceDate(context, conference.getStartDate()));
         }
 
         if (!TextUtils.isEmpty(conference.getCity())) {
@@ -103,14 +103,14 @@ public class Utils {
      * Returns the date of a conference.
      *
      * @param context context of running application
-     * @param conference data conference
+     * @param startDate data conference date
      * @return date in String
      */
-    public static String getConferenceDate(Context context, Conference conference) {
+    public static String getConferenceDate(Context context, Long startDate) {
 
         StringBuffer sb = new StringBuffer();
-        if(null != conference.getStartDate()) {
-            sb.append(getFormattedDate(context, conference.getStartDate()));
+        if(null != startDate) {
+            sb.append(getFormattedDate(context, startDate));
         }
 
         // TODO. TRUCO PARA CONCATENAR DATOS PARA MOSTRAR POR PANTALLA

@@ -57,6 +57,10 @@ public class RouteContract {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
 
+        public static Uri buildRouteUriWithStartDate(long startDate) {
+            return CONTENT_URI.buildUpon().appendQueryParameter(COLUMN_START_DATE, Long.toString(startDate)).build();
+        }
+
         public static String getRouteIdFromUri(Uri uri) {
             return uri.getPathSegments().get(1);
         }
