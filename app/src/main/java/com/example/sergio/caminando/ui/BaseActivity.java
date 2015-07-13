@@ -14,6 +14,7 @@ import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SyncStatusObserver;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.net.ConnectivityManager;
@@ -44,6 +45,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sergio.caminando.R;
+import com.example.sergio.caminando.provider.RouteContract;
 import com.example.sergio.caminando.sync.CaminandoSyncAdapter;
 import com.example.sergio.caminando.ui.widget.MultiSwipeRefreshLayout;
 import com.example.sergio.caminando.ui.widget.ScrimInsetsScrollView;
@@ -204,8 +206,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
             Intent intent = new Intent(this, WelcomeActivity.class);
             startActivity(intent);
             finish();
-        } else {
-            CaminandoSyncAdapter.initializeSyncAdapter(this);
         }
 
         mImageLoader = new ImageLoader(this);
@@ -213,6 +213,13 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         sp.registerOnSharedPreferenceChangeListener(this);
+
+        // TODO: registerçGCMClient
+        /*
+        if (savedInstanceState == null) {
+            registerGCMClient();
+        }
+         */
 
         ActionBar ab = getSupportActionBar();
         if (ab != null) {
@@ -272,6 +279,10 @@ public abstract class BaseActivity extends AppCompatActivity implements
      */
     protected int getSelfNavDrawerItem() {
         return NAVDRAWER_ITEM_INVALID;
+    }
+
+    public int getThemedStatusBarColor() {
+        return mThemedStatusBarColor;
     }
 
     /**
@@ -496,6 +507,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
         trySetupSwipeRefresh();;
         updateSwipeRefreshProgressBarTop();
+
         View mainContent = findViewById(R.id.main_content);
         if (mainContent != null) {
             mainContent.setAlpha(0);
@@ -719,27 +731,35 @@ public abstract class BaseActivity extends AppCompatActivity implements
         Account activeAccount = AccountUtils.getActiveAccount(this);
         ContentResolver contentResolver = getContentResolver();
         Toast.makeText(this, "Manual REquiest,, change to active Sincronizacion",Toast.LENGTH_LONG).show();
-        /*
-        if (contentResolver.isSyncActive(activeAccount, ScheduleContract.CONTENT_AUTHORITY)) {
+
+        if (contentResolver.isSyncActive(activeAccount, RouteContract.CONTENT_AUTHORITY)) {
             LOGD(TAG, "Ignoring manual sync request because a sync is already in progress.");
             return;
         }
-        */
+
         mManualSyncRequest = true;
         LOGD(TAG, "Requesting manual data refresh.");
+        // TODO: Futura prueba. mirar de io14 haber como afecta
         //SyncHelper.requestManualSync(activeAccount);
+        CaminandoSyncAdapter.syncImmediately(getApplicationContext());
     }
 
     private void goToNavDrawerItem(int item) {
         Intent intent;
         switch (item) {
             case NAVDRAWER_ITEM_MY_SCHEDULE:
+                intent = new Intent(this, BrowseSessionsActivity.class);
+                startActivity(intent);
+                finish();
                 break;
             case NAVDRAWER_ITEM_EXPLORE:
                 break;
             case NAVDRAWER_ITEM_MAP:
                 break;
             case NAVDRAWER_ITEM_SOCIAL:
+                intent = new Intent(this, CreateRouteActivity.class);
+                startActivity(intent);
+                finish();
                 break;
             case NAVDRAWER_ITEM_PEOPLE_IVE_MET:
                 break;
@@ -806,13 +826,12 @@ public abstract class BaseActivity extends AppCompatActivity implements
         // Verifies the proper version of Google Play Services exists on the device.
         PlayServicesUtils.checkGooglePlaySevices(this);
 
-        /*
         // Watch for sync state changes
         mSyncStatusObserver.onStatusChanged(0);
         final int mask = ContentResolver.SYNC_OBSERVER_TYPE_PENDING |
                 ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE;
         mSyncObserverHandle = ContentResolver.addStatusChangeListener(mask, mSyncStatusObserver);
-        */
+
     }
 
     @Override
@@ -837,6 +856,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
         // Perform one-time bootstrap setup, if needed
         if (!PrefUtils.isDataBootstrapDone(this) && mDataBootstrapThread == null) {
             LOGD(TAG, "One-time data bootstrap not done yet. Doing now.");
+            // TODO: performDataBootstrap();
         }
 
         startLoginProcess();
@@ -975,15 +995,14 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
         refreshAccountDependantData();
 
-        /*
         if (newlyAuthenticated) {
             LOGD(TAG, "Enabling auto sync on content provider for account " + accountName);
-            SyncHelper.updateSyncInterval(this, account);
-            SyncHelper.requestManualSync(account);
+            CaminandoSyncAdapter.initializeSyncAdapter(getApplicationContext());
         }
-*/
+
         setupAccountBox();
         populateNavDrawer();
+        // TODO: registerGCMClient();
     }
 
     @Override
@@ -995,7 +1014,8 @@ public abstract class BaseActivity extends AppCompatActivity implements
     protected void refreshAccountDependantData() {
         // Force local data refresh for data that depends on the logged user:
         LOGD(TAG, "Refreshing MySchedule data");
-        //getContentResolver().notifyChange(ScheduleContract.MySchedule.CONTENT_URI, null, false);
+        // TODO: Cambiar para no poder ver los datos confidenciales, no las rutas
+        getContentResolver().notifyChange(RouteContract.RouteEntry.CONTENT_URI, null, false);
     }
 
     /**
@@ -1179,11 +1199,24 @@ public abstract class BaseActivity extends AppCompatActivity implements
     protected void onDestroy() {
         super.onDestroy();
 
+        //TODO GCMRegistrar
+        /*
+        if (mGCMRegisterTask != null) {
+            LOGD(TAG, "Cancelling GCM registration task.");
+            mGCMRegisterTask.cancel(true);
+        }
+
+        try {
+            GCMRegistrar.onDestroy(this);
+        } catch (Exception e) {
+            LOGW(TAG, "C2DM unregistration error", e);
+        }
+         */
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         sp.unregisterOnSharedPreferenceChangeListener(this);
     }
 
-    /*
+
     private SyncStatusObserver mSyncStatusObserver = new SyncStatusObserver() {
         @Override
         public void onStatusChanged(int which) {
@@ -1199,9 +1232,9 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
                     Account account = new Account(accountName, GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
                     boolean syncActive = ContentResolver.isSyncActive(
-                            account, ScheduleContract.CONTENT_AUTHORITY);
+                            account, RouteContract.CONTENT_AUTHORITY);
                     boolean syncPending = ContentResolver.isSyncPending(
-                            account, ScheduleContract.CONTENT_AUTHORITY);
+                            account, RouteContract.CONTENT_AUTHORITY);
                     if (!syncActive && !syncPending) {
                         mManualSyncRequest = false;
                     }
@@ -1210,7 +1243,13 @@ public abstract class BaseActivity extends AppCompatActivity implements
             });
         }
     };
-    */
+
+
+    protected void onRefreshingStateChanged(boolean refreshing) {
+        if (mSwipeRefreshLayout != null) {
+            mSwipeRefreshLayout.setRefreshing(refreshing);
+        }
+    }
 
     protected void registerHideableHeaderView(View hideableHeaderView) {
         if (!mHideableHeaderViews.contains(hideableHeaderView)) {

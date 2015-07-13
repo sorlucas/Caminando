@@ -27,8 +27,6 @@ import com.example.sergio.caminando.endpoints.utils.ConferenceUtils;
 import com.example.sergio.caminando.endpoints.utils.DecoratedConference;
 import com.example.sergio.caminando.endpoints.utils.Utils;
 import com.example.sergio.caminando.provider.RouteContract;
-import com.example.sergio.caminando.sync.CaminandoSyncAdapter;
-import com.example.sergio.caminando.util.AccountUtils;
 
 import java.io.IOException;
 import java.util.List;
@@ -89,12 +87,12 @@ public class BroseSessionsFragment extends Fragment implements
         return ViewCompat.canScrollVertically(mRecyclerView, -1);
     }
 
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
         // Authorization check successful, get conferences.
-        ConferenceUtils.build(getActivity(), AccountUtils.getActiveAccountName(getActivity()));
         getLoaderManager().initLoader(FORECAST_LOADER, null, this);
 
         LinearLayoutManager llm = new LinearLayoutManager(getActivity());
@@ -176,6 +174,55 @@ public class BroseSessionsFragment extends Fragment implements
         new RegistrationAsyncTask(decoratedConference).execute();
     }
 
+
+
+    public void loadConferences() {
+        // Authorization check successful, get conferences.
+        // ConferenceUtils.build(getActivity(), AccountUtils.getActiveAccountName(getActivity()));
+        getLoaderManager().initLoader(FORECAST_LOADER, null, this);
+    }
+
+    public void reload() {
+        getLoaderManager().restartLoader(FORECAST_LOADER, null, this).startLoading();
+    }
+
+    /*
+    public void reload(List<DecoratedConference> conferences) {
+        mAdapter = new ConferenceDataAdapter(getActivity(),conferences);
+        mAdapter.notifyDataSetChanged();
+    }
+    */
+
+
+    public interface ItemClickListener {
+        void onItemClick(View view, int position);
+    }
+    /*
+    private void notifyAdapterDataSetChanged() {
+        // We have to set up a new adapter (as opposed to just calling notifyDataSetChanged()
+        // because we might need MORE view types than before, and ListView isn't prepared to
+        // handle the case where its existing adapter suddenly needs to increase the number of
+        // view types it needs.
+        if (conferences != null){
+            mRecyclerView.setAdapter(new ConferenceDataAdapter(getActivity(),conferences));
+        }
+
+    }
+    */
+    public void setContentTopClearance(int topClearance) {
+
+        if(mContentTopClearance != topClearance){
+            //TODO: CollectionView
+            mContentTopClearance = topClearance;
+            mRecyclerView.setPadding(mRecyclerView.getPaddingLeft(),
+                    mContentTopClearance,
+                    mRecyclerView.getPaddingRight(),
+                    mRecyclerView.getPaddingBottom());
+            //TODO: notifyAdapterDataSetChanged();
+        }
+
+    }
+
     class RegistrationAsyncTask extends AsyncTask<Void, Void, Boolean> {
 
         private final DecoratedConference mDecoratedConference;
@@ -227,60 +274,5 @@ public class BroseSessionsFragment extends Fragment implements
                 }
             }
         }
-    }
-
-    public static BroseSessionsFragment newInstance() {
-        BroseSessionsFragment f = new BroseSessionsFragment();
-        Bundle b = new Bundle();
-        f.setArguments(b);
-        return f;
-    }
-
-    public void loadConferences() {
-        // Authorization check successful, get conferences.
-        ConferenceUtils.build(getActivity(), AccountUtils.getActiveAccountName(getActivity()));
-        getLoaderManager().initLoader(0, null, this);
-    }
-
-    public void reload() {
-        CaminandoSyncAdapter.syncImmediately(getActivity());
-        getLoaderManager().restartLoader(0, null, this).startLoading();
-    }
-
-    /*
-    public void reload(List<DecoratedConference> conferences) {
-        mAdapter = new ConferenceDataAdapter(getActivity(),conferences);
-        mAdapter.notifyDataSetChanged();
-    }
-    */
-
-
-    public interface ItemClickListener {
-        void onItemClick(View view, int position);
-    }
-    /*
-    private void notifyAdapterDataSetChanged() {
-        // We have to set up a new adapter (as opposed to just calling notifyDataSetChanged()
-        // because we might need MORE view types than before, and ListView isn't prepared to
-        // handle the case where its existing adapter suddenly needs to increase the number of
-        // view types it needs.
-        if (conferences != null){
-            mRecyclerView.setAdapter(new ConferenceDataAdapter(getActivity(),conferences));
-        }
-
-    }
-    */
-    public void setContentTopClearance(int topClearance) {
-
-        if(mContentTopClearance != topClearance){
-            //TODO: CollectionView
-            mContentTopClearance = topClearance;
-            mRecyclerView.setPadding(mRecyclerView.getPaddingLeft(),
-                    mContentTopClearance,
-                    mRecyclerView.getPaddingRight(),
-                    mRecyclerView.getPaddingBottom());
-            //TODO: notifyAdapterDataSetChanged();
-        }
-
     }
 }

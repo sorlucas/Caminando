@@ -386,11 +386,9 @@ public class CreateRouteFragment extends Fragment implements
             // Ensure only one task is running at a time.
             mAuthTask = this;
 
-            // Authorization check successful, get conferences.
-            ConferenceUtils.build(getActivity(), AccountUtils.getActiveAccountName(getActivity()));
-
             try {
-                ConferenceUtils.getProfile();
+                // Authorization check successful, get conferences.
+                ConferenceUtils.build(getActivity(), AccountUtils.getActiveAccountName(getActivity()));
                 return ConferenceUtils.createConference(conferenceForm);
             } catch (IOException e) {
                 Log.e(TAG, "Failed to create Route", e);

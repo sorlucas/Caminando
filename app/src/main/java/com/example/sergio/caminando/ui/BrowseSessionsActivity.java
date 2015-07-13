@@ -42,18 +42,15 @@ public class BrowseSessionsActivity extends BaseActivity  {
     // How is this Activity being used?
     private static final int MODE_EXPLORE = 0; // as top-level "Explore" screen
     private static final int MODE_TIME_FIT = 1; // showing sessions that fit in a time interval
-
     private int mMode = MODE_EXPLORE;
+    // time when the user last clicked "refresh" from the stale data butter bar
+    private long mLastDataStaleUserActionTime = 0L;
 
     private BroseSessionsFragment mSessionsFrag = null;
     private DrawShadowFrameLayout mDrawShadowFrameLayout;
-
     private View mButterBar;
 
     private BroseSessionsFragment mRoutesFragment;
-
-    // time when the user last clicked "refresh" from the stale data butter bar
-    private long mLastDataStaleUserActionTime = 0L;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,14 +67,10 @@ public class BrowseSessionsActivity extends BaseActivity  {
         }
 
         mRoutesFragment = (BroseSessionsFragment) getSupportFragmentManager().findFragmentById(R.id.sessions_fragment);
-
         mButterBar = findViewById(R.id.butter_bar);
         mDrawShadowFrameLayout = (DrawShadowFrameLayout) findViewById(R.id.main_content);
 
         registerHideableHeaderView(mButterBar);
-
-        // TODO: Implement to sync Inmediately
-        //QuemedejesSyncAdapter.syncImmediately(getApplicationContext());
 
         //TODO: DELETO FOR RELEASE
         ViewServer.get(this).addWindow(this);
@@ -105,9 +98,9 @@ public class BrowseSessionsActivity extends BaseActivity  {
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        RecyclerView ListView = (RecyclerView) findViewById(R.id.sessions_collection_view);
-        if (ListView != null) {
-            enableActionBarAutoHide(ListView);
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.sessions_collection_view);
+        if (recyclerView != null) {
+            enableActionBarAutoHide(recyclerView);
         }
 
         mSessionsFrag = (BroseSessionsFragment) getSupportFragmentManager().findFragmentById(R.id.sessions_fragment);
