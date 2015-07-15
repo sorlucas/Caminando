@@ -44,7 +44,7 @@ public class StorageUtils {
 
 
 
-    public static void build(Context context) throws Exception{
+    public static void build(Context context) throws Exception {
         mStorageApiHandler = getStorage(context, AccountUtils.getActiveAccountName(context));
     }
 

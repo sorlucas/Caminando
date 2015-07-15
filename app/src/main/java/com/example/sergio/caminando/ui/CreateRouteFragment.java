@@ -1,12 +1,11 @@
 package com.example.sergio.caminando.ui;
 
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,13 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sergio.caminando.R;
-import com.example.sergio.caminando.endpoints.utils.ConferenceException;
-import com.example.sergio.caminando.endpoints.utils.ConferenceUtils;
-import com.example.sergio.caminando.endpoints.utils.StorageException;
-import com.example.sergio.caminando.endpoints.utils.StorageUtils;
-import com.example.sergio.caminando.util.AccountUtils;
-import com.example.sergio.myapplication.backend.domain.conference.model.Conference;
-import com.example.sergio.myapplication.backend.domain.conference.model.ConferenceForm;
+import com.example.sergio.caminando.provider.RouteContract;
 import com.fourmob.datetimepicker.date.DatePickerDialog;
 import com.kbeanie.imagechooser.api.ChooserType;
 import com.kbeanie.imagechooser.api.ChosenImage;
@@ -39,11 +32,9 @@ import com.sleepbot.datetimepicker.time.RadialPickerLayout;
 import com.sleepbot.datetimepicker.time.TimePickerDialog;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Locale;
 
 import static com.example.sergio.caminando.util.LogUtils.makeLogTag;
@@ -83,11 +74,31 @@ public class CreateRouteFragment extends Fragment implements
     private String filePath;
     private int chooserType;
 
-    // Url object public link
-    private String mUrlPhotoLink;
+    public interface Callbacks {
+        void onUploadRoute(HashMap<String,String> routeHasMap, String urlPhotoPath);
+    }
 
-    private CreateRouteTask mAuthTask;
-    private UploadPhotoTask mAuthPhoto;
+    private static Callbacks sDummyCallbacks = new Callbacks() {
+        @Override
+        public void onUploadRoute(HashMap<String, String> routeHasMap, String urlPhotoPath) {}
+    };
+
+    private Callbacks mCallbacks = sDummyCallbacks;
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if (!(activity instanceof Callbacks)) {
+            throw new ClassCastException("Activity must implement fragment's callbacks.");
+        }
+        mCallbacks = (Callbacks) activity;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mCallbacks = sDummyCallbacks;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -221,41 +232,21 @@ public class CreateRouteFragment extends Fragment implements
     }
 
     private void uploadRoute(){
+        mCallbacks.onUploadRoute(getHashMapDataRoutes(), filePath);
 
-        // TODO: Cambiar unresponsabilidad mientras sube ruta. Volver rapido a fragment_routes
-        // Cancel previously running ROUTE tasks.
-        if (mAuthTask != null) {
-            mAuthTask.cancel(true);
-        }
-        // Cancel previously running PHOTO tasks.
-        if (mAuthPhoto != null) {
-            mAuthPhoto.cancel(true);
-        }
-
-        // Start task to upload photo
-        mAuthPhoto = new UploadPhotoTask();
-        mAuthPhoto.execute("photos_routes",filePath);
-
-        // Start task to check authorization.
-        mAuthTask = new CreateRouteTask();
 
     }
 
-    private ConferenceForm getDataConference(){
-        //TODO: FIX listTopics to catch List<String>
-        List<String> listTopics = new ArrayList<>();
-        listTopics.add(mTopicsRoute.getText().toString());
-
-        ConferenceForm conferenceForm = new ConferenceForm();
-
-        conferenceForm.setName(mRouteName.getText().toString());
-        conferenceForm.setDescription(mDescriptionRoute.getText().toString());
-        conferenceForm.setTopics(listTopics);
-        conferenceForm.setCity(mCityName.getText().toString());
-        conferenceForm.setStartDate(startDate);
-        conferenceForm.setUrlPhotoCover(mUrlPhotoLink);
-        conferenceForm.setMaxAttendees(Integer.parseInt(mMaxAttendees.getText().toString()));
-        return conferenceForm;
+    private HashMap<String,String> getHashMapDataRoutes(){
+        HashMap<String,String> hashMapRoutes = new HashMap<>();
+        hashMapRoutes.put(RouteContract.RouteEntry.COLUMN_NAME_ROUTE,mRouteName.getText().toString());
+        hashMapRoutes.put(RouteContract.RouteEntry.COLUMN_DESCRIPTION,mDescriptionRoute.getText().toString());
+        hashMapRoutes.put(RouteContract.RouteEntry.COLUMN_TOPICS,mTopicsRoute.getText().toString());
+        hashMapRoutes.put(RouteContract.RouteEntry.COLUMN_CITY_NAME_INIT, mCityName.getText().toString());
+        hashMapRoutes.put(RouteContract.RouteEntry.COLUMN_START_DATE,startDate.toString());
+        hashMapRoutes.put(RouteContract.RouteEntry.COLUMN_URL_ROUTE_COVER,filePath);
+        hashMapRoutes.put(RouteContract.RouteEntry.COLUMN_MAX_ATTENDEES, mMaxAttendees.getText().toString());
+        return hashMapRoutes;
     }
 
     private void chooseImage() {
@@ -360,95 +351,5 @@ public class CreateRouteFragment extends Fragment implements
             }
         }
         super.onViewStateRestored(savedInstanceState);
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if (mAuthTask != null) {
-            mAuthTask.cancel(true);
-            mAuthTask = null;
-        }
-
-        if (mAuthPhoto != null) {
-            mAuthPhoto.cancel(true);
-            mAuthPhoto = null;
-        }
-    }
-
-    public class CreateRouteTask extends AsyncTask<ConferenceForm, Integer, Conference> {
-        @Override
-        protected Conference doInBackground(ConferenceForm... conferenceForms) {
-
-            Log.i(TAG, "Background task started.");
-
-            ConferenceForm conferenceForm = conferenceForms[0];
-            // Ensure only one task is running at a time.
-            mAuthTask = this;
-
-            try {
-                // Authorization check successful, get conferences.
-                ConferenceUtils.build(getActivity(), AccountUtils.getActiveAccountName(getActivity()));
-                return ConferenceUtils.createConference(conferenceForm);
-            } catch (IOException e) {
-                Log.e(TAG, "Failed to create Route", e);
-            } catch (ConferenceException e) {
-                // logged
-            }
-            return null;
-        }
-        @Override
-        protected void onPreExecute() {
-            mAuthTask = this;
-        }
-        @Override
-        protected void onPostExecute(Conference conference) {
-            Toast.makeText(getActivity(),"Upload Route",Toast.LENGTH_LONG).show();
-            mAuthTask = null;
-            getActivity().finish();
-        }
-        @Override
-        protected void onCancelled() {
-            mAuthTask = null;
-        }
-    }
-
-    public class UploadPhotoTask extends AsyncTask<String,Void,String> {
-
-        @Override
-        protected String doInBackground(String... params) {
-            mAuthPhoto = this;
-            String urlPath = null;
-            try {
-                StorageUtils.build(getActivity());
-                urlPath = StorageUtils.uploadPhotoToBucket(params[0],params[1]);
-            } catch (IOException e) {
-                Log.e(TAG, "Failed to create Route", e);
-            } catch (StorageException e) {
-                // logged
-            } catch (Exception e){
-                // create build to Storage
-                Log.e(TAG, "Failed to create credential",e);
-            }
-            return urlPath;
-        }
-
-        @Override
-        protected void onPostExecute(String urlPublicLink) {
-            super.onPostExecute(urlPublicLink);
-            Toast.makeText(getActivity(),"Foto subida: " + urlPublicLink ,Toast.LENGTH_LONG).show();
-            mUrlPhotoLink = urlPublicLink;
-            // Now I have mUrlPhotoLink to add in getDataConference()
-            mAuthTask.execute(getDataConference());
-        }
-
-        @Override
-        protected void onPreExecute() {
-            mAuthPhoto = this;
-        }
-        @Override
-        protected void onCancelled() {
-            mAuthPhoto = null;
-        }
     }
 }

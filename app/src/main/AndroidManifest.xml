@@ -76,6 +76,8 @@
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/syncadapter" />
         </service>
+        <service android:name=".service.UploadRouteService"
+            android:exported="true"/>
     </application>
 
 </manifest>

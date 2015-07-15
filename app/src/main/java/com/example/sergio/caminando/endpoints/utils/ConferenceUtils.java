@@ -5,6 +5,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.example.sergio.caminando.Config;
+import com.example.sergio.caminando.util.AccountUtils;
 import com.example.sergio.myapplication.backend.domain.conference.model.Conference;
 import com.example.sergio.myapplication.backend.domain.conference.model.ConferenceCollection;
 import com.example.sergio.myapplication.backend.domain.conference.model.ConferenceForm;
@@ -26,7 +27,8 @@ public class ConferenceUtils {
 
     private static com.example.sergio.myapplication.backend.domain.conference.Conference sApiServiceHandler;
 
-    public static void build(Context context, String email) {
+    public static void build(Context context) {
+        String email = AccountUtils.getActiveAccountName(context);
         sApiServiceHandler = buildServiceHandler(context, email);
     }
 

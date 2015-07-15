@@ -8,7 +8,6 @@ import com.example.sergio.caminando.endpoints.utils.ConferenceException;
 import com.example.sergio.caminando.endpoints.utils.ConferenceUtils;
 import com.example.sergio.caminando.endpoints.utils.DecoratedConference;
 import com.example.sergio.caminando.endpoints.utils.Utils;
-import com.example.sergio.caminando.util.AccountUtils;
 import com.example.sergio.myapplication.backend.domain.conference.model.ConferenceQueryForm;
 import com.example.sergio.myapplication.backend.domain.conference.model.Filter;
 
@@ -41,7 +40,7 @@ public class ConferenceLoader extends AsyncTaskLoader<List<DecoratedConference>>
     @Override
     public List<DecoratedConference> loadInBackground() {
         try {
-            ConferenceUtils.build(mContext, AccountUtils.getActiveAccountName(mContext));
+            ConferenceUtils.build(mContext);
             return ConferenceUtils.getConferences(mConferenceQueryForm);
         } catch (IOException e) {
             Log.e(TAG, "Failed to get conferences", e);
