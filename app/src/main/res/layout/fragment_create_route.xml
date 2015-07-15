@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.CreateRouteActivity" >
+    android:divider="?android:dividerHorizontal"
+    android:showDividers="middle"
+    tools:context=".ui.CreateRouteActivity">
+
+    <ScrollView android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/linearLayout">
 
         <RelativeLayout
             android:layout_width="wrap_content"
@@ -30,24 +36,15 @@
                 android:src="@drawable/ic_launcher"
                 android:maxWidth="300dp" />
 
-            <TextView
-                android:id="@+id/textViewFile"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/imageViewThumb"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="10dp"
-                android:text="Chose an option" />
-
             <LinearLayout
                 android:id="@+id/layoutButtons"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/textViewFile"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="10dp"
                 android:paddingLeft="10dp"
-                android:paddingRight="10dp" >
+                android:paddingRight="10dp"
+                android:layout_below="@id/imageViewThumb">
 
                 <Button
                     android:id="@+id/buttonTakePicture"
@@ -163,4 +160,49 @@
                     android:inputType="number"/>
             </android.support.design.widget.TextInputLayout>
         </RelativeLayout>
-</ScrollView>
+    </ScrollView>
+
+    <!--
+        When using the Holo theme (setting your activity or app theme to
+        Theme.Holo or one of its descendants), a LinearLayout with the
+        ?android:buttonBarStyle will draw dividers (with padding) between
+        buttons.
+    -->
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        style="?android:buttonBarStyle"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        >
+
+        <!--
+            Make sure to apply the ?android:buttonBarStyle to each button
+            in the button bar.
+
+            In the Holo theme, this style is very similar to
+            ?android:borderlessButtonStyle, but designed for use specifically
+            in horizontal button bars.
+        -->
+        <Button
+            android:id="@+id/cancel_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            style="?android:attr/borderlessButtonStyle"
+            android:text="@string/cancel"
+            android:onClick="myClickMethod" />
+
+        <Button
+            android:id="@+id/ok_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            style="?android:attr/borderlessButtonStyle"
+            android:text="@string/ok"
+            android:onClick="myClickMethod" />
+
+    </LinearLayout>
+</RelativeLayout>

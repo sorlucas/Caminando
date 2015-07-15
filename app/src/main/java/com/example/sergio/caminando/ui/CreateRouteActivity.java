@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.IntentCompat;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Toast;
 
@@ -26,28 +25,13 @@ public class CreateRouteActivity extends BaseActivity implements DownloadResultR
 
     private DownloadResultReceiver mReceiver;
 
+    private CreateRouteFragment mFragment;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_routes);
+        setContentView(R.layout.activity_create_route);
 
-        Toolbar toolbar = getActionBarToolbar();
-        toolbar.setTitle(R.string.title_activity_create_routes);
-        toolbar.setNavigationIcon(R.drawable.ic_up);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                navigateUpToFromChild(CreateRouteActivity.this,
-                        IntentCompat.makeMainActivity(new ComponentName(CreateRouteActivity.this,
-                                BrowseSessionsActivity.class)));
-            }
-        });
-
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new CreateRouteFragment())
-                    .commit();
-        }
+        mFragment = (CreateRouteFragment) getSupportFragmentManager().findFragmentById(R.id.container);
     }
 
     @Override
@@ -86,13 +70,26 @@ public class CreateRouteActivity extends BaseActivity implements DownloadResultR
                 /* Hide progress & extract result from bundle */
                 setProgressBarIndeterminateVisibility(false);
                 //String[] results = resultData.getStringArray("result");
-                Toast.makeText(getApplicationContext(),"Ruta subida",Toast.LENGTH_LONG).show();
+                Toast.makeText(this,"Ruta subida",Toast.LENGTH_LONG).show();
                 break;
             case UploadRouteService.STATUS_ERROR:
                 /* Handle the error */
                 String error = resultData.getString(Intent.EXTRA_TEXT);
                 Toast.makeText(this, error, Toast.LENGTH_LONG).show();
                 break;
+        }
+    }
+
+    public void myClickMethod(View view) {
+        switch (view.getId()){
+            case R.id.cancel_button:
+                navigateUpToFromChild(CreateRouteActivity.this,
+                        IntentCompat.makeMainActivity(new ComponentName(CreateRouteActivity.this,
+                                BrowseSessionsActivity.class)));
+                return;
+            default:
+                mFragment.myClickMethod(view);
+                return;
         }
     }
 }

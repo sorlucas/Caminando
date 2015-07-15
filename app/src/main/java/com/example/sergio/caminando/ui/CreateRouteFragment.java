@@ -7,9 +7,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -18,7 +15,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sergio.caminando.R;
@@ -68,7 +64,6 @@ public class CreateRouteFragment extends Fragment implements
 
     //Delarate Views to catch photo route
     private ImageView imageViewThumbnail;
-    private TextView textViewFile;
     private ImageChooserManager imageChooserManager;
     private ProgressBar pbar;
     private String filePath;
@@ -123,7 +118,6 @@ public class CreateRouteFragment extends Fragment implements
             }
         });
         imageViewThumbnail = (ImageView) root.findViewById(R.id.imageViewThumb);
-        textViewFile = (TextView) root.findViewById(R.id.textViewFile);
         pbar = (ProgressBar) root.findViewById(R.id.progressBar);
         pbar.setVisibility(View.GONE);
 
@@ -210,31 +204,16 @@ public class CreateRouteFragment extends Fragment implements
 
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        inflater.inflate(R.menu.menu_create_route, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //To create route
-        if (id == R.id.menu_create) {
-            uploadRoute();
+    /**
+     * Methodo was used from CreateRoute to pass a Views from fragment_create_route
+     * @param view View to be clicked
+     */
+    public void myClickMethod(View view){
+        switch (view.getId()){
+            case (R.id.ok_button):
+                mCallbacks.onUploadRoute(getHashMapDataRoutes(), filePath);
+                return;
         }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void uploadRoute(){
-        mCallbacks.onUploadRoute(getHashMapDataRoutes(), filePath);
-
-
     }
 
     private HashMap<String,String> getHashMapDataRoutes(){
@@ -301,7 +280,6 @@ public class CreateRouteFragment extends Fragment implements
                 pbar.setVisibility(View.GONE);
                 if (image != null) {
                     filePath = image.getFilePathOriginal();
-                    textViewFile.setText(image.getFilePathOriginal());
                     imageViewThumbnail.setImageURI(Uri.parse(new File(image
                             .getFileThumbnail()).toString()));
                 }
