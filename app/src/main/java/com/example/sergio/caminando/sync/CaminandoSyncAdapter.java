@@ -13,10 +13,8 @@ import android.content.SharedPreferences;
 import android.content.SyncRequest;
 import android.content.SyncResult;
 import android.content.res.Resources;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -40,7 +38,7 @@ public class CaminandoSyncAdapter extends AbstractThreadedSyncAdapter {
     public static final int SYNC_INTERVAL = 60 * 5;
     public static final int SYNC_FLEXTIME = SYNC_INTERVAL/3;
     private static final long DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
-    private static final int WEATHER_NOTIFICATION_ID = 3004;
+    private static final int ROUTE_NOTIFICATION_ID = 3999;
 
     private static final String[] NOTIFY_WEATHER_PROJECTION = new String[] {
             RouteContract.RouteEntry._ID,
@@ -85,6 +83,8 @@ public class CaminandoSyncAdapter extends AbstractThreadedSyncAdapter {
         return;
     }
 
+    // TODO: Notificaciones de rutas mal hecho. Hay que hacerlo de manera de que notifique solo las nuevas y con informacion
+    // notifica que hay rutas nuevas
     private void notifyRoute() {
         Context context = getContext();
         //checking the last update and notify if it' the first of the day
@@ -95,80 +95,53 @@ public class CaminandoSyncAdapter extends AbstractThreadedSyncAdapter {
 
         if ( displayNotifications ) {
 
-            String lastNotificationKey = context.getString(R.string.pref_last_notification);
-            long lastSync = prefs.getLong(lastNotificationKey, 0);
 
-            if (System.currentTimeMillis() - lastSync >= DAY_IN_MILLIS) {
+                // TODO: Change iconId to future implementation. PHOTO ROUTE
+                //int iconId = Utility.getIconResourceForRouteCondition(routeId);
+                int iconId = R.mipmap.ic_launcher;
+                Resources resources = context.getResources();
 
-                Uri routesUri = RouteContract.RouteEntry.buildRouteUriWithStartDate(System.currentTimeMillis());
+                // TODO: Change also large icon
+                Bitmap largeIcon = BitmapFactory.decodeResource(resources,
+                        R.drawable.io2014_logo);
 
-                // we'll query our contentProvider, as always
-                Cursor cursor = context.getContentResolver().query(routesUri, NOTIFY_WEATHER_PROJECTION, null, null, null);
+                String title = context.getString(R.string.app_name);
 
-                if (cursor.moveToFirst()) {
+                // Define the text of the forecast.
+                String contentText = context.getString(R.string.notification_routes);
 
-                    long routeId = cursor.getLong(INDEX_ID);
-                    String nameRoute = cursor.getString(INDEX_COLUMN_NAME_ROUTE);
-                    String topics = cursor.getString(INDEX_TOPICS);
-                    String cityNameRoute = cursor.getString(INDEX_CITY_NAME_INIT);
-                    long startDate = cursor.getLong(INDEX_START_DATE);
-                    String organizerName = cursor.getString(INDEX_ORGANIZER_DISPLAY_NAME);
+                // NotificationCompatBuilder is a very convenient way to build backward-compatible
+                // notifications.  Just throw in some data.
+                NotificationCompat.Builder mBuilder =
+                        new NotificationCompat.Builder(getContext())
+                                .setColor(resources.getColor(R.color.theme_primary))
+                                .setSmallIcon(iconId)
+                                .setLargeIcon(largeIcon)
+                                .setContentTitle(title)
+                                .setContentText(contentText);
 
-                    // TODO: Change iconId to future implementation. PHOTO ROUTE
-                    //int iconId = Utility.getIconResourceForRouteCondition(routeId);
-                    int iconId = R.drawable.ic_launcher;
-                    Resources resources = context.getResources();
+                // Make something interesting happen when the user clicks on the notification.
+                // In this case, opening the app is sufficient.
+                Intent resultIntent = new Intent(context, BrowseSessionsActivity.class);
 
-                    // TODO: Change also large icon
-                    Bitmap largeIcon = BitmapFactory.decodeResource(resources,
-                            R.drawable.io2014_logo);
+                // The stack builder object will contain an artificial back stack for the
+                // started Activity.
+                // This ensures that navigating backward from the Activity leads out of
+                // your application to the Home screen.
+                TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+                stackBuilder.addNextIntent(resultIntent);
+                PendingIntent resultPendingIntent =
+                        stackBuilder.getPendingIntent(
+                                0,
+                                PendingIntent.FLAG_UPDATE_CURRENT
+                        );
+                mBuilder.setContentIntent(resultPendingIntent);
 
-                    String title = context.getString(R.string.app_name);
+                NotificationManager mNotificationManager =
+                        (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+                // WEATHER_NOTIFICATION_ID allows you to update the notification later on.
+                mNotificationManager.notify(ROUTE_NOTIFICATION_ID, mBuilder.build());
 
-                    // Define the text of the forecast.
-                    String contentText = String.format(context.getString(R.string.format_notification),
-                            String.valueOf(nameRoute),
-                            String.valueOf(organizerName));
-
-                    // NotificationCompatBuilder is a very convenient way to build backward-compatible
-                    // notifications.  Just throw in some data.
-                    NotificationCompat.Builder mBuilder =
-                            new NotificationCompat.Builder(getContext())
-                                    .setColor(resources.getColor(R.color.theme_primary))
-                                    .setSmallIcon(iconId)
-                                    .setLargeIcon(largeIcon)
-                                    .setContentTitle(title)
-                                    .setContentText(contentText);
-
-                    // Make something interesting happen when the user clicks on the notification.
-                    // In this case, opening the app is sufficient.
-                    Intent resultIntent = new Intent(context, BrowseSessionsActivity.class);
-
-                    // The stack builder object will contain an artificial back stack for the
-                    // started Activity.
-                    // This ensures that navigating backward from the Activity leads out of
-                    // your application to the Home screen.
-                    TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-                    stackBuilder.addNextIntent(resultIntent);
-                    PendingIntent resultPendingIntent =
-                            stackBuilder.getPendingIntent(
-                                    0,
-                                    PendingIntent.FLAG_UPDATE_CURRENT
-                            );
-                    mBuilder.setContentIntent(resultPendingIntent);
-
-                    NotificationManager mNotificationManager =
-                            (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
-                    // WEATHER_NOTIFICATION_ID allows you to update the notification later on.
-                    mNotificationManager.notify(WEATHER_NOTIFICATION_ID, mBuilder.build());
-
-                    //refreshing last sync
-                    SharedPreferences.Editor editor = prefs.edit();
-                    editor.putLong(lastNotificationKey, System.currentTimeMillis());
-                    editor.commit();
-                }
-                cursor.close();
-            }
         }
     }
 
