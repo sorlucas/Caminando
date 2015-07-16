@@ -130,10 +130,10 @@ public class BroseSessionsFragment extends Fragment implements
         // Sort order:  Ascending, by date.
         String sortOrder = RouteContract.RouteEntry.COLUMN_START_DATE + " ASC";
 
-        Uri weatherForLocationUri = RouteContract.RouteEntry.buildRouteUriWithStartDate(System.currentTimeMillis());
+        Uri routesUri = RouteContract.RouteEntry.buildRouteUriWithStartDate(System.currentTimeMillis());
 
         return new CursorLoader(getActivity(),
-                weatherForLocationUri,
+                routesUri,
                 FORECAST_COLUMNS,
                 null,
                 null,

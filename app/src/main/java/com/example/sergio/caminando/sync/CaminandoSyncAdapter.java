@@ -2,14 +2,26 @@ package com.example.sergio.caminando.sync;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.SyncRequest;
 import android.content.SyncResult;
+import android.content.res.Resources;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
 import com.example.sergio.caminando.R;
@@ -17,6 +29,7 @@ import com.example.sergio.caminando.endpoints.ConferenceLoader;
 import com.example.sergio.caminando.endpoints.utils.DecoratedConference;
 import com.example.sergio.caminando.endpoints.utils.Utils;
 import com.example.sergio.caminando.provider.RouteContract;
+import com.example.sergio.caminando.ui.BrowseSessionsActivity;
 
 import java.util.List;
 
@@ -30,17 +43,21 @@ public class CaminandoSyncAdapter extends AbstractThreadedSyncAdapter {
     private static final int WEATHER_NOTIFICATION_ID = 3004;
 
     private static final String[] NOTIFY_WEATHER_PROJECTION = new String[] {
+            RouteContract.RouteEntry._ID,
+            RouteContract.RouteEntry.COLUMN_NAME_ROUTE,
+            RouteContract.RouteEntry.COLUMN_TOPICS,
+            RouteContract.RouteEntry.COLUMN_CITY_NAME_INIT,
             RouteContract.RouteEntry.COLUMN_START_DATE,
             RouteContract.RouteEntry.COLUMN_ORGANIZER_DISPLAY_NAME,
-            RouteContract.RouteEntry.COLUMN_CITY_NAME_INIT,
-            RouteContract.RouteEntry.COLUMN_NAME_ROUTE
     };
 
     // these indices must match the projection
-    private static final int INDEX_COLUMN_DATE = 0;
-    private static final int INDEX_DURATION_ROUTE = 1;
-    private static final int INDEX_DISTANCE_ROUTE = 2;
-    private static final int INDEX_ROUTE_ID = 3;
+    private static final int INDEX_ID = 0;
+    private static final int INDEX_COLUMN_NAME_ROUTE = 1;
+    private static final int INDEX_TOPICS = 2;
+    private static final int INDEX_CITY_NAME_INIT = 3;
+    private static final int INDEX_START_DATE = 4;
+    private static final int INDEX_ORGANIZER_DISPLAY_NAME = 5;
 
     public CaminandoSyncAdapter(Context context, boolean autoInitialize) {
         super(context, autoInitialize);
@@ -51,6 +68,7 @@ public class CaminandoSyncAdapter extends AbstractThreadedSyncAdapter {
         
         Log.d(LOG_TAG, "Starting sync");
 
+        // TODO: FUTURO CAMBIO DE las conferencias que loader con GCM. mas eficiente. ahora se cargan todas desde ahora
         ConferenceLoader conferenceLoader = new ConferenceLoader(getContext());
         conferenceLoader.setFiltersQueryForm("STARTDATE", "GT",String.valueOf(System.currentTimeMillis()));
         List<DecoratedConference> decoratedConferences = conferenceLoader.loadInBackground();
@@ -59,14 +77,14 @@ public class CaminandoSyncAdapter extends AbstractThreadedSyncAdapter {
             //Create route values today an insert in database
             int rowsInserted = Utils.addRoutesToSQLite(getContext(), decoratedConferences);
             Log.d(LOG_TAG, "Sync Complete. " + rowsInserted + " new Routes Inserted");
+            if(rowsInserted > 0){
+                notifyRoute();
+            }
         }
-
-        // TODO: Implement
-        //notifyRoute();
 
         return;
     }
-    /*
+
     private void notifyRoute() {
         Context context = getContext();
         //checking the last update and notify if it' the first of the day
@@ -81,31 +99,36 @@ public class CaminandoSyncAdapter extends AbstractThreadedSyncAdapter {
             long lastSync = prefs.getLong(lastNotificationKey, 0);
 
             if (System.currentTimeMillis() - lastSync >= DAY_IN_MILLIS) {
-                // Last sync was more than 1 day ago, let's send a notification with the weather.
-                String locationQuery = Utility.getPreferredLocation(context);
 
-                Uri weatherUri = RouteContract.RouteEntry.buildRouteUri(System.currentTimeMillis());
+                Uri routesUri = RouteContract.RouteEntry.buildRouteUriWithStartDate(System.currentTimeMillis());
 
                 // we'll query our contentProvider, as always
-                Cursor cursor = context.getContentResolver().query(weatherUri, NOTIFY_WEATHER_PROJECTION, null, null, null);
+                Cursor cursor = context.getContentResolver().query(routesUri, NOTIFY_WEATHER_PROJECTION, null, null, null);
 
                 if (cursor.moveToFirst()) {
-                    long date = cursor.getLong(INDEX_COLUMN_DATE);
-                    double duration = cursor.getDouble(INDEX_DURATION_ROUTE);
-                    double distance = cursor.getDouble(INDEX_DISTANCE_ROUTE);
-                    String routeId = cursor.getString(INDEX_ROUTE_ID);
 
-                    int iconId = Utility.getIconResourceForRouteCondition(routeId);
+                    long routeId = cursor.getLong(INDEX_ID);
+                    String nameRoute = cursor.getString(INDEX_COLUMN_NAME_ROUTE);
+                    String topics = cursor.getString(INDEX_TOPICS);
+                    String cityNameRoute = cursor.getString(INDEX_CITY_NAME_INIT);
+                    long startDate = cursor.getLong(INDEX_START_DATE);
+                    String organizerName = cursor.getString(INDEX_ORGANIZER_DISPLAY_NAME);
+
+                    // TODO: Change iconId to future implementation. PHOTO ROUTE
+                    //int iconId = Utility.getIconResourceForRouteCondition(routeId);
+                    int iconId = R.drawable.ic_launcher;
                     Resources resources = context.getResources();
+
+                    // TODO: Change also large icon
                     Bitmap largeIcon = BitmapFactory.decodeResource(resources,
-                            Utility.getArtResourceForRouteCondition(routeId));
+                            R.drawable.io2014_logo);
+
                     String title = context.getString(R.string.app_name);
 
                     // Define the text of the forecast.
                     String contentText = String.format(context.getString(R.string.format_notification),
-                            String.valueOf(date),
-                            Utility.getFriendlyDayString(context, date),
-                            String.valueOf(distance));
+                            String.valueOf(nameRoute),
+                            String.valueOf(organizerName));
 
                     // NotificationCompatBuilder is a very convenient way to build backward-compatible
                     // notifications.  Just throw in some data.
@@ -148,7 +171,6 @@ public class CaminandoSyncAdapter extends AbstractThreadedSyncAdapter {
             }
         }
     }
-    */
 
 
     //Metodos para configuracion de la Sync
