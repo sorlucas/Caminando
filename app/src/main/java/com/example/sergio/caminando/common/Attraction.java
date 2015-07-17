@@ -49,4 +49,6 @@ public class Attraction {
         this.webSafeKey = webSafeKey;
         this.organizeName = organizeName;
     }
+
+
 }

@@ -38,8 +38,8 @@ public class DetailActivity extends AppCompatActivity {
     private static final String EXTRA_ATTRACTION = "attraction";
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public static void launch(Activity activity, String attraction, View heroView) {
-        Intent intent = getLaunchIntent(activity, attraction);
+    public static void launch(Activity activity, Long routeId, View heroView) {
+        Intent intent = getLaunchIntent(activity, routeId);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
                     activity, heroView, heroView.getTransitionName());
@@ -49,9 +49,9 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
-    public static Intent getLaunchIntent(Context context, String attraction) {
+    public static Intent getLaunchIntent(Context context, Long routeId) {
         Intent intent = new Intent(context, DetailActivity.class);
-        intent.putExtra(EXTRA_ATTRACTION, attraction);
+        intent.putExtra(EXTRA_ATTRACTION, routeId);
         return intent;
     }
 
@@ -60,10 +60,10 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        String attraction = getIntent().getStringExtra(EXTRA_ATTRACTION);
+        Long routeId = getIntent().getLongExtra(EXTRA_ATTRACTION, 0);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, DetailFragment.createInstance(attraction))
+                    .add(R.id.container, DetailFragment.createInstance(routeId))
                     .commit();
         }
     }

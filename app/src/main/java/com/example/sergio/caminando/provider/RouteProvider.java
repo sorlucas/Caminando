@@ -66,7 +66,7 @@ public class RouteProvider extends ContentProvider {
             case ROUTE:
                 return RouteContract.RouteEntry.CONTENT_TYPE;
             case ROUTE_WITH_ID:
-                return RouteContract.RouteEntry.CONTENT_TYPE;
+                return RouteContract.RouteEntry.CONTENT_ITEM_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -80,10 +80,7 @@ public class RouteProvider extends ContentProvider {
         // and query the database accordingly.
         Cursor retCursor;
         switch (sUriMatcher.match(uri)) {
-            // "route"
             case ROUTE: {
-
-
                 retCursor =  mOpenHelper.getReadableDatabase().query(
                         RouteContract.RouteEntry.TABLE_NAME,
                         projection,
@@ -93,10 +90,8 @@ public class RouteProvider extends ContentProvider {
                         null,
                         sortOrder
                 );
-
                 break;
             }
-            // "route with id"
             case ROUTE_WITH_ID: {
                 String routeId = RouteContract.RouteEntry.getRouteIdFromUri(uri);
                 retCursor = mOpenHelper.getReadableDatabase().query(
@@ -106,12 +101,10 @@ public class RouteProvider extends ContentProvider {
                         new String[]{routeId},
                         null,
                         null,
-                        sortOrder
+                        null
                 );
-
                 break;
             }
-
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }

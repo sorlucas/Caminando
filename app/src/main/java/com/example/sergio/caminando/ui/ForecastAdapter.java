@@ -43,7 +43,7 @@ public class ForecastAdapter extends CursorRecyclerViewAdapter<ForecastAdapter.V
         public void onItemClick(View view, int position) {
             View heroView = view.findViewById(android.R.id.icon);
             DetailActivity.launch(
-                    mActivity, String.valueOf(getItemId(position)), heroView);
+                    mActivity, getItemId(position), heroView);
         }
     };
 

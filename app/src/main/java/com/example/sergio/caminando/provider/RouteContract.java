@@ -65,6 +65,7 @@ public class RouteContract {
             return uri.getPathSegments().get(1);
         }
 
+        //TODO: No lo usames porque utilizamos manualmente la fecha actual del ordenador
         public static long getStartDateFromUri(Uri uri) {
             String dateString = uri.getQueryParameter(COLUMN_START_DATE);
             if (null != dateString && dateString.length() > 0)
