@@ -1,36 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <!-- Change to CollectionView -->
-    <android.support.v7.widget.RecyclerView
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".BrowseSessionsFragment">
+
+    <com.example.sergio.caminando.ui.widget.AttractionsRecyclerView
         android:id="@+id/sessions_collection_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="@dimen/explore_grid_padding_half"
-        android:clipToPadding="false"
-        android:scrollbarStyle="outsideOverlay" />
-
-    <ProgressBar
-        android:id="@+id/loading"
-        android:visibility="gone"
-        android:paddingTop="?actionBarSize"
-        android:layout_gravity="center"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        />
+        android:scrollbars="vertical" />
 
     <TextView
-        android:id="@+id/empty_text"
-        android:visibility="gone"
-        android:paddingTop="?actionBarSize"
-        android:layout_gravity="center"
-        android:gravity="center"
+        android:id="@android:id/empty"
+        android:text="@string/empty_list"
+        style="?android:attr/textAppearanceMedium"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:textSize="@dimen/text_size_medium"
-        android:textColor="@color/body_text_2"
-        android:text="@string/no_conferences"
-        />
+        android:layout_gravity="center"
+        android:gravity="center" />
 
 </FrameLayout>

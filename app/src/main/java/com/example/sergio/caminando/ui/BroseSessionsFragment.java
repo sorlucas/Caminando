@@ -10,16 +10,13 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewCompat;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
-import android.view.animation.LayoutAnimationController;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.example.sergio.caminando.R;
 import com.example.sergio.caminando.endpoints.utils.ConferenceException;
@@ -27,6 +24,7 @@ import com.example.sergio.caminando.endpoints.utils.ConferenceUtils;
 import com.example.sergio.caminando.endpoints.utils.DecoratedConference;
 import com.example.sergio.caminando.endpoints.utils.Utils;
 import com.example.sergio.caminando.provider.RouteContract;
+import com.example.sergio.caminando.ui.widget.AttractionsRecyclerView;
 
 import java.io.IOException;
 import java.util.List;
@@ -41,9 +39,7 @@ public class BroseSessionsFragment extends Fragment implements
 
     private ForecastAdapter mAdapter;
 
-    private RecyclerView mRecyclerView;
-    private TextView mEmptyView;
-    private View mLoadingView;
+    private AttractionsRecyclerView mRecyclerView;
 
     private int mPosition = RecyclerView.INVALID_TYPE;
     private static final String SELECTED_KEY = "selected_position";
@@ -94,22 +90,15 @@ public class BroseSessionsFragment extends Fragment implements
 
         // Authorization check successful, get conferences.
         getLoaderManager().initLoader(FORECAST_LOADER, null, this);
-
-        LinearLayoutManager llm = new LinearLayoutManager(getActivity());
-        mRecyclerView.setLayoutManager(llm);
-
-        LayoutAnimationController controller = AnimationUtils
-                .loadLayoutAnimation(getActivity(), R.anim.list_layout_controller);
-        mRecyclerView.setLayoutAnimation(controller);
-        //mRecyclerView.setEmptyView(mEmptyView);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ViewGroup root = (ViewGroup) inflater.inflate(R.layout.fragment_sessions, container, false);
-        mRecyclerView = (RecyclerView) root.findViewById(R.id.sessions_collection_view);
-        mEmptyView = (TextView) root.findViewById(R.id.empty_text);
-        mLoadingView = root.findViewById(R.id.loading);
+        mRecyclerView = (AttractionsRecyclerView) root.findViewById(R.id.sessions_collection_view);
+        mRecyclerView.setEmptyView(root.findViewById(android.R.id.empty));
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), getResources().getInteger(R.integer.list_columns) ));
 
         //TODO: DELETE WHEN COLLECTIONVIEW
         final TypedArray xmlArgs = getActivity().obtainStyledAttributes(null,
