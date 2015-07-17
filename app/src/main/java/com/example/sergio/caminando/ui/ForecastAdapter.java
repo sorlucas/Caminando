@@ -1,5 +1,6 @@
 package com.example.sergio.caminando.ui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -32,23 +33,39 @@ public class ForecastAdapter extends CursorRecyclerViewAdapter<ForecastAdapter.V
     private boolean mUseTodayLayout = true;
 
     private Context mContext;
+    private Activity mActivity;
 
-    public ForecastAdapter(Context context,Cursor cursor){
-        super(context,cursor);
-        this.mContext = context;
+    interface ItemClickListener {
+        void onItemClick(View view, int position);
+    }
+    private ItemClickListener sDummyCallbacks = new ItemClickListener() {
+        @Override
+        public void onItemClick(View view, int position) {
+            View heroView = view.findViewById(android.R.id.icon);
+            DetailActivity.launch(
+                    mActivity, String.valueOf(getItemId(position)), heroView);
+        }
+    };
+
+    public ForecastAdapter(Activity activity,Cursor cursor){
+        super(activity.getApplicationContext(),cursor);
+        this.mContext = activity.getApplicationContext();
+        this.mActivity = activity;
     }
     /**
      * Cache of the children views for a forecast list item.
      */
-    public static class ViewHolder extends RecyclerView.ViewHolder{
+    public static class ViewHolder extends RecyclerView.ViewHolder
+        implements View.OnClickListener {
         CardView cardView;
         ImageView photoRouteCover;
         TextView titleView;
         TextView descriptionView;
         TextView cityAndDateView;
         ImageView registerView;
+        ItemClickListener mItemClickListener;
 
-        public ViewHolder(View view) {
+        public ViewHolder(View view, ItemClickListener itemClickListener) {
             super(view);
             cardView = (CardView)view.findViewById(R.id.cardView);
             photoRouteCover = (ImageView) cardView.findViewById(R.id.imageRouteCover);
@@ -56,6 +73,12 @@ public class ForecastAdapter extends CursorRecyclerViewAdapter<ForecastAdapter.V
             descriptionView = (TextView)cardView.findViewById(R.id.textView2);
             cityAndDateView = (TextView)cardView.findViewById(R.id.textView3);
             registerView = (ImageView)cardView.findViewById(R.id.imageView);
+            mItemClickListener = itemClickListener;
+            view.setOnClickListener(this);
+        }
+        @Override
+        public void onClick(View v) {
+            mItemClickListener.onItemClick(v, getAdapterPosition());
         }
     }
 
@@ -77,7 +100,7 @@ public class ForecastAdapter extends CursorRecyclerViewAdapter<ForecastAdapter.V
 
         View itemView = LayoutInflater.from(parent.getContext()).inflate(layoutId, parent, false);
 
-        ViewHolder vh = new ViewHolder(itemView);
+        ViewHolder vh = new ViewHolder(itemView, sDummyCallbacks);
         return vh;
     }
 

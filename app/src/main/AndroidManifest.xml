@@ -48,6 +48,12 @@
         <activity android:name=".util.AndroidDatabaseManager"
             android:theme="@style/Theme.AppCompat.Light"/>
 
+        <activity
+            android:name=".ui.DetailActivity"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.IOSched.SessionDetails"
+            android:parentActivityName=".ui.BrowseSessionsActivity" />
+
         <provider
             android:authorities="@string/content_authority"
             android:name=".provider.RouteProvider"
