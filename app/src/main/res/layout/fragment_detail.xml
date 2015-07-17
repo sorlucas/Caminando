@@ -49,13 +49,21 @@
             android:ellipsize="end"
             android:textIsSelectable="true"
             style="@style/TextAppearance.AppCompat.Title.Inverse"
-            android:transitionName="title" />
+            android:transitionName="title"
+            android:text="@string/placeholder_name_route"/>
 
         <TextView
             android:id="@+id/distanceTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/TextAppearance.AppCompat.Subhead.Inverse" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="@string/placeholder_city_and_date_route"
+            android:id="@+id/cityAndDate" />
 
     </LinearLayout>
     
@@ -75,7 +83,8 @@
             android:textIsSelectable="true"
             style="@style/TextAppearance.AppCompat.Body1"
             android:paddingStart="@dimen/keyline2"
-            android:paddingEnd="@dimen/keyline3" />
+            android:paddingEnd="@dimen/keyline3"
+            android:text="@string/placeholder_description_route"/>
 
     </ScrollView>
 

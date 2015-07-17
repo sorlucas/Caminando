@@ -17,6 +17,7 @@
 package com.example.sergio.caminando.ui;
 
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -28,12 +29,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.example.sergio.caminando.R;
 import com.example.sergio.caminando.common.Attraction;
+import com.example.sergio.caminando.endpoints.utils.Utils;
 import com.example.sergio.caminando.provider.RouteContract;
 
 
@@ -47,7 +50,7 @@ public class DetailFragment extends Fragment implements
 
     private static final String EXTRA_ATTRACTION = "attraction";
 
-    private Attraction mAttraction;
+    private Attraction mAttraction = new Attraction();
     
     private static final int FORECAST_LOADER = 0;
     // For the forecast view we're showing only a small subset of the stored data. Specify the columns we need.
@@ -66,19 +69,24 @@ public class DetailFragment extends Fragment implements
     };
 
     // These indices are tied to FORECAST_COLUMNS.  If FORECAST_COLUMNS changes, these must change.
-    static final int COL_ROUTE_ID = 0;
-    static final int COL_NAME_ROUTE = 1;
-    static final int COL_DESCRIPTION = 2;
-    static final int COL_TOPICS = 3;
-    static final int COL_CITY_NAME_INIT = 4;
-    static final int COL_START_DATE = 5;
-    static final int COL_MAX_ATTENDEES = 6;
-    static final int COL_URL_ROUTE_COVER = 7;
-    static final int COL_SEATS_AVAILABLE = 8;
-    static final int COL_WEBSAFE_KEY = 9;
-    static final int COL_ORGANIZER_DISPLAY_NAME = 10;
-    
-    
+    public static final int COL_ROUTE_ID = 0;
+    public static final int COL_NAME_ROUTE = 1;
+    public static final int COL_DESCRIPTION = 2;
+    public static final int COL_TOPICS = 3;
+    public static final int COL_CITY_NAME_INIT = 4;
+    public static final int COL_START_DATE = 5;
+    public static final int COL_MAX_ATTENDEES = 6;
+    public static final int COL_URL_ROUTE_COVER = 7;
+    public static final int COL_SEATS_AVAILABLE = 8;
+    public static final int COL_WEBSAFE_KEY = 9;
+    public static final int COL_ORGANIZER_DISPLAY_NAME = 10;
+
+    TextView nameTextView;
+    TextView descTextView;
+    TextView cityAndDateView;
+    TextView distanceTextView;
+    ImageView imageView;
+
     public static DetailFragment createInstance(Long routeId) {
         DetailFragment detailFragment = new DetailFragment();
         Bundle bundle = new Bundle();
@@ -110,13 +118,12 @@ public class DetailFragment extends Fragment implements
 
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
 
-        TextView nameTextView = (TextView) view.findViewById(R.id.nameTextView);
-        TextView descTextView = (TextView) view.findViewById(R.id.descriptionTextView);
-        TextView distanceTextView = (TextView) view.findViewById(R.id.distanceTextView);
-        ImageView imageView = (ImageView) view.findViewById(R.id.imageView);
+        nameTextView = (TextView) view.findViewById(R.id.nameTextView);
+        descTextView = (TextView) view.findViewById(R.id.descriptionTextView);
+        cityAndDateView = (TextView) view.findViewById(R.id.cityAndDate);
+        distanceTextView = (TextView) view.findViewById(R.id.distanceTextView);
+        imageView = (ImageView) view.findViewById(R.id.imageView);
 
-        Long routeId = getArguments().getLong(EXTRA_ATTRACTION);
-        nameTextView.setText(routeId.toString());
 
         //TODO: Change when add module common
         /*
@@ -156,9 +163,24 @@ public class DetailFragment extends Fragment implements
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         data.moveToNext();
+        mAttraction.setRouteDataFromCursor(data);
 
-        Toast.makeText(getActivity(), String.valueOf(data.getLong(COL_ROUTE_ID)), Toast.LENGTH_SHORT).show();
+        nameTextView.setText(mAttraction.getName());
+        descTextView.setText(mAttraction.getDescription());
+        cityAndDateView.setText(mAttraction.getCityNameInit() + ", " +
+                Utils.getConferenceDate(getActivity(), mAttraction.getStartDate()));
+        // TODO: change to real distance
+        distanceTextView.setText(String.valueOf(mAttraction.getSeatsAvailable()));
 
+        Glide.with(getActivity())
+                .load(mAttraction.getUrlRouteCover())
+                .asBitmap()
+                .into(new SimpleTarget<Bitmap>(200, 200) {
+                    @Override
+                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                        imageView.setImageBitmap(resource);
+                    }
+                });
 
     }
 
