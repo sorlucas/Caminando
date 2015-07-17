@@ -8,6 +8,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
+import com.example.sergio.caminando.util.PrefUtils;
+
 /**
  * Created by sergio on 28/04/15.
  */
@@ -134,6 +136,8 @@ public class RouteProvider extends ContentProvider {
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
+        // mark that conference data sync succeeded
+        PrefUtils.markSyncSucceededNow(getContext());
         getContext().getContentResolver().notifyChange(uri, null);
         return returnUri;
     }

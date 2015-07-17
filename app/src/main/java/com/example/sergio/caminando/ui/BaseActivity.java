@@ -852,13 +852,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
     public void onStart() {
         LOGD(TAG, "onStart");
         super.onStart();
-
-        // Perform one-time bootstrap setup, if needed
-        if (!PrefUtils.isDataBootstrapDone(this) && mDataBootstrapThread == null) {
-            LOGD(TAG, "One-time data bootstrap not done yet. Doing now.");
-            // TODO: performDataBootstrap();
-        }
-
         startLoginProcess();
     }
 

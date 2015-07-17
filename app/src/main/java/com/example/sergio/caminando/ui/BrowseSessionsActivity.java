@@ -187,21 +187,14 @@ public class BrowseSessionsActivity extends BaseActivity  {
     }
 
     private void checkShowStaleDataButterBar() {
-        final boolean showingFilters = findViewById(R.id.filters_box) != null && findViewById(R.id.filters_box).getVisibility() == View.VISIBLE;
+
+        //TODO: Volver a mirar lo de mostrar la barra dependiendo de la sincronizacion
+        final boolean showingFilters = findViewById(R.id.filters_box) != null
+                && findViewById(R.id.filters_box).getVisibility() == View.VISIBLE;
         final long now = UIUtils.getCurrentTime(this);
         final boolean inSnooze = (now - mLastDataStaleUserActionTime < Config.STALE_DATA_WARNING_SNOOZE);
-        final long staleTime = now - PrefUtils.getLastSyncSucceededTime(this);
-        //TODO: implement para mostrar la barra o no de pendiendo de si la ruta esta en ejecucion para asi mostrar los flitros
-        /*
-        final long staleThreshold = (now >= Config.CONFERENCE_START_MILLIS && now
-                <= Config.CONFERENCE_END_MILLIS) ? Config.STALE_DATA_THRESHOLD_DURING_CONFERENCE :
-                Config.STALE_DATA_THRESHOLD_NOT_DURING_CONFERENCE;
-
-        final boolean isStale = (staleTime >= staleThreshold);
-        */
-        final boolean isStale = true;
-        //final boolean bootstrapDone = PrefUtils.isDataBootstrapDone(this);
-        final boolean mustShowBar = isStale && !inSnooze && !showingFilters;
+        final boolean staleTime = now - PrefUtils.getLastSyncSucceededTime(this) < Config.HOUR_MILLIS;
+        final boolean mustShowBar = staleTime && !inSnooze && !showingFilters;
 
         if (!mustShowBar) {
             mButterBar.setVisibility(View.GONE);

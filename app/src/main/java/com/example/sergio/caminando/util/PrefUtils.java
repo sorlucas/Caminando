@@ -130,16 +130,6 @@ public class PrefUtils  {
         return sp.getBoolean(PREF_ATTENDEE_AT_VENUE, true);
     }
 
-    public static void markDataBootstrapDone(final Context context) {
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
-        sp.edit().putBoolean(PREF_DATA_BOOTSTRAP_DONE, true).commit();
-    }
-
-    public static boolean isDataBootstrapDone(final Context context) {
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
-        return sp.getBoolean(PREF_DATA_BOOTSTRAP_DONE, false);
-    }
-
     public static void init(final Context context) {
         // Check what year we're configured for
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
