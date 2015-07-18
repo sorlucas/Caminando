@@ -18,6 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.sergio.caminando.R;
+import com.example.sergio.caminando.maps.MapsActivity;
 import com.example.sergio.caminando.provider.RouteContract;
 import com.fourmob.datetimepicker.date.DatePickerDialog;
 import com.kbeanie.imagechooser.api.ChooserType;
@@ -58,6 +59,7 @@ public class CreateRouteFragment extends Fragment implements
     private ImageButton mImageButtonStartDate;
     private ImageButton mImageButtonStartTime;
     private EditText mMaxAttendees;
+    private Button mImageButtonLunchMaps;
 
     private SimpleDateFormat dateFormatter;
     private Long startDate;
@@ -132,6 +134,14 @@ public class CreateRouteFragment extends Fragment implements
 
         mMaxAttendees = (EditText) root.findViewById(R.id.max_attendees_editext);
 
+        mImageButtonLunchMaps = (Button) root.findViewById(R.id.buttonMaps);
+        mImageButtonLunchMaps.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), MapsActivity.class);
+                startActivity(intent);
+            }
+        });
         return root;
     }
 

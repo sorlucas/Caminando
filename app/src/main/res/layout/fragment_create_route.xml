@@ -28,13 +28,13 @@
                 android:id="@+id/imageViewThumb"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="5dp"
                 android:background="@drawable/image_border"
                 android:padding="10dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_launcher"
-                android:maxWidth="300dp" />
+                android:maxWidth="300dp"
+                android:layout_below="@+id/inputLayoutRouteName"
+                android:layout_centerHorizontal="true" />
 
             <LinearLayout
                 android:id="@+id/layoutButtons"
@@ -65,8 +65,8 @@
                 android:id="@+id/inputLayoutRouteName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:layout_below="@id/layoutButtons">
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true">
                 <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/route_name_editext"
                     android:layout_width="match_parent"
@@ -79,8 +79,8 @@
                 android:id="@+id/inputLayoutCityName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:layout_below="@id/inputLayoutRouteName">
+                android:layout_below="@+id/layoutButtons"
+                android:layout_alignParentStart="true">
                 <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/route_city_name_editext"
                     android:layout_width="match_parent"
@@ -205,4 +205,13 @@
             android:onClick="myClickMethod" />
 
     </LinearLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add Map"
+        android:id="@+id/buttonMaps"
+        android:layout_above="@+id/linearLayout"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="88dp" />
 </RelativeLayout>
