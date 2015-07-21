@@ -1,8 +1,8 @@
 package com.example.sergio.caminando.maps;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.widget.TextView;
 
 import com.example.sergio.caminando.R;
 import com.google.android.gms.maps.GoogleMap;
@@ -12,23 +12,25 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 
 public class MapsActivity extends FragmentActivity
-        implements GoogleMap.OnMapClickListener, GoogleMap.OnMapLongClickListener, GoogleMap.OnCameraChangeListener,
-        OnMapReadyCallback {
+        implements
+        GoogleMap.OnMapClickListener,
+        GoogleMap.OnMapLongClickListener,
+        GoogleMap.OnCameraChangeListener,
+        OnMapReadyCallback,
+        RouteInfoFragment.OnFragmentInteractionListener {
 
-    private TextView mTapTextView;
-    private TextView mCameraTextView;
+    private RouteInfoFragment mInfoFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-        mTapTextView = (TextView) findViewById(R.id.tap_text);
-        mCameraTextView = (TextView) findViewById(R.id.camera_text);
 
-        SupportMapFragment mapFragment =
-                (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        mInfoFragment = (RouteInfoFragment) getSupportFragmentManager().findFragmentById(R.id.information_fragment);
     }
 
     @Override
@@ -40,16 +42,21 @@ public class MapsActivity extends FragmentActivity
 
     @Override
     public void onMapClick(LatLng point) {
-        mTapTextView.setText("tapped, point=" + point);
+        mInfoFragment.setText("tapped, point=" + point, 0);
     }
 
     @Override
     public void onMapLongClick(LatLng point) {
-        mTapTextView.setText("long pressed, point=" + point);
+        mInfoFragment.setText("long pressed, point=" + point, 0);
     }
 
     @Override
     public void onCameraChange(final CameraPosition position) {
-        mCameraTextView.setText(position.toString());
+        mInfoFragment.setText(position.toString(), 1);
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 }
