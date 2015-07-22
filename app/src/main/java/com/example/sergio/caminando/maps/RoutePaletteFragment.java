@@ -1,28 +1,27 @@
 package com.example.sergio.caminando.maps;
 
 import android.app.Activity;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 import com.example.sergio.caminando.R;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link OnFragmentInfoListener} interface
+ * {@link RoutePaletteFragment.OnFragmentPaletteListener} interface
  * to handle interaction events.
- * Use the {@link RouteInfoFragment#newInstance} factory method to
+ * Use the {@link RoutePaletteFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class RouteInfoFragment extends Fragment {
-
-    private TextView mTapTextView;
-    private TextView mCameraTextView;
+public class RoutePaletteFragment extends Fragment
+        implements AdapterView.OnItemSelectedListener   {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -33,7 +32,7 @@ public class RouteInfoFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private OnFragmentInfoListener mListener;
+    private OnFragmentPaletteListener mListener;
 
     /**
      * Use this factory method to create a new instance of
@@ -41,11 +40,11 @@ public class RouteInfoFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment RouteInfoFragment.
+     * @return A new instance of fragment BlankFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static RouteInfoFragment newInstance(String param1, String param2) {
-        RouteInfoFragment fragment = new RouteInfoFragment();
+    public static RoutePaletteFragment newInstance(String param1, String param2) {
+        RoutePaletteFragment fragment = new RoutePaletteFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -53,7 +52,7 @@ public class RouteInfoFragment extends Fragment {
         return fragment;
     }
 
-    public RouteInfoFragment() {
+    public RoutePaletteFragment() {
         // Required empty public constructor
     }
 
@@ -69,29 +68,26 @@ public class RouteInfoFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_route_info, container, false);
-
-        mTapTextView = (TextView) root.findViewById(R.id.tap_text);
-        mCameraTextView = (TextView) root.findViewById(R.id.camera_text);
+        // Inflate the layout for this fragment
+        View root = inflater.inflate(R.layout.palette, container, false);
+        Spinner spinner = (Spinner) root.findViewById(R.id.layers_spinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                getActivity(), R.array.layers_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(this);
 
         return root;
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteractionInfo(uri);
-        }
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (OnFragmentInfoListener) activity;
+            mListener = (OnFragmentPaletteListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement OnFragmentPaletteListener");
         }
     }
 
@@ -111,25 +107,23 @@ public class RouteInfoFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnFragmentInfoListener {
+    public interface OnFragmentPaletteListener {
         // TODO: Update argument type and name
-        void onFragmentInteractionInfo(Uri uri);
+        void onFragmentInteractionPalette(String layerName);
     }
 
-    /**
-     * Put de text in TextVies Information fragment. Depend type put in diferentt Textview
-     * @param text text to put
-     * @param type 0 (TapTex)  1 (CameraTex)
-     */
-    public void setText(String text,int type){
-        switch (type) {
-            case 0:
-                mTapTextView.setText(text);
-                return;
-            case 1:
-                mCameraTextView.setText(text);
-                return;
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        // This is also called by the Android framework in onResume(). The map may not be created at
+        // this stage yet.
+
+        if (mListener != null) {
+            mListener.onFragmentInteractionPalette((String) parent.getItemAtPosition(position));
         }
     }
 
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
 }
