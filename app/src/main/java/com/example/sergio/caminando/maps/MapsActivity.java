@@ -103,7 +103,8 @@ public class MapsActivity extends FragmentActivity
                     .snippet("Descripcion")
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.arrow))
                     .draggable(true));
-            mInfoFragment.setText("tapped, point=" + mMarkerInit.getPosition(), 0);
+            // Put City init in fragment_info
+            mInfoFragment.setText(mMarkerInit.getPosition().toString(), 0);
         } else if (mMarketFinal == null) {
             mMarketFinal = mMap.addMarker(new MarkerOptions()
                     .position(point)
@@ -111,6 +112,10 @@ public class MapsActivity extends FragmentActivity
                     .snippet("Descripcion")
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.finish_flag))
                     .draggable(true));
+            // Put City End, Distance and Altitude in fragment_info
+            mInfoFragment.setText(mMarketFinal.getPosition().toString(), 3);
+            mInfoFragment.setText("En construcion", 1);
+            mInfoFragment.setText("En construcion", 2);
         } else {
             Toast.makeText(getApplicationContext(),
                     "Already created Init and finish route",
@@ -121,12 +126,12 @@ public class MapsActivity extends FragmentActivity
 
     @Override
     public void onMapLongClick(LatLng point) {
-        mInfoFragment.setText("long pressed, point=" + point, 0);
+        //TODO: Implement onMapLongClick
     }
 
     @Override
     public void onCameraChange(final CameraPosition position) {
-        mInfoFragment.setText(position.toString(), 1);
+        //TODO: Implement onCameraChange
     }
 
     /**
@@ -154,7 +159,6 @@ public class MapsActivity extends FragmentActivity
     @Override
     public void onLocationChanged(Location location) {
         // TODO: POSITION ACTUAL
-        Toast.makeText(getApplicationContext(),location.toString(),Toast.LENGTH_SHORT).show();
     }
 
     /**

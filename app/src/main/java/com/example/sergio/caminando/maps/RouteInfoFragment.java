@@ -21,8 +21,10 @@ import com.example.sergio.caminando.R;
  */
 public class RouteInfoFragment extends Fragment {
 
-    private TextView mTapTextView;
-    private TextView mCameraTextView;
+    private TextView mCityInitView;
+    private TextView mDistanceRouteView;
+    private TextView mAltitudeRouteView;
+    private TextView mCityEndView;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -71,8 +73,11 @@ public class RouteInfoFragment extends Fragment {
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_route_info, container, false);
 
-        mTapTextView = (TextView) root.findViewById(R.id.tap_text);
-        mCameraTextView = (TextView) root.findViewById(R.id.camera_text);
+        mCityInitView = (TextView) root.findViewById(R.id.cityInitTextView);
+        mDistanceRouteView = (TextView) root.findViewById(R.id.distanceTextView);
+        mAltitudeRouteView = (TextView) root.findViewById(R.id.altitudeTextView);
+        mCityEndView = (TextView) root.findViewById(R.id.cityEndTextView);
+
 
         return root;
     }
@@ -119,15 +124,21 @@ public class RouteInfoFragment extends Fragment {
     /**
      * Put de text in TextVies Information fragment. Depend type put in diferentt Textview
      * @param text text to put
-     * @param type 0 (TapTex)  1 (CameraTex)
+     * @param type 0 (CityInit)  1 (Distance) 2(Altitude) 3(CityEnd)
      */
     public void setText(String text,int type){
         switch (type) {
             case 0:
-                mTapTextView.setText(text);
+                mCityInitView.setText(text);
                 return;
             case 1:
-                mCameraTextView.setText(text);
+                mDistanceRouteView.setText(text);
+                return;
+            case 2:
+                mAltitudeRouteView.setText(text);
+                return;
+            case 3:
+                mCityEndView.setText(text);
                 return;
         }
     }
