@@ -3,7 +3,11 @@ package com.example.sergio.caminando.maps;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.support.v4.app.FragmentActivity;
+import android.view.animation.BounceInterpolator;
+import android.view.animation.Interpolator;
 import android.widget.Toast;
 
 import com.example.sergio.caminando.R;
@@ -17,6 +21,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapsActivity extends FragmentActivity
         implements
@@ -28,7 +34,8 @@ public class MapsActivity extends FragmentActivity
         RoutePaletteFragment.OnFragmentPaletteListener,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        LocationListener {
+        LocationListener,
+        GoogleMap.OnMarkerClickListener {
 
     private GoogleApiClient mGoogleApiClient;
     private GoogleMap mMap;
@@ -36,6 +43,7 @@ public class MapsActivity extends FragmentActivity
     private RouteInfoFragment mInfoFragment;
     private RoutePaletteFragment mPaletteFragment;
 
+    private Marker mMarkerInit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +88,12 @@ public class MapsActivity extends FragmentActivity
 
     @Override
     public void onMapClick(LatLng point) {
-        mInfoFragment.setText("tapped, point=" + point, 0);
+
+        mMarkerInit = mMap.addMarker(new MarkerOptions()
+                .position(point)
+                .title("Route Start")
+                .snippet("Descripcion"));
+        mInfoFragment.setText("tapped, point=" + mMarkerInit.getPosition(), 0);
     }
 
     @Override
@@ -146,5 +159,32 @@ public class MapsActivity extends FragmentActivity
     @Override
     public void onConnectionFailed(ConnectionResult result) {
         // Do nothing
+    }
+
+    @Override
+    public boolean onMarkerClick(final Marker marker) {
+        // TODO: qUE HACE?
+        // This causes the marker at Perth to bounce into position when it is clicked.
+        final Handler handler = new Handler();
+        final long start = SystemClock.uptimeMillis();
+        final long duration = 1500;
+
+        final Interpolator interpolator = new BounceInterpolator();
+
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                long elapsed = SystemClock.uptimeMillis() - start;
+                float t = Math.max(
+                        1 - interpolator.getInterpolation((float) elapsed / duration), 0);
+                marker.setAnchor(0.5f, 1.0f + 2 * t);
+
+                if (t > 0.0) {
+                    // Post again 16ms later.
+                    handler.postDelayed(this, 16);
+                }
+            }
+        });
+        return false;
     }
 }
