@@ -5,12 +5,21 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.sergio.caminando.R;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.GoogleMap;
 
 /**
  * Created by sergio on 22/07/15.
  */
 public class MapsUtils {
+
+    // These settings are the same as the settings for the map. They will in fact give you updates
+    // at the maximal rates currently possible.
+    // TODO: Adjust to Speed Rate position
+    public static final LocationRequest REQUEST = LocationRequest.create()
+            .setInterval(10)         // 10 seconds
+            .setFastestInterval(16)    // 16ms = 60fps
+            .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
     private static boolean checkReady(Context context, GoogleMap map) {
         if (map == null) {
