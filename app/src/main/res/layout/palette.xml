@@ -6,7 +6,7 @@
     android:background="@color/background_floating_material_light">
     <Spinner
         android:id="@+id/layers_spinner"
-        android:layout_width="157dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
 </FrameLayout>

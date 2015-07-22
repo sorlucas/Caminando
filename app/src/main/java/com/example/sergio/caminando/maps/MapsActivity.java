@@ -16,6 +16,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -50,6 +51,8 @@ public class MapsActivity extends FragmentActivity
 
     private Marker mMarkerInit;
     private Marker mMarketFinal;
+
+    private Location mActualLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,7 +117,8 @@ public class MapsActivity extends FragmentActivity
                     .draggable(true));
             // Put City End, Distance and Altitude in fragment_info
             mInfoFragment.setText(mMarketFinal.getPosition().toString(), 3);
-            mInfoFragment.setText("En construcion", 1);
+            String distanceRoute = MapsUtils.getDistanceRouteNoReal(mMarkerInit.getPosition(), mMarketFinal.getPosition());
+            mInfoFragment.setText(distanceRoute, 1);
             mInfoFragment.setText("En construcion", 2);
         } else {
             Toast.makeText(getApplicationContext(),
@@ -159,6 +163,15 @@ public class MapsActivity extends FragmentActivity
     @Override
     public void onLocationChanged(Location location) {
         // TODO: POSITION ACTUAL
+        // To go in mapReady de first place
+        if (mActualLocation == null)    {
+            mActualLocation = location;
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                    new LatLng(mActualLocation.getLatitude(), mActualLocation.getLongitude())
+                    , 10));
+        }
+
+
     }
 
     /**

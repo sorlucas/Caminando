@@ -1,12 +1,16 @@
 package com.example.sergio.caminando.util;
 
 import android.content.Context;
+import android.location.Location;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.example.sergio.caminando.R;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLng;
+
+import java.text.DecimalFormat;
 
 /**
  * Created by sergio on 22/07/15.
@@ -62,6 +66,30 @@ public class MapsUtils {
         } else {
             Log.i("LDA", "Error setting layer with name " + layerName);
         }
+    }
+
+    public static String getDistanceRouteNoReal(LatLng my_latlong,LatLng frnd_latlong)    {
+
+        Location l1 = new Location("One");
+        l1.setLatitude(my_latlong.latitude);
+        l1.setLongitude(my_latlong.longitude);
+
+        Location l2 = new Location("Two");
+        l2.setLatitude(frnd_latlong.latitude);
+        l2.setLongitude(frnd_latlong.longitude);
+
+        DecimalFormat df = new DecimalFormat();
+        df.setMaximumFractionDigits(2);
+
+        float distance = l1.distanceTo(l2);
+        String dist = df.format(distance) + " m";
+
+        if(distance > 1000.0f)  {
+            distance = distance/1000.0f;
+            dist = df.format(distance) + " Km";
+        }
+
+        return dist;
     }
 
 }
