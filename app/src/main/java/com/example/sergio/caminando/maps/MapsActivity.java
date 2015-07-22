@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.animation.BounceInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.Toast;
@@ -47,7 +48,6 @@ public class MapsActivity extends FragmentActivity
     private GoogleMap mMap;
 
     private RouteInfoFragment mInfoFragment;
-    private RoutePaletteFragment mPaletteFragment;
 
     private Marker mMarkerInit;
     private Marker mMarketFinal;
@@ -63,7 +63,6 @@ public class MapsActivity extends FragmentActivity
         mapFragment.getMapAsync(this);
 
         mInfoFragment = (RouteInfoFragment) getSupportFragmentManager().findFragmentById(R.id.information_fragment);
-        mPaletteFragment = (RoutePaletteFragment) getSupportFragmentManager().findFragmentById(R.id.palette_fragment);
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
@@ -157,6 +156,11 @@ public class MapsActivity extends FragmentActivity
         MapsUtils.setLayerMap(getApplicationContext(), mMap, layerName);
     }
 
+    @Override
+    public void onChangeCameraView(LatLng latLng) {
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12));
+    }
+
     /**
      * Implementation of {@link LocationListener}.
      */
@@ -169,6 +173,9 @@ public class MapsActivity extends FragmentActivity
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                     new LatLng(mActualLocation.getLatitude(), mActualLocation.getLongitude())
                     , 10));
+            ;
+            getSupportFragmentManager().beginTransaction().add(R.id.palette_fragment,
+                    RoutePaletteFragment.newInstance(location.getLatitude(),location.getLongitude())).commit();
         }
 
 
@@ -194,11 +201,21 @@ public class MapsActivity extends FragmentActivity
     }
 
     /**
-     * Implementation of {@link GoogleApiClient.OnConnectionFailedListener}.
+     * Called when the Activity could not connect to Google Play services and the auto manager
+     * could resolve the error automatically.
+     * In this case the API is not available and notify the user.
+     *
+     * @param connectionResult can be inspected to determine the cause of the failure
      */
     @Override
-    public void onConnectionFailed(ConnectionResult result) {
-        // Do nothing
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        Log.e(TAG, "onConnectionFailed: ConnectionResult.getErrorCode() = "
+                + connectionResult.getErrorCode());
+
+        // TODO(Developer): Check error code and notify the user of error state and resolution.
+        Toast.makeText(this,
+                "Could not connect to Google API Client: Error " + connectionResult.getErrorCode(),
+                Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -228,4 +245,6 @@ public class MapsActivity extends FragmentActivity
             marker.showInfoWindow();
         return false;
     }
+
+
 }
