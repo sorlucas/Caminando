@@ -19,10 +19,13 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import static com.example.sergio.caminando.util.LogUtils.makeLogTag;
 
 public class MapsActivity extends FragmentActivity
         implements
@@ -37,6 +40,8 @@ public class MapsActivity extends FragmentActivity
         LocationListener,
         GoogleMap.OnMarkerClickListener {
 
+    private static final String TAG = makeLogTag(MapsActivity.class);
+
     private GoogleApiClient mGoogleApiClient;
     private GoogleMap mMap;
 
@@ -44,6 +49,7 @@ public class MapsActivity extends FragmentActivity
     private RoutePaletteFragment mPaletteFragment;
 
     private Marker mMarkerInit;
+    private Marker mMarketFinal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,10 +82,12 @@ public class MapsActivity extends FragmentActivity
     }
     @Override
     public void onMapReady(GoogleMap map) {
-        mMap = map;
-
         // Update mTrafficCheckbox and setMyLocationEnabled. Initial functions
         mMap = MapsUtils.updateAllTypesOfViews(this, map);
+
+        // Setting an info window adapter allows us to change the both the contents and look of the
+        // info window.
+        mMap.setInfoWindowAdapter(new MarketInfoWindowAdapter(getApplicationContext()));
 
         map.setOnMapClickListener(this);
         map.setOnMapLongClickListener(this);
@@ -88,12 +96,27 @@ public class MapsActivity extends FragmentActivity
 
     @Override
     public void onMapClick(LatLng point) {
+        if (mMarkerInit == null) {
+            mMarkerInit = mMap.addMarker(new MarkerOptions()
+                    .position(point)
+                    .title("Start")
+                    .snippet("Descripcion")
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.arrow))
+                    .draggable(true));
+            mInfoFragment.setText("tapped, point=" + mMarkerInit.getPosition(), 0);
+        } else if (mMarketFinal == null) {
+            mMarketFinal = mMap.addMarker(new MarkerOptions()
+                    .position(point)
+                    .title("End")
+                    .snippet("Descripcion")
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.finish_flag))
+                    .draggable(true));
+        } else {
+            Toast.makeText(getApplicationContext(),
+                    "Already created Init and finish route",
+                    Toast.LENGTH_LONG).show();
+        }
 
-        mMarkerInit = mMap.addMarker(new MarkerOptions()
-                .position(point)
-                .title("Route Start")
-                .snippet("Descripcion"));
-        mInfoFragment.setText("tapped, point=" + mMarkerInit.getPosition(), 0);
     }
 
     @Override
@@ -185,6 +208,7 @@ public class MapsActivity extends FragmentActivity
                 }
             }
         });
+            marker.showInfoWindow();
         return false;
     }
 }
