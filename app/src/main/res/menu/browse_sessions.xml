@@ -22,12 +22,6 @@
         android:title="@string/description_search"
         iosched:showAsAction="always" />
 
-    <item android:id="@+id/menu_add_route"
-        android:icon="@drawable/add_schedule_button_icon_unchecked"
-        android:orderInCategory="2"
-        android:title="@string/description_add_schedule"
-        iosched:showAsAction="ifRoom" />
-
     <item android:id="@+id/menu_refresh"
         android:orderInCategory="1"
         android:title="@string/description_refresh"

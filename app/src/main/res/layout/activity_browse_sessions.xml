@@ -43,6 +43,16 @@
                 tools:layout="@layout/fragment_sessions"/>
         </com.example.sergio.caminando.ui.widget.MultiSwipeRefreshLayout>
 
+        <!-- FloatingActionButton -->
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/btnFloatingAction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:src="@drawable/ic_plus"
+            app:fabSize="normal"
+            app:rippleColor="@android:color/background_dark" />
+
         <LinearLayout style="@style/HeaderBar"
             android:id="@+id/headerbar"
             android:layout_width="match_parent"

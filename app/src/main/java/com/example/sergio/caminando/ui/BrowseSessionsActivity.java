@@ -18,6 +18,7 @@ package com.example.sergio.caminando.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -68,9 +69,18 @@ public class BrowseSessionsActivity extends BaseActivity  {
 
         mRoutesFragment = (BroseSessionsFragment) getSupportFragmentManager().findFragmentById(R.id.sessions_fragment);
         mButterBar = findViewById(R.id.butter_bar);
+        registerHideableHeaderView(mButterBar);
+
         mDrawShadowFrameLayout = (DrawShadowFrameLayout) findViewById(R.id.main_content);
 
-        registerHideableHeaderView(mButterBar);
+        FloatingActionButton btnFab = (FloatingActionButton) findViewById(R.id.btnFloatingAction);
+        btnFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), CreateRouteActivity.class);
+                startActivity(intent);
+            }
+        });
 
         //TODO: DELETO FOR RELEASE
         ViewServer.get(this).addWindow(this);
@@ -112,7 +122,6 @@ public class BrowseSessionsActivity extends BaseActivity  {
             */
         }
         getConferencesForList();
-
         registerHideableHeaderView(findViewById(R.id.headerbar));
     }
 
@@ -147,13 +156,10 @@ public class BrowseSessionsActivity extends BaseActivity  {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        /*
         switch (item.getItemId()) {
-            case R.id.menu_add_route:
-
-                Intent intent = new Intent(getApplicationContext(), CreateRouteActivity.class);
-                startActivity(intent);
-                return true;
         }
+        */
         return super.onOptionsItemSelected(item);
     }
 
