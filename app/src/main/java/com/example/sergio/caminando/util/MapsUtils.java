@@ -34,20 +34,10 @@ public class MapsUtils {
     }
 
     public static GoogleMap updateAllTypesOfViews (Context context, GoogleMap map){
-        map = updateTraffic(context,map);
-        map = updateMyLocation(context, map);
-        return map;
-    }
-    // implementations
-    public static GoogleMap updateTraffic(Context context, GoogleMap map) {
         if (checkReady(context,map)) {
             map.setTrafficEnabled(true);
-        }
-        return map;
-    }
-    public static GoogleMap updateMyLocation(Context context, GoogleMap map) {
-        if (checkReady(context,map)) {
             map.setMyLocationEnabled(true);
+            map.getUiSettings().setZoomControlsEnabled(true);
         }
         return map;
     }

@@ -24,7 +24,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         class="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_toEndOf="@+id/palette_fragment"
+        android:layout_above="@+id/information_fragment"
         android:layout_alignParentStart="true" />
 
     <fragment
@@ -41,9 +41,9 @@
         android:layout_height="wrap_content"
         android:name="com.example.sergio.caminando.maps.RoutePaletteFragment"
         android:id="@+id/palette_fragment"
-        android:layout_alignParentStart="true"
         tools:layout="@layout/palette"
         android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
         android:layout_margin="16dp" />
 
 </RelativeLayout>
