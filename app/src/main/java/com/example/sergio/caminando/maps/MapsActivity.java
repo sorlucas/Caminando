@@ -34,13 +34,13 @@ public class MapsActivity extends FragmentActivity
         GoogleMap.OnMapClickListener,
         GoogleMap.OnMapLongClickListener,
         GoogleMap.OnCameraChangeListener,
+        GoogleMap.OnMarkerClickListener,
         OnMapReadyCallback,
         RouteInfoFragment.OnFragmentInfoListener,
         RoutePaletteFragment.OnFragmentPaletteListener,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        LocationListener,
-        GoogleMap.OnMarkerClickListener {
+        LocationListener {
 
     private static final String TAG = makeLogTag(MapsActivity.class);
 

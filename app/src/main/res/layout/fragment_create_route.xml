@@ -28,8 +28,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <include layout = "@layout/cardview_create_route_info"
-                android:layout_height="wrap_content" />
+            <include layout = "@layout/cardview_create_route_info"/>
             <include layout="@layout/navdrawer_separator"/>
             <include layout = "@layout/cardview_create_route_date" />
             <include layout="@layout/navdrawer_separator"/>
