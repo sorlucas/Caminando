@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="5dp"
+    android:paddingStart="8dp"
+    android:paddingLeft="8dp"
+    android:paddingRight="16dp"
+    android:paddingEnd="16dp"
+    android:paddingTop="5dp">
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/scrollView"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="false"
+        android:layout_above="@+id/linearLayout">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <include layout = "@layout/cardview_create_route_info" />
+            <include layout="@layout/navdrawer_separator"/>
+            <include layout = "@layout/cardview_create_route_date" />
+            <include layout="@layout/navdrawer_separator"/>
+            <include layout = "@layout/cardview_create_route_add_photo"/>
+            <include layout="@layout/navdrawer_separator"/>
+            <include layout="@layout/cardview_create_route_map"/>
+            <include layout="@layout/navdrawer_separator"/>
+            <include layout="@layout/cardview_create_route_extra_information"/>
+            <include layout="@layout/navdrawer_separator"/>
+        </LinearLayout>
+
+
+
+    </ScrollView>
+
+    <!--
+        When using the Holo theme (setting your activity or app theme to
+        Theme.Holo or one of its descendants), a LinearLayout with the
+        ?android:buttonBarStyle will draw dividers (with padding) between
+        buttons.
+    -->
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        style="?android:buttonBarStyle"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        >
+
+        <!--
+            Make sure to apply the ?android:buttonBarStyle to each button
+            in the button bar.
+
+            In the Holo theme, this style is very similar to
+            ?android:borderlessButtonStyle, but designed for use specifically
+            in horizontal button bars.
+        -->
+        <Button
+            android:id="@+id/cancel_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            style="?android:attr/borderlessButtonStyle"
+            android:text="@string/cancel"
+            android:onClick="myClickMethod" />
+
+        <Button
+            android:id="@+id/ok_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            style="?android:attr/borderlessButtonStyle"
+            android:text="@string/ok"
+            android:onClick="myClickMethod" />
+
+    </LinearLayout>
+</RelativeLayout>

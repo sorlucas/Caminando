@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sergio.caminando.R;
@@ -52,7 +53,7 @@ public class CreateRouteFragment extends Fragment implements
     //Declarate UI Rerferences
 
     private EditText mRouteName;
-    private EditText mCityName;
+    private TextView mCityName;
     private EditText mDescriptionRoute;
     private EditText mTopicsRoute;
     private EditText mStartDate;
@@ -65,7 +66,8 @@ public class CreateRouteFragment extends Fragment implements
     private Long startDate;
 
     //Delarate Views to catch photo route
-    private ImageView imageViewThumbnail;
+    private ImageView mImageViewCover;
+    private ImageView mImageViewMap;
     private ImageChooserManager imageChooserManager;
     private ProgressBar pbar;
     private String filePath;
@@ -101,7 +103,7 @@ public class CreateRouteFragment extends Fragment implements
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
 
-        ViewGroup root = (ViewGroup) inflater.inflate(R.layout.fragment_create_route, container, false);
+        ViewGroup root = (ViewGroup) inflater.inflate(R.layout.fragment_create_route_debug, container, false);
 
         Button buttonTakePicture = (Button) root.findViewById(R.id.buttonTakePicture);
         buttonTakePicture.setOnClickListener(new View.OnClickListener() {
@@ -119,12 +121,12 @@ public class CreateRouteFragment extends Fragment implements
                 chooseImage();
             }
         });
-        imageViewThumbnail = (ImageView) root.findViewById(R.id.imageViewThumb);
+        mImageViewCover = (ImageView) root.findViewById(R.id.imageViewCover);
         pbar = (ProgressBar) root.findViewById(R.id.progressBar);
         pbar.setVisibility(View.GONE);
 
         mRouteName = (EditText) root.findViewById(R.id.route_name_editext);
-        mCityName = (EditText) root.findViewById(R.id.route_city_name_editext);
+        mCityName = (TextView) root.findViewById(R.id.route_city_name_textview);
         mDescriptionRoute = (EditText) root.findViewById(R.id.description_route_editext);
         mTopicsRoute = (EditText) root.findViewById(R.id.topics_routes);
 
@@ -134,8 +136,9 @@ public class CreateRouteFragment extends Fragment implements
 
         mMaxAttendees = (EditText) root.findViewById(R.id.max_attendees_editext);
 
-        mImageButtonLunchMaps = (Button) root.findViewById(R.id.buttonMaps);
-        mImageButtonLunchMaps.setOnClickListener(new View.OnClickListener() {
+
+        mImageViewMap = (ImageView) root.findViewById(R.id.imageViewMap);
+        mImageViewMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), MapsActivity.class);
@@ -290,7 +293,7 @@ public class CreateRouteFragment extends Fragment implements
                 pbar.setVisibility(View.GONE);
                 if (image != null) {
                     filePath = image.getFilePathOriginal();
-                    imageViewThumbnail.setImageURI(Uri.parse(new File(image
+                    mImageViewCover.setImageURI(Uri.parse(new File(image
                             .getFileThumbnail()).toString()));
                 }
             }
