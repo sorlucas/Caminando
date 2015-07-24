@@ -7,19 +7,9 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/theme_primary_dark">
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/inputLayoutStartDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp">
-            <android.support.v7.widget.AppCompatEditText
-                android:id="@+id/start_date_route_editext"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/create_route_start_date"
-                android:inputType="date"/>
-        </android.support.design.widget.TextInputLayout>
+        android:background="@color/cardview_light_background"
+        android:gravity="center_horizontal">
+
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -30,6 +20,22 @@
             android:layout_height="wrap_content"
             android:id="@+id/imageButtonStartTime"
             android:src="@drawable/ic_alarm_holo_dark"/>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/inputLayoutStartDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+
+            <android.support.v7.widget.AppCompatEditText
+                android:id="@+id/start_date_route_editext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="@string/create_route_start_date"
+                android:inputType="date"
+                android:layout_gravity="center"
+                android:layout_marginLeft="36dp" />
+        </android.support.design.widget.TextInputLayout>
 
     </LinearLayout>
 

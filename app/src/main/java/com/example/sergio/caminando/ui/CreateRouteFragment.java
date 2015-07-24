@@ -103,7 +103,7 @@ public class CreateRouteFragment extends Fragment implements
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
 
-        ViewGroup root = (ViewGroup) inflater.inflate(R.layout.fragment_create_route_debug, container, false);
+        ViewGroup root = (ViewGroup) inflater.inflate(R.layout.fragment_create_route, container, false);
 
         Button buttonTakePicture = (Button) root.findViewById(R.id.buttonTakePicture);
         buttonTakePicture.setOnClickListener(new View.OnClickListener() {

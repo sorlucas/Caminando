@@ -7,7 +7,7 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/theme_primary_dark">
+        android:background="@color/cardview_light_background">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -25,7 +25,8 @@
             android:scaleType="fitCenter"
             android:src="@drawable/icon_google_maps_earth"
             android:minHeight="100dp"
-            android:maxWidth="150dp" />
+            android:maxWidth="150dp"
+            android:clickable="true" />
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -35,12 +36,13 @@
             android:weightSum="1">
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="Route Position"
                 android:id="@+id/route_city_name_textview"
-                android:layout_weight="0.98" />
+                android:gravity="fill"
+                android:layout_marginRight="16dp" />
 
             <ImageButton
                 android:layout_width="wrap_content"

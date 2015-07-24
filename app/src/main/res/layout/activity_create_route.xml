@@ -10,11 +10,5 @@
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:layout="@layout/fragment_create_route_debug"/>
-
-    <fragment android:name="com.example.sergio.caminando.ui.BroseSessionsFragment"
-        android:id="@+id/sessions_fragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:layout="@layout/fragment_sessions"/>
+        tools:layout="@layout/fragment_create_route"/>
 </LinearLayout>

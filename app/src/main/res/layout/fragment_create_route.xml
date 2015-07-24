@@ -8,6 +8,7 @@
     android:paddingRight="16dp"
     android:paddingEnd="16dp"
     android:paddingTop="5dp">
+
     <ProgressBar
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyleLarge"
@@ -19,8 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/scrollView"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="false"
+        android:layout_below="@id/progressBar"
         android:layout_above="@+id/linearLayout">
 
         <LinearLayout
@@ -28,7 +28,8 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <include layout = "@layout/cardview_create_route_info" />
+            <include layout = "@layout/cardview_create_route_info"
+                android:layout_height="wrap_content" />
             <include layout="@layout/navdrawer_separator"/>
             <include layout = "@layout/cardview_create_route_date" />
             <include layout="@layout/navdrawer_separator"/>
@@ -87,4 +88,5 @@
             android:onClick="myClickMethod" />
 
     </LinearLayout>
+
 </RelativeLayout>
