@@ -16,6 +16,7 @@
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -24,8 +25,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         class="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_above="@+id/information_fragment"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_above="@+id/information_fragment" />
 
     <fragment
         android:id="@+id/information_fragment"
@@ -34,7 +35,8 @@
         class="com.example.sergio.caminando.maps.RouteInfoFragment"
         tools:layout="@layout/fragment_route_info"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_margin="8dp" />
 
     <fragment
         android:layout_width="wrap_content"
@@ -43,7 +45,27 @@
         android:id="@+id/palette_fragment"
         tools:layout="@layout/palette"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="16dp" />
+        android:layout_alignParentStart="true"
+        android:layout_margin="4dp" />
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/btnFloatingActionCreate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:src="@drawable/ic_create_white_24dp"
+        app:fabSize="normal"
+        app:rippleColor="@android:color/background_dark"
+        android:layout_centerVertical="true"
+        android:layout_alignParentStart="true" />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/btnFloatingActionCancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:src="@drawable/ic_cancel_white_24dp"
+        app:fabSize="normal"
+        app:rippleColor="@android:color/background_dark"
+        android:layout_below="@+id/btnFloatingActionCreate"
+        android:layout_alignParentStart="true" />
 </RelativeLayout>
