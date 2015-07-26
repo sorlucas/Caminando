@@ -60,11 +60,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right"
+        android:visibility="gone"
         android:src="@drawable/ic_done_white_24dp"
         app:fabSize="normal"
         app:rippleColor="@android:color/background_dark"
+        android:onClick="createRoute"
         android:layout_above="@+id/btnFloatingActionCancel"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentStart="true" />
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/btnFloatingActionCancel"
         android:layout_width="wrap_content"
@@ -73,6 +76,7 @@
         android:src="@drawable/ic_cancel_white_24dp"
         app:fabSize="normal"
         app:rippleColor="@android:color/background_dark"
-        android:layout_centerVertical="true"
-        android:layout_alignParentEnd="true" />
+        android:onClick="cancel"
+        android:layout_above="@+id/information_fragment"
+        android:layout_alignParentStart="true" />
 </RelativeLayout>

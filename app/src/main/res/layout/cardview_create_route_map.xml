@@ -6,7 +6,7 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:background="@color/cardview_light_background">
         <TextView
             android:layout_width="wrap_content"
@@ -14,23 +14,68 @@
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
             android:text="Add Route Map"
             android:id="@+id/textView4"
-            android:background="@color/theme_primary_light"
             android:padding="8dp" />
 
         <include layout="@layout/createroute_separator"/>
 
-        <ImageView
-            android:id="@+id/imageViewMap"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/image_border"
-            android:padding="10dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/icon_google_maps_earth"
-            android:minHeight="100dp"
-            android:maxWidth="150dp"
-            android:clickable="true"
-            android:focusable="true" />
+            android:layout_height="match_parent"
+            android:layout_margin="4dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="City Name Init kilometro, Spain"
+                android:id="@+id/city_name_init_textview"
+                android:gravity="fill"
+                android:layout_marginRight="16dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true" />
+
+            <ImageView
+                android:id="@+id/imageViewMap"
+                android:layout_width="250dp"
+                android:layout_height="125dp"
+                android:background="@drawable/image_border"
+                android:padding="10dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/icon_google_maps_earth"
+                android:clickable="true"
+                android:layout_below="@+id/city_name_init_textview"
+                android:layout_alignParentEnd="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="1987.41 (m)"
+                android:id="@+id/distance_textview"
+                android:layout_below="@+id/city_name_init_textview"
+                android:layout_toStartOf="@+id/imageViewMap"
+                android:layout_marginTop="40dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="123 (m)"
+                android:id="@+id/elevation_textview"
+                android:layout_below="@+id/distance_textview"
+                android:layout_alignEnd="@+id/distance_textview" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="City Name Final kilometro, Estados Unidos"
+                android:id="@+id/city_name_final_textview"
+                android:layout_below="@+id/imageViewMap"
+                android:layout_alignParentStart="true" />
+
+        </RelativeLayout>
+
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -39,20 +84,12 @@
             android:gravity="end"
             android:weightSum="1">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="Route Position"
-                android:id="@+id/route_city_name_textview"
-                android:gravity="fill"
-                android:layout_marginRight="16dp" />
-
             <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/imageButton"
-                android:src="@drawable/ic_delete_black_24dp" />
+                android:src="@drawable/ic_delete_black_24dp"
+                android:background="@drawable/image_border" />
 
         </TableRow>
 

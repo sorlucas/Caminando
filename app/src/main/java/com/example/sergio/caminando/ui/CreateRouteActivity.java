@@ -58,6 +58,7 @@ public class CreateRouteActivity extends BaseActivity implements DownloadResultR
         intent.putExtra(RouteContract.RouteEntry.COLUMN_MAX_ATTENDEES, routeHasMap.get(RouteContract.RouteEntry.COLUMN_MAX_ATTENDEES));
 
         startService(intent);
+        finish();
     }
 
     @Override
@@ -82,13 +83,15 @@ public class CreateRouteActivity extends BaseActivity implements DownloadResultR
 
     public void myClickMethod(View view) {
         switch (view.getId()){
-            case R.id.cancel_button:
+            case R.id.button_cancel:
                 navigateUpToFromChild(CreateRouteActivity.this,
                         IntentCompat.makeMainActivity(new ComponentName(CreateRouteActivity.this,
                                 BrowseSessionsActivity.class)));
                 return;
-            default:
+            case R.id.button_create:
                 mFragment.myClickMethod(view);
+                return;
+            default:
                 return;
         }
     }

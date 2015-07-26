@@ -50,11 +50,17 @@ public class CreateRouteFragment extends Fragment implements
     public static final String DATEPICKER_TAG_START = "datepickerstart";
     public static final String TIMEPICKER_TAG_START = "timepickerstart";
 
+    // Request codes for the UIs that we show
+    public static final int REQUEST_MAPS = 100;
+
     //Declarate UI Rerferences
 
     private EditText mRouteName;
-    private TextView mCityName;
+    private TextView mCityNameInit;
+    private TextView mCityNameFinal;
     private EditText mDescriptionRoute;
+    private TextView mDistanceRoute;
+    private TextView mElevationRoute;
     private EditText mTopicsRoute;
     private EditText mStartDate;
     private ImageButton mImageButtonStartDate;
@@ -126,23 +132,23 @@ public class CreateRouteFragment extends Fragment implements
         pbar.setVisibility(View.GONE);
 
         mRouteName = (EditText) root.findViewById(R.id.route_name_editext);
-        mCityName = (TextView) root.findViewById(R.id.route_city_name_textview);
+        mCityNameInit = (TextView) root.findViewById(R.id.city_name_init_textview);
+        mCityNameFinal = (TextView) root.findViewById(R.id.city_name_final_textview);
         mDescriptionRoute = (EditText) root.findViewById(R.id.description_route_editext);
+        mDistanceRoute = (TextView) root.findViewById(R.id.distance_textview);
+        mElevationRoute = (TextView) root.findViewById(R.id.elevation_textview);
         mTopicsRoute = (EditText) root.findViewById(R.id.topics_routes);
-
         mStartDate = (EditText) root.findViewById(R.id.start_date_route_editext);
         mImageButtonStartDate = (ImageButton) root.findViewById(R.id.imageButtonStartDate);
         mImageButtonStartTime = (ImageButton) root.findViewById(R.id.imageButtonStartTime);
-
         mMaxAttendees = (EditText) root.findViewById(R.id.max_attendees_editext);
-
 
         mImageViewMap = (ImageView) root.findViewById(R.id.imageViewMap);
         mImageViewMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), MapsActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, REQUEST_MAPS);
             }
         });
         return root;
@@ -223,7 +229,7 @@ public class CreateRouteFragment extends Fragment implements
      */
     public void myClickMethod(View view){
         switch (view.getId()){
-            case (R.id.ok_button):
+            case (R.id.button_create):
                 mCallbacks.onUploadRoute(getHashMapDataRoutes(), filePath);
                 return;
         }
@@ -234,7 +240,7 @@ public class CreateRouteFragment extends Fragment implements
         hashMapRoutes.put(RouteContract.RouteEntry.COLUMN_NAME_ROUTE,mRouteName.getText().toString());
         hashMapRoutes.put(RouteContract.RouteEntry.COLUMN_DESCRIPTION,mDescriptionRoute.getText().toString());
         hashMapRoutes.put(RouteContract.RouteEntry.COLUMN_TOPICS,mTopicsRoute.getText().toString());
-        hashMapRoutes.put(RouteContract.RouteEntry.COLUMN_CITY_NAME_INIT, mCityName.getText().toString());
+        hashMapRoutes.put(RouteContract.RouteEntry.COLUMN_CITY_NAME_INIT, mCityNameInit.getText().toString());
         hashMapRoutes.put(RouteContract.RouteEntry.COLUMN_START_DATE,String.valueOf(startDate));
         hashMapRoutes.put(RouteContract.RouteEntry.COLUMN_URL_ROUTE_COVER,filePath);
         hashMapRoutes.put(RouteContract.RouteEntry.COLUMN_MAX_ATTENDEES, mMaxAttendees.getText().toString());
@@ -281,6 +287,28 @@ public class CreateRouteFragment extends Fragment implements
             imageChooserManager.submit(requestCode, data);
         } else {
             pbar.setVisibility(View.GONE);
+        }
+
+        if (requestCode == REQUEST_MAPS) {
+            if(resultCode == getActivity().RESULT_OK){
+                String cityInit = data.getStringExtra("city_name_init");
+                Double latInit = data.getDoubleExtra("lat_init", 0);
+                Double lonInit = data.getDoubleExtra("lon_init", 0);
+                String cityFinal = data.getStringExtra("city_name_final");
+                Double latFinal = data.getDoubleExtra("lat_final", 0);
+                Double lonFinal = data.getDoubleExtra("lon_final", 0);
+                String distance = data.getStringExtra("distance");
+                String elevation = data.getStringExtra("elevation");
+
+                mCityNameInit.setText(cityInit);
+                mCityNameFinal.setText(cityFinal);
+                mDistanceRoute.setText(distance);
+                mElevationRoute.setText(elevation);
+            }
+            if (resultCode == getActivity().RESULT_CANCELED) {
+                Toast.makeText(getActivity(), "Cancelled",
+                        Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -343,4 +371,6 @@ public class CreateRouteFragment extends Fragment implements
         }
         super.onViewStateRestored(savedInstanceState);
     }
+
+
 }

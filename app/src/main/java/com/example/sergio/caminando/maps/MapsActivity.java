@@ -1,12 +1,15 @@
 package com.example.sergio.caminando.maps;
 
+import android.content.Intent;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.View;
 import android.view.animation.BounceInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.Toast;
@@ -52,7 +55,14 @@ public class MapsActivity extends FragmentActivity
     private Marker mMarkerInit;
     private Marker mMarketFinal;
 
+    private FloatingActionButton mFloatButtonOK;
+    
     private Location mActualLocation;
+
+    private String mCityNameInit;
+    private String mDistanceRoute;
+    private String mElevationRoute;
+    private String mCityNameFinal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +73,7 @@ public class MapsActivity extends FragmentActivity
         mapFragment.getMapAsync(this);
 
         mInfoFragment = (RouteInfoFragment) getSupportFragmentManager().findFragmentById(R.id.information_fragment);
+        mFloatButtonOK = (FloatingActionButton) findViewById(R.id.btnFloatingActionCreate);
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
@@ -105,8 +116,11 @@ public class MapsActivity extends FragmentActivity
                     .snippet("Descripcion")
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.arrow))
                     .draggable(true));
-            // Put City init in fragment_info
-            mInfoFragment.setText(mMarkerInit.getPosition().toString(), 0);
+
+            // TODO: Implement real CityName
+            mCityNameInit = "Implement";
+
+            mInfoFragment.setText(mCityNameInit, 0);
         } else if (mMarketFinal == null) {
             mMarketFinal = mMap.addMarker(new MarkerOptions()
                     .position(point)
@@ -114,11 +128,19 @@ public class MapsActivity extends FragmentActivity
                     .snippet("Descripcion")
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.finish_flag))
                     .draggable(true));
-            // Put City End, Distance and Altitude in fragment_info
-            mInfoFragment.setText(mMarketFinal.getPosition().toString(), 3);
-            String distanceRoute = MapsUtils.getDistanceRouteNoReal(mMarkerInit.getPosition(), mMarketFinal.getPosition());
-            mInfoFragment.setText(distanceRoute, 1);
-            mInfoFragment.setText("En construcion", 2);
+
+            // TODO: Implement real city name final
+            mCityNameFinal = "implement";
+            mInfoFragment.setText(mCityNameFinal, 3);
+
+            mDistanceRoute = MapsUtils.getDistanceRouteNoReal(mMarkerInit.getPosition(), mMarketFinal.getPosition());
+            mInfoFragment.setText(mDistanceRoute, 1);
+
+            // TODO: Implement real elevation.
+            mElevationRoute = "En construcion";
+            mInfoFragment.setText(mElevationRoute, 2);
+
+            checkButtonOk();
         } else {
             Toast.makeText(getApplicationContext(),
                     "Already created Init and finish route",
@@ -246,5 +268,39 @@ public class MapsActivity extends FragmentActivity
         return false;
     }
 
+    private void checkButtonOk () {
+        if (mMarkerInit.getPosition() != null && mMarketFinal.getPosition() != null) {
+                mFloatButtonOK.setVisibility(View.VISIBLE);
+        } else {
+            mFloatButtonOK.setVisibility(View.GONE);
+        }
+    }
 
+    public void cancel(View view) {
+        Intent returnIntent = new Intent();
+        setResult(RESULT_CANCELED, returnIntent);
+        finish();
+    }
+
+    public void createRoute (View view) {
+        Double lat_init = mMarkerInit.getPosition().latitude;
+        Double lon_init = mMarkerInit.getPosition().longitude;
+
+        Double lat_final = mMarketFinal.getPosition().latitude;
+        Double lon_final = mMarketFinal.getPosition().longitude;
+
+        // Create intent to result data points to Parent activity
+        Intent returnIntent = new Intent();
+        // TODO: Change to Routecontract
+        returnIntent.putExtra("city_name_init", mCityNameInit);
+        returnIntent.putExtra("lat_init", lat_init);
+        returnIntent.putExtra("lon_init", lon_init);
+        returnIntent.putExtra("city_name_final", mCityNameFinal);
+        returnIntent.putExtra("lat_final", lat_final);
+        returnIntent.putExtra("lon_final", lon_final);
+        returnIntent.putExtra("distance", mDistanceRoute);
+        returnIntent.putExtra("elevation", mElevationRoute);
+        setResult(RESULT_OK, returnIntent);
+        finish();
+    }
 }

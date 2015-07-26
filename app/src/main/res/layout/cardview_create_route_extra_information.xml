@@ -15,7 +15,6 @@
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
             android:text="Extra Information"
             android:id="@+id/textView4"
-            android:background="@color/theme_primary_light"
             android:padding="8dp" />
 
         <include layout="@layout/createroute_separator"/>

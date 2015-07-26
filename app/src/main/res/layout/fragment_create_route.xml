@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="5dp"
     android:paddingStart="8dp"
@@ -20,8 +21,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/scrollView"
-        android:layout_below="@id/progressBar"
-        android:layout_above="@+id/linearLayout">
+        android:layout_alignParentBottom="true"
+        android:layout_alignTop="@+id/progressBar">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -44,48 +45,36 @@
 
     </ScrollView>
 
+
+
     <!--
-        When using the Holo theme (setting your activity or app theme to
-        Theme.Holo or one of its descendants), a LinearLayout with the
-        ?android:buttonBarStyle will draw dividers (with padding) between
-        buttons.
+        Make sure to apply the ?android:buttonBarStyle to each button
+        in the button bar.
+
+        In the Holo theme, this style is very similar to
+        ?android:borderlessButtonStyle, but designed for use specifically
+        in horizontal button bars.
     -->
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="match_parent"
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/button_create"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        style="?android:buttonBarStyle"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        >
+        android:src="@drawable/ic_done_white_24dp"
+        app:fabSize="normal"
+        app:rippleColor="@android:color/background_dark"
+        android:onClick="myClickMethod"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"/>
 
-        <!--
-            Make sure to apply the ?android:buttonBarStyle to each button
-            in the button bar.
-
-            In the Holo theme, this style is very similar to
-            ?android:borderlessButtonStyle, but designed for use specifically
-            in horizontal button bars.
-        -->
-        <Button
-            android:id="@+id/cancel_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            style="?android:attr/borderlessButtonStyle"
-            android:text="@string/cancel"
-            android:onClick="myClickMethod" />
-
-        <Button
-            android:id="@+id/ok_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            style="?android:attr/borderlessButtonStyle"
-            android:text="@string/ok"
-            android:onClick="myClickMethod" />
-
-    </LinearLayout>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/button_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:src="@drawable/ic_cancel_white_24dp"
+        app:fabSize="normal"
+        app:rippleColor="@android:color/background_dark"
+        android:onClick="myClickMethod"
+        android:layout_alignParentBottom="true" />
 
 </RelativeLayout>
