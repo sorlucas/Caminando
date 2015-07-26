@@ -158,7 +158,7 @@ public class MapsActivity extends FragmentActivity
 
     @Override
     public void onChangeCameraView(LatLng latLng) {
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
     }
 
     /**
@@ -172,7 +172,7 @@ public class MapsActivity extends FragmentActivity
             mActualLocation = location;
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                     new LatLng(mActualLocation.getLatitude(), mActualLocation.getLongitude())
-                    , 10));
+                    , 15));
             ;
             getSupportFragmentManager().beginTransaction().add(R.id.palette_fragment,
                     RoutePaletteFragment.newInstance(location.getLatitude(),location.getLongitude())).commit();

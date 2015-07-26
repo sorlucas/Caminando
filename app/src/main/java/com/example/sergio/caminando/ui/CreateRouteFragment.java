@@ -235,7 +235,7 @@ public class CreateRouteFragment extends Fragment implements
         hashMapRoutes.put(RouteContract.RouteEntry.COLUMN_DESCRIPTION,mDescriptionRoute.getText().toString());
         hashMapRoutes.put(RouteContract.RouteEntry.COLUMN_TOPICS,mTopicsRoute.getText().toString());
         hashMapRoutes.put(RouteContract.RouteEntry.COLUMN_CITY_NAME_INIT, mCityName.getText().toString());
-        hashMapRoutes.put(RouteContract.RouteEntry.COLUMN_START_DATE,startDate.toString());
+        hashMapRoutes.put(RouteContract.RouteEntry.COLUMN_START_DATE,String.valueOf(startDate));
         hashMapRoutes.put(RouteContract.RouteEntry.COLUMN_URL_ROUTE_COVER,filePath);
         hashMapRoutes.put(RouteContract.RouteEntry.COLUMN_MAX_ATTENDEES, mMaxAttendees.getText().toString());
         return hashMapRoutes;
